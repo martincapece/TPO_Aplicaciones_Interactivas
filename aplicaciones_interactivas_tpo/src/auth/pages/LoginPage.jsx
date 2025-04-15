@@ -1,7 +1,11 @@
+import { AuthLayout } from "../layout"
+
 export const LoginPage = () => {
 
 
     return (
-        <h1>LoginPage</h1>
+        <AuthLayout title={ "Iniciar Sesion" }>
+            <div>Algo</div>
+        </AuthLayout>
     )
 }
