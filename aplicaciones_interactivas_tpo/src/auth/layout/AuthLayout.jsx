@@ -1,4 +1,4 @@
-import { Button, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 export const AuthLayout = ({ children, title }) => {
   return (
@@ -12,8 +12,6 @@ export const AuthLayout = ({ children, title }) => {
       sx={{ backgroundColor: '#ffffff' }}
     >
       <Grid
-        item
-        md={3}
         sx={{
           width: '100%',
           maxWidth: { xs: 300, sm: 500, md: 700 }

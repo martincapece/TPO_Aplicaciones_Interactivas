@@ -1,6 +1,7 @@
 import { Button, Grid, TextField } from "@mui/material"
 import { Apple, Facebook, Google } from '@mui/icons-material';
 import { AuthLayout } from "../layout"
+import { Link } from "react-router-dom";
 
 export const LoginPage = () => {
 
@@ -48,6 +49,9 @@ export const LoginPage = () => {
                     
                     <Grid>
                         <Button
+                        LinkComponent={Link}
+                        to="/auth/register"
+                        type="submit"
                         fullWidth
                         sx={{
                             fontFamily: 'Inter',
@@ -68,7 +72,7 @@ export const LoginPage = () => {
                         justifyContent="space-between"
                         columnSpacing={{ xs: 1 }}
                     >
-                        <Grid item>
+                        <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }
@@ -83,7 +87,7 @@ export const LoginPage = () => {
                                 <Facebook sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }
@@ -98,7 +102,7 @@ export const LoginPage = () => {
                                 <Apple sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }

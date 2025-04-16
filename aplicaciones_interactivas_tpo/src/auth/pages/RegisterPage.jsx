@@ -1,6 +1,7 @@
 import { Button, Grid, TextField } from "@mui/material"
 import { Apple, Facebook, Google } from '@mui/icons-material';
 import { AuthLayout } from "../layout"
+import { Link } from "react-router-dom";
 
 export const RegisterPage = () => {
     
@@ -56,6 +57,7 @@ export const RegisterPage = () => {
                     <Grid>
                         <Button
                         fullWidth
+                        type="submit"
                         sx={{
                             fontFamily: 'Inter',
                             fontWeight: 500,
@@ -71,6 +73,8 @@ export const RegisterPage = () => {
                     
                     <Grid>
                         <Button
+                        LinkComponent={Link}
+                        to="/auth/login"
                         fullWidth
                         sx={{
                             fontFamily: 'Inter',
@@ -91,7 +95,7 @@ export const RegisterPage = () => {
                         justifyContent="space-between"
                         columnSpacing={{ xs: 1 }}
                     >
-                        <Grid item>
+                        <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }
@@ -106,7 +110,7 @@ export const RegisterPage = () => {
                                 <Facebook sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }
@@ -121,7 +125,7 @@ export const RegisterPage = () => {
                                 <Apple sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }
