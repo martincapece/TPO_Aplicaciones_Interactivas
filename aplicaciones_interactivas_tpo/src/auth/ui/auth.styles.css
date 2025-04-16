@@ -1,8 +1,8 @@
 body {
     /* text-align: center; */
-
+    background-color: aqua;
 }
 
-.rojo {
-    color: red;
+div {
+    background-color: red;
 }

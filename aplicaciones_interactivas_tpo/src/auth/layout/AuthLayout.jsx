@@ -1,12 +1,37 @@
-import '../UI/auth.styles.css';
-import { Button } from '@mui/material/Button';
+import { Button, Grid, Typography } from '@mui/material';
 
 export const AuthLayout = ({ children, title }) => {
   return (
-    <>
-      <Button variant="contained">Hello world</Button>
-      <h1 className=''>{ title }</h1>
-      {children}
-    </>
+    <Grid
+      container
+      spacing={ 0 }
+      direction="column"
+      justifyContent="center"
+      alignItems= "center"
+      minHeight='100vh'
+      sx={{ backgroundColor: '#ffffff' }}
+    >
+      <Grid
+        item
+        md={3}
+        sx={{
+          width: '100%',
+          maxWidth: 300
+        }}
+      >
+        <Typography 
+          variant='h5'
+          sx={{
+            fontFamily: 'Inter',
+            fontWeight: '800',
+            mb: 3
+          }}
+        >
+          { title }
+        </Typography>
+        
+          { children }
+      </Grid>
+    </Grid>
   )
 }
