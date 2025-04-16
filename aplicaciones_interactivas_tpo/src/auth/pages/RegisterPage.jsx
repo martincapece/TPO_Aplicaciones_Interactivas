@@ -88,49 +88,52 @@ export const RegisterPage = () => {
                         container 
                         spacing={ 0 } 
                         direction="row"
-                        justifyContent="space-around"
+                        justifyContent="space-between"
                         columnSpacing={{ xs: 1 }}
                     >
-                        <Grid>
+                        <Grid item>
                             <Button
                             fullWidth
+                            xs={ 4 }
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
                                 color: 'black',
                                 outline: 1,
-                                p: 1,
+                                p: { xs: 1, md: 2},
                             }}
                             >
-                                <Facebook sx={{paddingX: 3, fontSize: 30 }} />
+                                <Facebook sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
-                        <Grid>
+                        <Grid item>
                             <Button
                             fullWidth
+                            xs={ 4 }
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
                                 color: 'black',
                                 outline: 1,
-                                p: 1,
+                                p: { xs: 1, md: 2},
                             }}
                             >
-                                <Apple sx={{paddingX: 3, fontSize: 30 }} />
+                                <Apple sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
-                        <Grid>
+                        <Grid item>
                             <Button
                             fullWidth
+                            xs={ 4 }
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
                                 color: 'black',
                                 outline: 1,
-                                p: 1,
+                                p: { xs: 1, md: 2},
                             }}
                             >
-                                <Google sx={{paddingX: 3, fontSize: 30 }} />
+                                <Google sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
                     </Grid>

@@ -16,7 +16,7 @@ export const AuthLayout = ({ children, title }) => {
         md={3}
         sx={{
           width: '100%',
-          maxWidth: 300
+          maxWidth: { xs: 300, sm: 500, md: 700 }
         }}
       >
         <Typography 
