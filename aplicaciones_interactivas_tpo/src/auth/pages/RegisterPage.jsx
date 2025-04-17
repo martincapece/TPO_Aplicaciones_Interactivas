@@ -2,9 +2,18 @@ import { Button, Grid, TextField } from "@mui/material"
 import { Apple, Facebook, Google } from '@mui/icons-material';
 import { AuthLayout } from "../layout"
 import { Link } from "react-router-dom";
+import { useForm } from "../hooks";
+
+const formDate = {
+    name: '',
+    username: '',
+    email: '',
+    password: ''
+}
 
 export const RegisterPage = () => {
     
+    const { name, username, email, password, onInputChange } = useForm( formDate );
     
     return (
         <AuthLayout title={'CREAR CUENTA'}>
@@ -18,7 +27,8 @@ export const RegisterPage = () => {
                             fullWidth
                             name="name"
                             type="text"
-                            // onChange={}
+                            onChange={ onInputChange }
+                            value={ name }
                         />
                     </Grid>
                     <Grid>
@@ -27,9 +37,10 @@ export const RegisterPage = () => {
                             placeholder="Jerefer22"
                             variant="outlined"
                             fullWidth
-                            name="displayName"
+                            name="username"
                             type="text"
-                            // onChange={}
+                            onChange={ onInputChange }
+                            value={ username }
                         />
                     </Grid>
                     <Grid>
@@ -41,7 +52,8 @@ export const RegisterPage = () => {
                             autoComplete="undefined"
                             name="email"
                             type="email"
-                            // onChange={}
+                            onChange={ onInputChange }
+                            value={ email }
                         />
                     </Grid>
                     <Grid>
@@ -51,7 +63,8 @@ export const RegisterPage = () => {
                             variant="outlined"
                             fullWidth
                             name="password"
-                            // onChange={}
+                            onChange={ onInputChange }
+                            value={ password }
                         />
                     </Grid>
                     <Grid>

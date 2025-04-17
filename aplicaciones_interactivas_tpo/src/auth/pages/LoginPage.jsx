@@ -2,13 +2,31 @@ import { Button, Grid, TextField } from "@mui/material"
 import { Apple, Facebook, Google } from '@mui/icons-material';
 import { AuthLayout } from "../layout"
 import { Link } from "react-router-dom";
+import { useForm } from "../hooks";
+import { useEffect, useState } from "react";
+
+const formDate = {
+    email: '',
+    password: ''
+}
 
 export const LoginPage = () => {
 
+    const { formState, onInputChange } = useForm( formDate );
+    const { email, password } = formState;
+
+    const [counter, setCounter] = useState(1);
+    
+    const onSubmitButton = ( event ) => {
+        event.preventDefault();
+        localStorage.setItem( `user${counter}`, formState );
+        setCounter( counter + 1 );
+    }
+    
 
     return (
         <AuthLayout title={ "INICIAR SESION" }>
-            <form>
+            <form onSubmit={ onSubmitButton } >
                 <Grid container spacing={ 2 } direction="column">
                     <Grid sx={{ mt: 1 }}>
                         <TextField 
@@ -18,7 +36,8 @@ export const LoginPage = () => {
                             fullWidth
                             name="email"
                             type="email"
-                            // onChange={}
+                            onChange={ onInputChange }
+                            value={ email }
                         />
                     </Grid>
                     <Grid>
@@ -28,12 +47,14 @@ export const LoginPage = () => {
                             variant="outlined"
                             fullWidth
                             name="password"
-                            // onChange={}
+                            onChange={ onInputChange }
+                            value={ password }
                         />
                     </Grid>
                     <Grid>
                         <Button
                         fullWidth
+                        type="submit"
                         sx={{
                             fontFamily: 'Inter',
                             fontWeight: 500,
