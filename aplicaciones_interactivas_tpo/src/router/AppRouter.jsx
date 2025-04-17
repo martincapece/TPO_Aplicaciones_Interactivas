@@ -14,8 +14,8 @@ export const AppRouter = () => {
           o guiarlo hacia el login (no esta logueado o cerro sesion anteriormente) para que inicie sesion o se cree una cuenta.
         */}
 
-         <Route path="/auth/*" element={ <AuthRoutes /> } />
-         {/* <Route path="/*" element={ <EcomerceRoutes /> } />  */}
+         {/* <Route path="/auth/*" element={ <AuthRoutes /> } /> */}
+         <Route path="/*" element={ <EcomerceRoutes /> } /> 
          
          {/* No descomentar EcomerceRoutes porque la app no va a funcionar (no enviara al usario al login)*/}
 
