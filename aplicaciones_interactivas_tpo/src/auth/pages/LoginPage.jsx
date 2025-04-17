@@ -3,7 +3,6 @@ import { Apple, Facebook, Google } from '@mui/icons-material';
 import { AuthLayout } from "../layout"
 import { Link } from "react-router-dom";
 import { useForm } from "../hooks";
-import { useEffect, useState } from "react";
 
 const formDate = {
     email: '',
@@ -14,13 +13,11 @@ export const LoginPage = () => {
 
     const { formState, onInputChange } = useForm( formDate );
     const { email, password } = formState;
-
-    const [counter, setCounter] = useState(1);
     
     const onSubmitButton = ( event ) => {
         event.preventDefault();
-        localStorage.setItem( `user${counter}`, formState );
-        setCounter( counter + 1 );
+        // localStorage.setItem( `user${counter}`, formState ); 
+        // logica para guardar la informacion 
     }
     
 
