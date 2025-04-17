@@ -1,0 +1,94 @@
+.cart-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 24px 0;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+.cart-item__image {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.cart-item__info {
+    flex: 1;
+}
+
+.cart-item__name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.cart-item__type,
+.cart-item__color,
+.cart-item__size {
+    font-size: 0.95rem;
+    margin: 2px 0;
+}
+
+.cart-item__promo-warning {
+    font-size: 0.85rem;
+    color: #b90000;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.cart-item__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 150px;
+}
+
+.cart-item__price {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.discounted-price {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.cart-item__quantity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qty-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: #c00;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
