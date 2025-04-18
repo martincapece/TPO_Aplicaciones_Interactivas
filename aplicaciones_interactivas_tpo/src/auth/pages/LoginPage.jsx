@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import { Button, Grid, TextField } from "@mui/material"
-import { Apple, Facebook, Google } from '@mui/icons-material';
+import { Facebook, Twitter, Google } from '@mui/icons-material';
 import { AuthLayout } from "../layout"
 import { Link } from "react-router-dom";
 import { useForm } from "../hooks";
+import { AuthContext } from "../context/AuthContext";
+import { loginWithEmailPassword, singInWithFacebook, singInWithGoogle } from "../../firebase/providers";
 
 const formDate = {
     email: '',
@@ -13,13 +16,44 @@ export const LoginPage = () => {
 
     const { formState, onInputChange } = useForm( formDate );
     const { email, password } = formState;
+    const { dispatch } = useContext(AuthContext);
     
-    const onSubmitButton = ( event ) => {
-        event.preventDefault();
-        // localStorage.setItem( `user${counter}`, formState ); 
-        // logica para guardar la informacion 
+    const facebookSignIn = async() => {
+        const result = await singInWithFacebook( dispatch );
+
+        if (!result.ok){
+            console.warn(result.errorMessage);
+            return;
+        }
+
+        console.log("logeado")
     }
-    
+
+    const twitterSignIn = () => {}
+
+    const googleSignIn = async() => {
+        const result = await singInWithGoogle( dispatch );
+
+        if (!result.ok){
+            console.warn(result.errorMessage);
+            return;
+        }
+
+        console.log("logeado")
+    }
+
+    const onSubmitButton = async( event ) => {
+        event.preventDefault();
+
+        const result = await loginWithEmailPassword({ email, password }, dispatch);
+
+        if (!result.ok){
+            console.warn(result.errorMessage);
+            return;
+        }
+
+        console.log("logeado")
+    }
 
     return (
         <AuthLayout title={ "INICIAR SESION" }>
@@ -94,6 +128,8 @@ export const LoginPage = () => {
                             <Button
                             fullWidth
                             xs={ 4 }
+                            onClick={ facebookSignIn }
+                            disabled
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
@@ -109,6 +145,8 @@ export const LoginPage = () => {
                             <Button
                             fullWidth
                             xs={ 4 }
+                            onClick={ twitterSignIn }
+                            disabled
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
@@ -117,13 +155,14 @@ export const LoginPage = () => {
                                 p: { xs: 1, md: 2},
                             }}
                             >
-                                <Apple sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
+                                <Twitter sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
                         <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }
+                            onClick={ googleSignIn }
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
