@@ -1,0 +1,44 @@
+.cart-container {
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente todo el contenido */
+    align-items: flex-start; /* Alinearlos arriba */
+    padding-top: 20px;
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 100%;
+    margin: 0 auto;
+    font-family: 'Helvetica', sans-serif;
+    gap: 4rem; /* Separación entre productos y resumen */
+}
+
+.cart-left {
+    flex: 2;
+    max-width: 700px; /* Ancho similar al de Nike */
+}
+
+
+.cart-right {
+    flex: 1;
+    max-width: 300px;
+    border-left: 1px solid #ddd;
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 14px;
+}
+
+.checkout-button {
+    padding: 1rem;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.checkout-button:hover {
+    background-color: #333;
+}

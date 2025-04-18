@@ -3,7 +3,7 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 1.5rem;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 0;
     border-bottom: 1px solid #e5e7eb;
     font-family: 'Arial', sans-serif;
 }
