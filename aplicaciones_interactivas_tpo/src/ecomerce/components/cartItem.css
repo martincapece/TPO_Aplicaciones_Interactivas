@@ -1,94 +1,105 @@
 .cart-item {
     display: flex;
-    align-items: flex-start;
     justify-content: space-between;
-    border-bottom: 1px solid #e5e5e5;
-    padding: 24px 0;
-    gap: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: 'Arial', sans-serif;
 }
 
-.cart-item__image {
-    width: 150px;
-    height: auto;
-    border-radius: 8px;
+/* Imagen y acciones */
+.image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 164.01px;
+}
+
+.product-image {
+    width: 164.01px;
+    height: 164.01px;
     object-fit: cover;
+    background-color: #f3f4f6;
 }
 
-.cart-item__info {
+/* Acciones debajo de imagen */
+.actions {
+    margin-top: 0.75rem;
+    width: 164.01px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px #E5E5E5 solid;
+    border-radius: 50px;
+    /* Forma de píldora */
+    padding: 0.25rem 0.75rem;
+    /* Aumentamos el padding para hacer el contorno más grande */
+}
+
+.quantity-control button {
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    /* Ajusta el tamaño del botón */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111827;
+    border-radius: 50px;
+    /* Bordes redondeados en los botones también */
+}
+
+.quantity-control button:hover {
+    opacity: 0.7;
+}
+
+.quantity-control span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Info producto */
+.info-section {
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.cart-item__name {
-    font-size: 1.2rem;
-    font-weight: bold;
+.info-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
     margin-bottom: 4px;
 }
 
-.cart-item__type,
-.cart-item__color,
-.cart-item__size {
-    font-size: 0.95rem;
+.info-section p {
+    color: #6b7280;
+    font-size: 0.9rem;
     margin: 2px 0;
 }
 
-.cart-item__promo-warning {
-    font-size: 0.85rem;
-    color: #b90000;
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
+.size {
+    margin-top: 6px;
 }
 
-.cart-item__actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-    min-width: 150px;
+.size span {
+    font-weight: 500;
 }
 
-.cart-item__price {
-    display: flex;
-    flex-direction: column;
+/* Precio */
+.price-section {
+    min-width: 80px;
     text-align: right;
-}
-
-.original-price {
-    text-decoration: line-through;
-    color: #999;
-    font-size: 0.9rem;
-}
-
-.discounted-price {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #2e7d32;
-}
-
-.cart-item__quantity {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.qty-btn {
-    width: 30px;
-    height: 30px;
     font-size: 1rem;
-    background-color: #f2f2f2;
-    border: 1px solid #ccc;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.remove-btn {
-    background: none;
-    border: none;
-    color: #c00;
-    cursor: pointer;
-    font-size: 0.9rem;
-    text-decoration: underline;
+    font-weight: bold;
+    color: #111827;
+    white-space: nowrap;
 }
