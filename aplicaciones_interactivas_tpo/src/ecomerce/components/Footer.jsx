@@ -49,7 +49,7 @@ const FooterColumn = ({ title, links }) => (
     </Box>
     );
 
-export default function Footer() {
+export const Footer = () => {
     return (
         <Box component="footer" sx={{ bgcolor: "black", color: "white", px: 4, py: 6 }}>
         <Grid container spacing={4} justifyContent="center">
