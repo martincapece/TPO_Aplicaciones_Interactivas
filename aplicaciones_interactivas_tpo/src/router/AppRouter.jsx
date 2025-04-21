@@ -16,6 +16,8 @@ export const AppRouter = () => {
             ? <Route path="/*" element={ <EcomerceRoutes /> } />
             : <Route path="/auth/*" element={ <AuthRoutes /> } />
         } 
+            
+        <Route path="/*" element={ <EcomerceRoutes /> } />
          
          {/* No descomentar EcomerceRoutes porque la app no va a funcionar (no enviara al usario al login)*/}
 
