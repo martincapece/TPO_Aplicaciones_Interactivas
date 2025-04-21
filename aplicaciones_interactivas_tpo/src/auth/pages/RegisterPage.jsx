@@ -1,23 +1,47 @@
 import { Button, Grid, TextField } from "@mui/material"
-import { Apple, Facebook, Google } from '@mui/icons-material';
+import { Facebook, Twitter, Google } from '@mui/icons-material';
 import { AuthLayout } from "../layout"
 import { Link } from "react-router-dom";
 import { useForm } from "../hooks";
+import { registerUserWithEmailPassword } from "../../firebase/providers";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const formDate = {
     name: '',
-    username: '',
+    displayName: '',
     email: '',
     password: ''
 }
 
 export const RegisterPage = () => {
     
-    const { name, username, email, password, onInputChange } = useForm( formDate );
-    
+    const { formState, onInputChange } = useForm( formDate );
+    const { name, displayName, email, password } = formState;
+    const { dispatch } = useContext(AuthContext);
+
+    const facebookSignIn = () => { console.log("facebook") }
+
+    const twitterSignIn = () => {}
+
+    const googleSignIn = () => {}
+
+    const onSubmitButton = async( event ) => {
+        event.preventDefault();
+
+        const result = await registerUserWithEmailPassword({ name, displayName, email, password }, dispatch);
+
+        if (!result.ok){
+            console.warn(result.errorMessage);
+            return;
+        }
+
+        console.log("logeado")
+    }
+
     return (
         <AuthLayout title={'CREAR CUENTA'}>
-            <form>
+            <form onSubmit={ onSubmitButton }>
                 <Grid container spacing={ 2 } direction="column">
                     <Grid sx={{ mt: 1 }}>
                         <TextField 
@@ -37,10 +61,10 @@ export const RegisterPage = () => {
                             placeholder="Jerefer22"
                             variant="outlined"
                             fullWidth
-                            name="username"
+                            name="displayName"
                             type="text"
                             onChange={ onInputChange }
-                            value={ username }
+                            value={ displayName }
                         />
                     </Grid>
                     <Grid>
@@ -112,6 +136,8 @@ export const RegisterPage = () => {
                             <Button
                             fullWidth
                             xs={ 4 }
+                            onClick={ facebookSignIn }
+                            disabled
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
@@ -127,6 +153,8 @@ export const RegisterPage = () => {
                             <Button
                             fullWidth
                             xs={ 4 }
+                            onClick={ twitterSignIn }
+                            disabled
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
@@ -135,13 +163,14 @@ export const RegisterPage = () => {
                                 p: { xs: 1, md: 2},
                             }}
                             >
-                                <Apple sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
+                                <Twitter sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
                             </Button>
                         </Grid>
                         <Grid>
                             <Button
                             fullWidth
                             xs={ 4 }
+                            onClick={ googleSignIn }
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,
