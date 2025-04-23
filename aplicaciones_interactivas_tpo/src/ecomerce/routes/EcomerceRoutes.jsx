@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import { EcomercePage } from "../pages"
-import CartItemList from "../components/CartItemList"
+import Cart from "../components/Cart"
 
 export const EcomerceRoutes = () => {
     
@@ -8,7 +8,7 @@ export const EcomerceRoutes = () => {
     return (
         <Routes>
             <Route path="inicio" element={ <EcomercePage /> } />
-            <Route path="inicio/cart" element={ <CartItemList /> } />
+            <Route path="inicio/cart" element={ <Cart /> } />
 
             <Route path="/*" element={ <Navigate to="/inicio" />}/>
         </Routes>

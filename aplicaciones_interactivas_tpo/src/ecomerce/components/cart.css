@@ -42,3 +42,34 @@
 .checkout-button:hover {
     background-color: #333;
 }
+
+
+
+
+/*
+.cart-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+.checkout-button {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 9999px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.checkout-button:hover {
+    background-color: #333;
+}
+
+*/
