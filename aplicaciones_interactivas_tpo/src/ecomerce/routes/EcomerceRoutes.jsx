@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import { EcomercePage } from "../pages"
-import Cart from "../components/Cart"
+import Cart from "../../Cart/components/Cart"
 
 export const EcomerceRoutes = () => {
     
