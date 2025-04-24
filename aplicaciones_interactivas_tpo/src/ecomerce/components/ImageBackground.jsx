@@ -24,6 +24,7 @@ export const ImageBackground = ({ title, subtitle }) => {
                     color: 'white',
                     fontWeight: '700',
                     fontFamily: 'Inter',
+                    fontSize: { xs: '40px', sm: '50px', md: '60px', lg: '100px' },
                     mb: 2
                 }}
                 >
@@ -41,9 +42,9 @@ export const ImageBackground = ({ title, subtitle }) => {
                 >
                     <Typography
                     sx={{
-                        fontSize: '40px',
+                        fontSize: { xs: '20px', sm: '25px', md: '30px', lg: '35px' },
                         fontFamily: 'Inter',
-                        fontWeight: 700
+                        fontWeight: 700,
                     }}
                     >
                         { subtitle }

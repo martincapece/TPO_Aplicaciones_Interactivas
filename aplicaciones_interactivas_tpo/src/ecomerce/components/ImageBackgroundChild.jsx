@@ -11,7 +11,7 @@ export const ImageBackgroundChild = ({ title = '', subtitle = '', url=''}) => {
             backgroundImage: `url(${url})`, 
             backgroundSize: "cover",
             backgroundPosition: "center",
-            height: "600px",
+            height: { xs: '300px', sm: '400px', md: '500px', lg: '600px' },
             width: '100%'
         }}
         >
@@ -22,7 +22,7 @@ export const ImageBackgroundChild = ({ title = '', subtitle = '', url=''}) => {
                 variant="h1"
                 sx={{
                     color: 'white',
-                    fontSize: '70px',
+                    fontSize: { xs: '50px', md: '50px', lg: '70px' },
                     fontWeight: 700,
                     fontFamily: 'Inter',
                     mb: 2
@@ -41,7 +41,7 @@ export const ImageBackgroundChild = ({ title = '', subtitle = '', url=''}) => {
                 >
                     <Typography
                     sx={{
-                        fontSize: '30px',
+                        fontSize: { xs: '20px', sm: '25px', md: '30px', lg: '35px' },
                         fontFamily: 'Inter',
                         fontWeight: 500
                     }}
