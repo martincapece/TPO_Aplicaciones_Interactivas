@@ -127,7 +127,7 @@ export const singInWithGoogle = async( dispatch ) => {
     }
 }
 
-export const logoutFirebase = async() => {
+export const logoutFirebase = async( dispatch ) => {
     const out = await FirebaseAuth.signOut();
 
     dispatch({ type: types.logout });

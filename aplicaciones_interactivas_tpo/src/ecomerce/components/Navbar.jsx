@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { IconButton, Badge } from '@mui/material';
 import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { logoutFirebase } from '../../firebase/providers';
+import { AuthContext } from '../../auth/context/AuthContext';
 
 export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const cartItems = 3; // Replace with your cart state
+  const cartItems = 3; // Cambia esto por el número real de artículos en el carrito
+  const { dispatch } = useContext(AuthContext);
 
   const handleMenuClick = () => {
     setMenuOpen(!menuOpen);
@@ -35,7 +38,7 @@ export const Navbar = () => {
       {menuOpen && isInicio && (
         <div
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: '50px',
             left: '0',
             width: '100%',
@@ -63,10 +66,10 @@ export const Navbar = () => {
       </IconButton>
 
       <div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => navigate('/')}>
-        LOGO
+        <img src="../../public/logo_ecomerce.jpg" style={{ width: 40 }} alt="" />
       </div>
 
-      <IconButton onClick={() => navigate('/profile')}>
+      <IconButton onClick={() => logoutFirebase( dispatch ) }>
         <Person />
       </IconButton>
       <IconButton onClick={() => navigate('/cart')}>
