@@ -1,0 +1,58 @@
+import jordan1HighTravisMarron from '../assets/sneakers/jordan1HighTravisMarron.png';
+
+export const dataDestacados = [
+    {
+        id: 1,
+        model: 'Jordan 1 High Travis Scott',
+        brand: 'Nike',
+        price: 150,
+        colors: ['Red', 'Black', 'White'],
+        sizes: ['7', '8', '9', '10', '11'],
+        image: jordan1HighTravisMarron,
+    },
+    {
+        id: 2,
+        model: 'Yeezy Boost 350 V2',
+        brand: 'Adidas',
+        price: 220,
+        colors: ['Black', 'White'],
+        sizes: ['7', '8', '9', '10', '11'],
+        image: jordan1HighTravisMarron,
+    },
+    {
+        id: 3,
+        model: 'Air Max 97',
+        brand: 'Nike',
+        price: 180,
+        colors: ['Blue', 'Silver'],
+        sizes: ['7', '8', '9', '10', '11'],
+        image: jordan1HighTravisMarron,
+    },
+    {
+        id: 4,
+        model: 'Vans Old Skool',
+        brand: 'Vans',
+        price: 70,
+        colors: ['Black', 'White'],
+        sizes: ['7', '8', '9', '10', '11'],
+        image: jordan1HighTravisMarron,
+    },
+    {
+        id: 5,
+        model: 'Converse Chuck Taylor All Star',
+        brand: 'Converse',
+        price: 60,
+        colors: ['Black', 'White'],
+        sizes: ['7', '8', '9', '10', '11'],
+        image: jordan1HighTravisMarron,
+    },
+    {
+        id: 6,
+        model: 'Puma RS-X',
+        brand: 'Puma',
+        price: 110,
+        colors: ['Red', 'Blue'],
+        sizes: ['7', '8', '9', '10', '11'],
+        image: jordan1HighTravisMarron,
+    },
+]
