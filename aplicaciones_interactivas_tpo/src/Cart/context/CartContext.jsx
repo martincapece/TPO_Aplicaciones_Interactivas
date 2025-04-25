@@ -1,9 +1,11 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
-const CartContext = createContext();
+//crea el contexto
+export const CartContext = createContext();
 
+// crea el provider
 export const CartProvider = ({ children }) => {
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState([]); // valor inicial del carrito (VACIO)
 
   const addProduct = (product) => {
     setProductList((prev) => {
@@ -16,27 +18,30 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const increaseQuantity = (id) => {
-    setProductList((prev) =>
-      prev.map(p => p.id === id ? { ...p, quantity: p.quantity + 1 } : p)
+  const handleIncreaseQuantity = (productId) => {
+    setProductList(prev =>
+      prev.map(item =>
+        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+      )
     );
   };
 
-  const decreaseQuantity = (id) => {
+  const handleDecreaseQuantity = (productId) => {
     setProductList((prev) =>
-      prev.map(p => p.id === id ? { ...p, quantity: p.quantity - 1 } : p)
-          .filter(p => p.quantity > 0)
+      prev.map(item => item.id === productId ? { ...item, quantity: item.quantity - 1 } : item)
+          .filter(item => item.quantity > 0)
     );
   };
 
   const subtotal = productList.reduce((acc, p) => acc + p.price * p.quantity, 0);
 
+
   return (
     <CartContext.Provider value={{
       productList,
       addProduct,
-      increaseQuantity,
-      decreaseQuantity,
+      handleIncreaseQuantity,
+      handleDecreaseQuantity,
       subtotal,
     }}>
       {children}

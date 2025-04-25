@@ -1,8 +1,11 @@
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
+import { useCart } from '../hooks/useCart';
 
-function CartItem({ product, onIncrease, onDecrease}) {
+function CartItem({ product }) {
   const { id, name, type, color, size, price, img, quantity} = product;
+
+  const {handleIncreaseQuantity, handleDecreaseQuantity} = useCart();
 
 
   return (
@@ -13,11 +16,11 @@ function CartItem({ product, onIncrease, onDecrease}) {
         <div className="actions">   
           {/* Control de cantidad */}
           <div className="quantity-control">
-            <button onClick={() => onDecrease(id)}>
+            <button onClick={() => handleDecreaseQuantity(id)}>
               <DeleteOutlineIcon fontSize="small" />
             </button>
             <span>{quantity}</span>
-            <button onClick={() => onIncrease(id)}>
+            <button onClick={() => handleIncreaseQuantity(id)}>
               <AddIcon fontSize="small" />
             </button>
           </div>

@@ -1,7 +1,7 @@
 import CartItem from './CartItem';
 import './cartItem.css'
 
-function CartItemList({ productList, onIncrease, onDecrease }) {
+function CartItemList({ productList}) {
     return (
         <div className="cart-left">
             <h1>Bolsa de compra</h1>
@@ -9,8 +9,6 @@ function CartItemList({ productList, onIncrease, onDecrease }) {
                 <CartItem
                     key={product.id}
                     product={product}
-                    onIncrease={onIncrease}
-                    onDecrease={onDecrease}
                 />
             ))}
         </div>
