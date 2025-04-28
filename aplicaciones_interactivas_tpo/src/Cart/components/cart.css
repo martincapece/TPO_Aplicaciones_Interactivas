@@ -1,0 +1,127 @@
+.cart-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 100%;
+    margin: 0 auto;
+    font-family: 'Helvetica', sans-serif;
+    gap: 4rem;
+    flex-wrap: wrap; /* Permite que los elementos se acomoden uno debajo del otro si es necesario */
+}
+
+.cart-left {
+    flex: 2;
+    max-width: 700px;
+    width: 100%; /* Para que ocupe todo el ancho disponible en pantallas pequeñas */
+}
+
+.cart-right {
+    flex: 1;
+    max-width: 300px;
+    width: 100%;
+    border-left: 1px solid #ddd;
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 14px;
+}
+
+/* Quitar el borde izquierdo cuando estén apilados */
+@media (max-width: 768px) {
+    .cart-container {
+        gap: 2rem;
+    }
+
+    .cart-right {
+        border-left: none;
+        border-top: 1px solid #ddd;
+        padding-left: 0;
+        padding-top: 2rem;
+    }
+}
+
+.checkout-button {
+    padding: 1rem;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+}
+
+.checkout-button:hover {
+    background-color: #333;
+}
+
+/* Estilos para el carrito vacío, centrado en la pantalla */
+.empty-cart {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+}
+
+.empty-cart h1 { /* Cambiado de p a h1 */
+    font-size: 3rem; /* Ajustado para mantener un tamaño adecuado */
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-weight: 600; /* Añade un poco más de peso a la fuente */
+}
+
+.empty-cart .buy-button {
+    padding: 1rem 4rem;
+    background-color: #fff;
+    color: black;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: 2px solid #555; /* Borde del mismo color que el fondo */
+}
+
+.empty-cart .buy-button:hover {
+    background-color: #F2F2F2;
+    border-color: #555; /* Cambio en el borde en el hover */
+}
+
+
+
+/*
+.cart-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+.checkout-button {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 9999px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.checkout-button:hover {
+    background-color: #333;
+}
+
+*/

@@ -1,0 +1,105 @@
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Imagen y acciones */
+.image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 164.01px;
+}
+
+.product-image {
+    width: 164.01px;
+    height: 164.01px;
+    object-fit: cover;
+    background-color: #f3f4f6;
+}
+
+/* Acciones debajo de imagen */
+.actions {
+    margin-top: 0.75rem;
+    width: 164.01px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px #E5E5E5 solid;
+    border-radius: 50px;
+    /* Forma de píldora */
+    padding: 0.25rem 0.75rem;
+    /* Aumentamos el padding para hacer el contorno más grande */
+}
+
+.quantity-control button {
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    /* Ajusta el tamaño del botón */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111827;
+    border-radius: 50px;
+    /* Bordes redondeados en los botones también */
+}
+
+.quantity-control button:hover {
+    opacity: 0.7;
+}
+
+.quantity-control span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Info producto */
+.info-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.info-section p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 2px 0;
+}
+
+.size {
+    margin-top: 6px;
+}
+
+.size span {
+    font-weight: 500;
+}
+
+/* Precio */
+.price-section {
+    min-width: 80px;
+    text-align: right;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #111827;
+    white-space: nowrap;
+}

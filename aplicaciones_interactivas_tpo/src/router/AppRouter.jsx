@@ -11,6 +11,7 @@ export const AppRouter = () => {
   return (
       <Routes>
 
+
         {
           ( !!authState.user )
             ? <Route path="/*" element={ <EcomerceRoutes /> } />
