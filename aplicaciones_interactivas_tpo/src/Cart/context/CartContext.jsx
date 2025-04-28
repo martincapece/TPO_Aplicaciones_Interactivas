@@ -7,6 +7,20 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [productList, setProductList] = useState([]); // valor inicial del carrito (VACIO)
 
+  // Cargar carrito desde localStorage al inicio
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      setProductList(JSON.parse(storedCart));
+    }
+  }, []);
+
+  // Guardar carrito en localStorage cada vez que cambie
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(productList));
+  }, [productList]);
+
+
   const addProduct = (product) => {
     setProductList((prev) => {
       const existing = prev.find(p => p.id === product.id);
@@ -29,7 +43,7 @@ export const CartProvider = ({ children }) => {
   const handleDecreaseQuantity = (productId) => {
     setProductList((prev) =>
       prev.map(item => item.id === productId ? { ...item, quantity: item.quantity - 1 } : item)
-          .filter(item => item.quantity > 0)
+        .filter(item => item.quantity > 0)
     );
   };
 
