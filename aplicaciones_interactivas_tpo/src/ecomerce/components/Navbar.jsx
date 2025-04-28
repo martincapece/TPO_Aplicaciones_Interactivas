@@ -66,7 +66,7 @@ export const Navbar = () => {
       </IconButton>
 
       <div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => navigate('/')}>
-        <img src="../../public/logo_ecomerce.jpg" style={{ width: 40 }} alt="" />
+        <img src="/assets/logo_ecomerce.jpg" style={{ width: 50 }} alt="" />
       </div>
 
       <IconButton onClick={() => logoutFirebase( dispatch ) }>

@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@mui/material"
-import portada from "../assets/home/portada.png"
+import portada from "/assets/portada.png"
 
 export const ImageBackground = ({ title, subtitle }) => {
     return (

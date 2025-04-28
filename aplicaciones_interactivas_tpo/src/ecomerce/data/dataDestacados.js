@@ -1,4 +1,4 @@
-import jordan1HighTravisMarron from '../assets/sneakers/jordan1HighTravisMarron.png';
+import jordan1HighTravisMarron from '/assets/jordan1HighTravisMarron.png';
 
 export const dataDestacados = [
     {

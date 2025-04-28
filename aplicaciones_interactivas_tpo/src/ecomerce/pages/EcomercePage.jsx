@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material"
 import { Destacados, Footer, ImageBackground, ImageBackgroundChild, Navbar } from "../components"
-import vans from "../assets/home/vans_knu.png"
-import jordan from "../assets/home/jordans.png"
+import vans from "/assets/vans_knu.png"
+import jordan from "/assets/jordans.png"
 
 export const EcomercePage = () => {
   return (
