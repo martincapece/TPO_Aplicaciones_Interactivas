@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { IconButton, Badge } from '@mui/material';
 import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
 import { AuthContext } from '../../auth/context/AuthContext';
 
@@ -72,7 +72,7 @@ export const Navbar = () => {
       <IconButton onClick={() => logoutFirebase( dispatch ) }>
         <Person />
       </IconButton>
-      <IconButton onClick={() => navigate('/cart')}>
+      <IconButton LinkComponent={Link} to="/inicio/cart" onClick={() => navigate('/cart')}>
         <Badge badgeContent={cartItems} color="error">
           <ShoppingCart />
         </Badge>

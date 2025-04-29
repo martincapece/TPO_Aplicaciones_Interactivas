@@ -5,15 +5,16 @@ export const CartContext = createContext();
 
 // crea el provider
 export const CartProvider = ({ children }) => {
-  const [productList, setProductList] = useState([]); // valor inicial del carrito (VACIO)
-
-  // Cargar carrito desde localStorage al inicio
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      setProductList(JSON.parse(storedCart));
+  const [productList, setProductList] = useState(() => {
+    try {
+      const storedCart = localStorage.getItem('cart');
+      if (storedCart) {
+        setProductList(JSON.parse(storedCart));
+      }
+    } catch (error) {
+      return ([]);
     }
-  }, []);
+  });
 
   // Guardar carrito en localStorage cada vez que cambie
   useEffect(() => {

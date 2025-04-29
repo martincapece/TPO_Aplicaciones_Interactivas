@@ -1,7 +1,10 @@
-import { Box, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"
 import { dataDestacados } from '../data/dataDestacados'
+import { useCart } from "../../Cart/hooks/useCart"
 
 export const Destacados = () => {
+
+    const { addProduct } = useCart();
 
     return (
         <>
@@ -63,6 +66,9 @@ export const Destacados = () => {
                                         NEW IN
                                     </Typography>
                                 </Box>
+                                <Button onClick={ () => addProduct({ id, model, brand, colors, price, image}) }>
+                                    Agregar
+                                </Button>
                                 <Typography gutterBottom variant="h5" component="div">
                                     ${price}
                                 </Typography>

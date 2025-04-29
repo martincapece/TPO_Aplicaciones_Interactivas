@@ -6,7 +6,6 @@ import jordan from "/assets/jordans.png"
 export const EcomercePage = () => {
   return (
     <>
-      <Navbar/> 
       <ImageBackground title={'NUEVA COLECCIÓN'} subtitle={'VER PRODUCTOS'} />
       
       <Grid
