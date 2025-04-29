@@ -8,11 +8,9 @@ export const CartProvider = ({ children }) => {
   const [productList, setProductList] = useState(() => {
     try {
       const storedCart = localStorage.getItem('cart');
-      if (storedCart) {
-        setProductList(JSON.parse(storedCart));
-      }
+      return storedCart ? JSON.parse(storedCart) : [];
     } catch (error) {
-      return ([]);
+      return [];
     }
   });
 
