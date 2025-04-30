@@ -1,20 +1,33 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import { EcomercePage } from "../pages"
 import Cart from "../../Cart/components/Cart"
-import { Navbar } from "../components"
+import { Footer, Navbar } from "../components"
+import SneakerPage from "../components/SneakerPage"
+import { AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import { Box } from "@mui/material";
 
 export const EcomerceRoutes = () => {
-    
+    const location = useLocation();
+
     return (
-        <>
+        <Box display="flex" flexDirection="column" minHeight="100vh">
+            
             <Navbar />
             
-            <Routes>
-                <Route path="inicio" element={ <EcomercePage /> } />
-                <Route path="inicio/cart" element={ <Cart /> } />
+            <Box flex="1">
+                <AnimatePresence mode="initial">
+                    <Routes location={location} key={location.pathname}>
+                        <Route path="inicio" element={<EcomercePage />} />
+                        <Route path="inicio/cart" element={<Cart />} />
+                        <Route path="/producto/:id" element={<SneakerPage />} />
+                        <Route path="/*" element={<Navigate to="/inicio" />} />
+                    </Routes>
+                </AnimatePresence>
+            </Box>
 
-                <Route path="/*" element={ <Navigate to="/inicio" />}/>
-            </Routes>
-        </>
+            <Footer />
+            
+        </Box>
     )
 }

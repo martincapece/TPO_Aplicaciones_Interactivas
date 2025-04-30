@@ -51,7 +51,7 @@ const FooterColumn = ({ title, links }) => (
 
 export const Footer = () => {
     return (
-        <Box component="footer" sx={{ bgcolor: "black", color: "white", px: 4, py: 6 }}>
+        <Box component="footer" sx={{ bgcolor: "black", color: "white", px: 4, py: 6, overflowX: "hidden",}}>
         <Grid container spacing={4} justifyContent="center">
             {footerData.map((section, index) => (
             <Grid item xs={6} sm={3} key={index}>

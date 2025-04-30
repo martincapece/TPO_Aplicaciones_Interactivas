@@ -51,8 +51,6 @@ export const EcomercePage = () => {
           </Grid>
         </Grid>
       </Grid>
-
-      <Footer />
     </>
   )
 }
