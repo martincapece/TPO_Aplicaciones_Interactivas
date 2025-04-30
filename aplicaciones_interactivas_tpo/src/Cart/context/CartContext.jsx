@@ -24,7 +24,7 @@ export const CartProvider = ({ children }) => {
     setProductList((prev) => {
       const existing = prev.find(p => p.id === product.id);
       if (existing) {
-        return prev.map(p => p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p);
+        return prev.map(p => p.id === product.id && p.size === product.size ? { ...p, quantity: p.quantity + 1 } : p);
       } else {
         return [...prev, { ...product, quantity: 1 }];
       }
@@ -48,6 +48,7 @@ export const CartProvider = ({ children }) => {
 
   const subtotal = productList.reduce((acc, p) => acc + p.price * p.quantity, 0);
 
+  const cartSize = productList.length;
 
   return (
     <CartContext.Provider value={{
@@ -56,6 +57,7 @@ export const CartProvider = ({ children }) => {
       handleIncreaseQuantity,
       handleDecreaseQuantity,
       subtotal,
+      cartSize
     }}>
       {children}
     </CartContext.Provider>
