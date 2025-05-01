@@ -293,26 +293,28 @@ return (
             Te recomendamos
         </Typography>
         <Grid container spacing={2}>
-            {dataDestacados
-            .filter((item) => item.id !== sneaker.id)
-            .slice(0, 3)
+        {dataDestacados
+            .filter(
+                (item) =>
+                item.id !== sneaker.id || item.brand.toLowerCase() === sneaker.brand.toLowerCase()
+            )
+            .slice(0, 6)
             .map((prod) => (
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={prod.id}>
-                <Box sx={{ textAlign: "center" }}>
+                <Grid item xs={12} sm={4} key={prod.id}>
+                <Link to={`/producto/${prod.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    <Box sx={{ textAlign: "center" }}>
                     <Box
-                    component="img"
-                    src={prod.image}
-                    alt={prod.model}
-                    sx={{ width: "100%", maxWidth: 250, mb: 1 }}
+                        component="img"
+                        src={prod.image[0]}
+                        alt={prod.model}
+                        sx={{ width: "100%", maxWidth: 180, mb: 1 }}
                     />
                     <Typography variant="body1">{prod.model}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                    ${prod.price}
+                        ${prod.price}
                     </Typography>
-                    <Link to={`/producto/${prod.id}`} style={{ color: "inherit" }}>
-                        <Box>Ver Producto</Box>
-                    </Link>
-                </Box>
+                    </Box>
+                </Link>
                 </Grid>
             ))}
         </Grid>

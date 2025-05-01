@@ -12,7 +12,7 @@ function CartItem({ product }) {
     <div className="cart-item">
       {/* Imagen + acciones */}
       <div className="image-section">
-        <img src={image} alt={model} className="product-image" />
+        <img src={image[0]} alt={model} className="product-image" />
         <div className="actions">   
           {/* Control de cantidad */}
           <div className="quantity-control">

@@ -17,7 +17,7 @@ export const Destacados = () => {
                 {dataDestacados.map(({ id, price, model, brand, colors, image }) => (
                     <Grid key={id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                         <Card sx={{ cursor: 'pointer' }} onClick={() => navigate(`/producto/${id}`)}>
-                            <CardMedia component="img" alt={model} image={image} />
+                            <CardMedia component="img" alt={model} image={image[0]} />
                             <CardContent sx={{ height: '200px' }}>
                                 <Box sx={{
                                     display: 'inline-flex',
