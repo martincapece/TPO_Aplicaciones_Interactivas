@@ -1,11 +1,26 @@
 import { Box, Button, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"
 import { dataDestacados } from '../data/dataDestacados'
 import { useCart } from "../../Cart/hooks/useCart"
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export const Destacados = () => {
     const { addProduct } = useCart();
     const navigate = useNavigate();
+    const location = useLocation();
+    useEffect(() => {
+        if (location.hash) {
+            const id = location.hash.replace("#", "");
+            const element = document.getElementById(id);
+            if (element) {
+            setTimeout(() => {
+                const yOffset = -80; 
+                const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: "smooth" });
+            }, 100);
+            }
+        }
+    }, [location]);
 
     return (
         <>

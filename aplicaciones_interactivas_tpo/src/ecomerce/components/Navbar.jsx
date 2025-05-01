@@ -88,10 +88,10 @@ export const Navbar = () => {
             open={Boolean(menuAnchorEl)}
             onClose={handleCloseMenus}
           >
-            <MenuItem onClick={() => handleNavigate('/contacto')}>Productos</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/nosotros')}>Sobre Nosotros</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/#destacados')}>Destacados</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/nosotros')}>Contacto</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/catalogo')}>Productos</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/inicio#destacados')}>Destacados</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/nosotros#')}>Sobre Nosotros</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/nosotros#contacto')}>Contacto</MenuItem>
           </Menu>
         </>
       ) : (
@@ -112,7 +112,7 @@ export const Navbar = () => {
           </Typography>
           <Typography
             variant="body1"
-            onClick={() => handleNavigate('/nosotros')}
+            onClick={() => handleNavigate('/nosotros#')}
             sx={{ cursor: 'pointer', fontWeight: 500 }}
           >
             Sobre Nosotros

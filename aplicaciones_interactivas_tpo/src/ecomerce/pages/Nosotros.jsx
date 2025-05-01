@@ -1,8 +1,24 @@
 import { Image } from '@mui/icons-material';
 import { Box, Divider, Grid, Typography } from '@mui/material';
-import React from 'react'
+import { React,useEffect } from 'react'
+import { useLocation } from "react-router-dom";
 
 export const Nosotros = () => {
+    const location = useLocation();
+    useEffect(() => {
+        if (location.hash) {
+        const id = location.hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+            setTimeout(() => {
+            const yOffset = -100; // altura aproximada de tu navbar
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+            }, 60);
+        }
+        }
+    }, [location]);
+
     return (
         <Grid container
         sx={{

@@ -1,6 +1,6 @@
-import React from 'react'
+import {React,useEffect} from 'react'
 import { Box, Grid, Typography, Link as MuiLink, Divider } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
 const footerData = [
 {
@@ -8,7 +8,7 @@ const footerData = [
     links: [
         {text: "Sneakers", to: "/catalogo"}, 
         {text: "Categorías", to: "/catalogo"},
-        {text: "Destacados", to: "/inicio#Destacados"},
+        {text: "Destacados", to: "/inicio#destacados"},
     ],
 },
 {
@@ -22,9 +22,9 @@ const footerData = [
 {
     title: "LEGALES",
     links: [
-        { text: "Política de Envíos", to: "/Legales" },
-        { text: "Términos y condiciones", to: "/Legales#2" },
-        { text: "Devoluciones y cambios", to: "/Legales#3" },
+        { text: "Política de Envíos", to: "/Legales#envios" },
+        { text: "Términos y condiciones", to: "/Legales#terminos" },
+        { text: "Devoluciones y cambios", to: "/Legales#devoluciones" },
     ],
 },
 ];
