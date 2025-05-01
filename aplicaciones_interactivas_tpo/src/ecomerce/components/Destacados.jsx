@@ -43,12 +43,7 @@ export const Destacados = () => {
                                 <Typography gutterBottom variant="h6">{model}</Typography>
                                 <Typography variant="h6" sx={{ color: '#C0C0C0' }}>{brand}</Typography>
                                 <Typography variant="h6" sx={{ color: '#C0C0C0' }}>{colors.length} colores</Typography>
-                                <Button onClick={(e) => {
-                                        e.stopPropagation(); // evita que el card haga navigate
-                                        addProduct({ id, model, brand, colors, price, image });
-                                    }}>
-                                        Agregar
-                                </Button>
+                                
                             </CardContent>
                         </Card>
                     </Grid>

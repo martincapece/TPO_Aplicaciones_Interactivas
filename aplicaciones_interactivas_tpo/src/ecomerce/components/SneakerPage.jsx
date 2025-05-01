@@ -238,7 +238,10 @@ return (
             <DialogActions sx={{ justifyContent: "center" }}>
                 <Button
                 onClick={() => {
-                    addProduct(sneaker);
+                    addProduct({
+                        ... sneaker,
+                        sizes: selectedSize,
+                    });
                     setDialogOpen(false);
                 }}
                 variant="contained"
@@ -296,7 +299,7 @@ return (
         {dataDestacados
             .filter(
                 (item) =>
-                item.id !== sneaker.id || item.brand.toLowerCase() === sneaker.brand.toLowerCase()
+                item.id !== sneaker.id && item.brand.toLowerCase() === sneaker.brand.toLowerCase()
             )
             .slice(0, 6)
             .map((prod) => (

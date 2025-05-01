@@ -1,53 +1,63 @@
 import React from 'react'
 import { Box, Grid, Typography, Link as MuiLink, Divider } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 const footerData = [
 {
     title: "PRODUCTOS",
-    links: ["Sneakers", "Categorías", "Destacados"],
+    links: [
+        {text: "Sneakers", to: "/catalogo"}, 
+        {text: "Categorías", to: "/catalogo"},
+        {text: "Destacados", to: "/inicio#Destacados"},
+    ],
 },
 {
     title: "NOSOTROS",
-    links: ["Sobre nosotros", "Historia", "Contacto"],
-},
-{
-    title: "AYUDA",
-    links: ["Preguntas frecuentes", "Envíos", "Soporte técnico"],
+    links: [
+        {text: "Sobre nosotros", to: "/Nosotros" }, 
+        {text: "Historia", to: "/Nosotros#2" }, 
+        {text: "Contacto", to: "/Nosotros#3" },
+    ],
 },
 {
     title: "LEGAL",
-    links: ["Términos y condiciones", "Devoluciones y cambios"],
+    links: [
+        { text: "Política de Envíos", to: "/Politicas" },
+        { text: "Términos y condiciones", to: "/Politicas#2" },
+        { text: "Devoluciones y cambios", to: "/Politicas#3" },
+    ],
 },
 ];
 
 const FooterColumn = ({ title, links }) => (
     <Box>
         <Typography
-        variant="subtitle2"
-        fontWeight="bold"
-        gutterBottom
-        sx={{ textTransform: "uppercase" }}
+            variant="subtitle2"
+            fontWeight="bold"
+            gutterBottom
+            sx={{ textTransform: "uppercase" }}
         >
-        {title}
+            {title}
         </Typography>
-        {links.map((text, i) => (
-        <MuiLink
+        {links.map((link, i) => (
+            <MuiLink
             key={i}
-            href="#"
+            component={RouterLink}
+            to={link.to}
             underline="none"
             color="grey.400"
             sx={{
-            display: "block",
-            fontSize: 14,
-            mb: 0.5,
-            "&:hover": { color: "grey.100" },
+                display: "block",
+                fontSize: 14,
+                mb: 0.5,
+                "&:hover": { color: "grey.100" },
             }}
-        >
-            {text}
-        </MuiLink>
+            >
+            {link.text}
+            </MuiLink>
         ))}
     </Box>
-    );
+);
 
 export const Footer = () => {
     return (
@@ -63,7 +73,7 @@ export const Footer = () => {
         <Divider sx={{ bgcolor: "grey.800", my: 4 }} />
     
         <Typography variant="body2" color="grey.500" align="center" fontSize={12}>
-            © 2025 LOQO. Todos los derechos reservados.
+            © 2025 SAPÁH. Todos los derechos reservados.
         </Typography>
         </Box>
     );

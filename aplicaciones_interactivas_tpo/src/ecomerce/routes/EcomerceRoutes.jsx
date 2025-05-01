@@ -6,6 +6,7 @@ import SneakerPage from "../components/SneakerPage"
 import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
+import { Nosotros } from "../pages/Nosotros"
 
 export const EcomerceRoutes = () => {
     const location = useLocation();
@@ -21,6 +22,7 @@ export const EcomerceRoutes = () => {
                         <Route path="inicio" element={<EcomercePage />} />
                         <Route path="inicio/cart" element={<Cart />} />
                         <Route path="/producto/:id" element={<SneakerPage />} />
+                        <Route path="/nosotros" element={<Nosotros />} />
                         <Route path="/*" element={<Navigate to="/inicio" />} />
                     </Routes>
                 </AnimatePresence>

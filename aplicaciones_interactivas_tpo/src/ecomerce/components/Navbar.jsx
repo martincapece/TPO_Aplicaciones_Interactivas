@@ -4,13 +4,15 @@ import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
 import { AuthContext } from '../../auth/context/AuthContext';
+import { CartContext } from '../../Cart/context/CartContext';
 
 export const Navbar = () => {
+  const { dispatch } = useContext(AuthContext);
+  const {cartSize} = useContext(CartContext)
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-  const cartItems = 3; // Cambia esto por el número real de artículos en el carrito
-  const { dispatch } = useContext(AuthContext);
+  const locaton = useLocation();
+  const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
 
   const handleMenuClick = () => {
     setMenuOpen(!menuOpen);

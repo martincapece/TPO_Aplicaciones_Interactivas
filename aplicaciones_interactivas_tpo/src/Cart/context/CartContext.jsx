@@ -19,7 +19,6 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(productList));
   }, [productList]);
 
-
   const addProduct = (product) => {
     setProductList((prev) => {
       const existing = prev.find(p => p.id === product.id);
