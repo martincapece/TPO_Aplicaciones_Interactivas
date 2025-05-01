@@ -7,7 +7,7 @@ import { AuthContext } from '../../auth/context/AuthContext';
 import { CartContext } from '../../Cart/context/CartContext';
 
 export const Navbar = () => {
-
+  const { productList, cartSize } = useContext(CartContext);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [userAnchorEl, setUserAnchorEl] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -17,7 +17,6 @@ export const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const { productList } = useContext(CartContext);
   const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
   const { dispatch, user } = useContext(AuthContext);
 
