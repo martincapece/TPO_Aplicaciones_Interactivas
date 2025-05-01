@@ -7,6 +7,8 @@ import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import { Nosotros } from "../pages/Nosotros"
+import { Legales } from "../pages/Legales"
+import { Catalogo } from "../pages/Catalogo"
 
 export const EcomerceRoutes = () => {
     const location = useLocation();
@@ -22,7 +24,9 @@ export const EcomerceRoutes = () => {
                         <Route path="inicio" element={<EcomercePage />} />
                         <Route path="inicio/cart" element={<Cart />} />
                         <Route path="/producto/:id" element={<SneakerPage />} />
-                        <Route path="/nosotros" element={<Nosotros />} />
+                        <Route path="/nosotros/" element={<Nosotros />} />
+                        <Route path="/legales/" element={<Legales />} />
+                        <Route path="/catalogo/" element={<Catalogo />} />
                         <Route path="/*" element={<Navigate to="/inicio" />} />
                     </Routes>
                 </AnimatePresence>

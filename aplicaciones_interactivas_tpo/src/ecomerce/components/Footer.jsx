@@ -14,17 +14,17 @@ const footerData = [
 {
     title: "NOSOTROS",
     links: [
-        {text: "Sobre nosotros", to: "/Nosotros" }, 
-        {text: "Historia", to: "/Nosotros#2" }, 
-        {text: "Contacto", to: "/Nosotros#3" },
+        {text: "Sobre nosotros", to: "/Nosotros#" }, 
+        {text: "Historia", to: "/Nosotros#historia" }, 
+        {text: "Contacto", to: "/Nosotros#contacto" },
     ],
 },
 {
-    title: "LEGAL",
+    title: "LEGALES",
     links: [
-        { text: "Política de Envíos", to: "/Politicas" },
-        { text: "Términos y condiciones", to: "/Politicas#2" },
-        { text: "Devoluciones y cambios", to: "/Politicas#3" },
+        { text: "Política de Envíos", to: "/Legales" },
+        { text: "Términos y condiciones", to: "/Legales#2" },
+        { text: "Devoluciones y cambios", to: "/Legales#3" },
     ],
 },
 ];
