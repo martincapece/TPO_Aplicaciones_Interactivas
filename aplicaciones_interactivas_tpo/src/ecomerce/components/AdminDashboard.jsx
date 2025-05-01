@@ -1,52 +1,128 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
+import products from '../../mocks/products.json' // importo los products del mock
+import { Avatar } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { IconButton } from '@mui/material';
+import { Select, MenuItem } from '@mui/material';
+import { Button, Box } from '@mui/material';
+
+
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
+  { field: 'id', headerName: 'ID', width: 70 , sortable: false, filterable: false, headerAlign: 'center', align: 'center'},
   {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 90,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
+    field: 'img',
+    headerName: 'Imagen',
+    width: 130, renderCell: params => (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100%'
+      }}>
+        <img
+          src={params.row.img}
+          alt={params.row.name}
+          style={{ width: 76, height: 76, objectFit: 'cover' }}
+        />
+      </div>
+    ),
     sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
+    filterable: false,
+    headerAlign: 'center',
+    align: 'center'
   },
-];
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+  { field: 'name', headerName: 'Nombre', width: 200, headerAlign: 'center', align: 'center' },
+  { field: 'brand', headerName: 'Marca', width: 130, headerAlign: 'center', align: 'center' },
+  { field: 'price', headerName: 'Precio', width: 100, type: 'number', headerAlign: 'center', align: 'center' },
+  {
+    field: 'sizes',
+    headerName: 'Tallas',
+    width: 150,
+    renderCell: (params) => {
+      const sizes = Array.isArray(params.row.sizes) ? params.row.sizes : [];
+    
+      return (
+        <Select
+          value={sizes[0] || ''}
+          size="small"
+          fullWidth
+          sx={{ backgroundColor: 'transparent' }}
+        >
+          {sizes.map((size, index) => (
+            <MenuItem key={index} value={size}>
+              {size}
+            </MenuItem>
+          ))}
+        </Select>
+      );
+    },
+    sortable: false,
+    filterable: false,
+    headerAlign: 'center',
+    align: 'center'
+  },
+  { field: 'stock', headerName: 'Stock', width: 100, type: 'number', headerAlign: 'center', align: 'center'},
+  { field: 'category', headerName: 'Categoría', width: 130, headerAlign: 'center', align: 'center' },
+  {
+    field: 'actions',
+    headerName: 'Acciones',
+    width: 150,
+    renderCell: (params) => (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <IconButton color="primary" onClick={() => handleEdit(params.row.id)}>
+          <EditIcon />
+        </IconButton>
+        <IconButton color="secondary" onClick={() => handleDelete(params.row.id)}>
+          <DeleteIcon />
+        </IconButton>
+      </div>
+    ),
+    sortable: false,
+    filterable: false,
+    headerAlign: 'center',
+    align: 'center'
+  },
 ];
 
 const paginationModel = { page: 0, pageSize: 5 };
 
+const handleEdit = (id) => {
+  console.log(`Edit product with id: ${id}`);
+  // Lógica para editar el producto
+};
+
+const handleDelete = (id) => {
+  console.log(`Delete product with id: ${id}`);
+  // Lógica para eliminar el producto
+};
+
 export default function AdminDashboard() {
+  console.log(products)
+
   return (
-    <Paper sx={{ height: 400, width: '100%' }}>
+    <>
+    <h1>DashBoard</h1>
+    <Box display="flex" justifyContent="flex-end" mb={2} mr={4}>
+      <Button variant="contained" color="primary" onClick={() => console.log('Agregar producto')}>
+        Agregar producto
+      </Button>
+    </Box>
+    <Paper sx={{ height: 500, width: '100%' }}>
       <DataGrid
-        rows={rows}
+        rows={products}
         columns={columns}
+        getRowId={row => row.id}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10]}
         checkboxSelection
+        rowHeight={80}
         sx={{ border: 0 }}
       />
     </Paper>
+    </>
   );
 }
