@@ -11,7 +11,7 @@ export const loginWithEmailPassword = async({ email, password }, dispatch) => {
         const result = await signInWithEmailAndPassword(FirebaseAuth, email, password);
         const { uid, photoURL, displayName } = result.user;
 
-        const user = { uid, photoURL, displayName };
+        const user = { uid, photoURL, email, password, displayName };
 
         // Dispatch al reducer
         dispatch({ type: types.login, payload: user });
@@ -36,7 +36,7 @@ export const registerUserWithEmailPassword = async({ name, displayName, email, p
         const resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
         const { uid, photoURL } = resp.user;
 
-        const user = { uid, name, displayName, photoURL };
+        const user = { uid, photoURL, displayName, email };
 
         dispatch({ type: types.login, payload: user });
 

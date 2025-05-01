@@ -18,8 +18,8 @@ export const Navbar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
-  const { dispatch, user } = useContext(AuthContext);
-
+  const { dispatch, authState } = useContext(AuthContext);
+  const { user } = authState;
 
   const isInicio = location.pathname === '/' || location.pathname === '/inicio';
 
@@ -161,7 +161,7 @@ export const Navbar = () => {
           open={Boolean(userAnchorEl)}
           onClose={handleCloseMenus}
         >
-          <MenuItem onClick={() => handleNavigate('/cuenta')}>{ user }</MenuItem>
+          <MenuItem onClick={() => handleNavigate('/cuenta')}>{ user?.email || 'user' }</MenuItem>
           <MenuItem onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</MenuItem>
           <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
         </Menu>
