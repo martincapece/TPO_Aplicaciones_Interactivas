@@ -25,12 +25,12 @@ export const Nosotros = () => {
             margin: '0 auto',
             maxWidth: { xs: '300px', sm: '600px', md: '800px', lg: '1000px' },
         }}>
-            <Box p={4}>
+            <Box p={4} id="sobre">
                 <img src="/assets/subtitulo.webp" width={"100%"}></img>
             </Box>
             <Box p={4}>
             {/* Introducción */}
-            <Typography variant="h4" gutterBottom fontWeight="bold" id="quienes-somos">
+            <Typography variant="h4" gutterBottom fontWeight="bold" >
                 Sobre Nosotros
             </Typography>
             <Typography variant="h6" mb={3}>

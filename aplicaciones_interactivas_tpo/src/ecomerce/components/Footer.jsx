@@ -14,7 +14,7 @@ const footerData = [
 {
     title: "NOSOTROS",
     links: [
-        {text: "Sobre nosotros", to: "/Nosotros#" }, 
+        {text: "Sobre nosotros", to: "/Nosotros#sobre" }, 
         {text: "Historia", to: "/Nosotros#historia" }, 
         {text: "Contacto", to: "/Nosotros#contacto" },
     ],

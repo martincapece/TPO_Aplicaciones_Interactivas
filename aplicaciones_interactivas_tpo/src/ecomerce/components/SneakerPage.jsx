@@ -1,17 +1,14 @@
-import React from 'react'
-import { useParams } from "react-router-dom";
 import { dataDestacados } from "../data/dataDestacados";
-import {Box,Typography,Button,Grid,Chip,Stack,Divider,ToggleButton,ToggleButtonGroup,} from "@mui/material";
-import { useState } from "react";
+import { useState,React, useEffect } from "react";
 import { useCart } from "../../Cart/hooks/useCart";
-import { Link } from "react-router-dom";
-import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Link ,useParams,useLocation } from "react-router-dom";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Accordion, AccordionSummary, AccordionDetails,Box,Typography,Button,Grid,ToggleButton,ToggleButtonGroup, } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 
 
-export default function SneakerPage() {
+export default function SneakerPage()  {
     const { id } = useParams();
+    const location = useLocation();
     const sneaker = dataDestacados.find((item) => item.id === parseInt(id));
     const [ selectedSize, setSelectedSize ] = useState("");
     const { addProduct } = useCart();
@@ -19,6 +16,10 @@ export default function SneakerPage() {
     const [ currentPhoto, setCurrentPhoto ] = useState(sneaker.image[0]);
     const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12]
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [id, location.pathname]);
+    
     if (!sneaker) {
         return <Typography variant="h6">Producto no encontrado</Typography>;
     }
