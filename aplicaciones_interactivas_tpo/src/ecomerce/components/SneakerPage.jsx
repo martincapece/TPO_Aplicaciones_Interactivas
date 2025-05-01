@@ -9,6 +9,7 @@ import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 
+
 export default function SneakerPage() {
     const { id } = useParams();
     const sneaker = dataDestacados.find((item) => item.id === parseInt(id));
@@ -16,6 +17,7 @@ export default function SneakerPage() {
     const { addProduct } = useCart();
     const [ dialogOpen, setDialogOpen ] = useState(false);
     const [ currentPhoto, setCurrentPhoto ] = useState(sneaker.image[0]);
+    const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12]
 
     if (!sneaker) {
         return <Typography variant="h6">Producto no encontrado</Typography>;
@@ -44,7 +46,7 @@ return (
         >
             <Grid item xs={12} md={6}>
                 <Box sx={{ maxWidth: 550, width: "100%" }}>
-                    {/* Contenedor de imagen principal con relación fija */}
+                    {/* Contenedor de imagen princigitpal con relación fija */}
                     <Box
                     sx={{
                         width: "100%",
@@ -118,29 +120,66 @@ return (
                     if (newSize) setSelectedSize(newSize);
                     }}
                     aria-label="talles"
-                    sx={{ flexWrap: "wrap", gap: 1 }}
-                >
-                    {sneaker.sizes.map((size) => (
-                    <ToggleButton 
-                    key={size}
-                    value={size}
-                    selected={selectedSize === size}
-                    color="primary"
                     sx={{
-                        border: "1px solid #ccc",
-                        color: "#000",
-                        '&.Mui-selected': {
-                        backgroundColor: '#1976d2',
-                        color: 'white',
+                        flexWrap: "wrap",
+                        gap: 1.5,
+                        justifyContent: "center",
+                        marginY: 2,
+                        '& .MuiToggleButtonGroup-grouped': {
+                            border: '1.5px solid #ccc !important',
+                            margin: 0,
+                            borderRadius: '12px !important',
                         },
-                        '&.Mui-selected:hover': {
-                        backgroundColor: '#1565c0',
+                        '& .MuiToggleButtonGroup-grouped.Mui-selected': {
+                            borderColor: '#000 !important',
                         }
                     }}
                     >
-                        {size}
-                    </ToggleButton>
-                    ))}
+                    {allSizes.map((size) => {
+                        const isAvailable = sneaker.sizes.includes(size.toString());
+                        return (
+                            <ToggleButton
+                                key={size}
+                                value={size}
+                                disabled={!isAvailable}
+                                selected={selectedSize === size}
+                                color="primary"
+                                sx={{
+                                    width: 50,
+                                    height: 50,
+                                    borderRadius: "12px",
+                                    color: selectedSize === size ? "#fff" : "#000",
+                                    fontWeight: 500,
+                                    fontSize: "16px",
+                                    fontFamily: "Inter",
+                                    transition: "all 0.2s ease-in-out",
+                                    '&:hover': {
+                                        backgroundColor: isAvailable ? "#f0f0f0" : "#f5f5f5",
+                                    },
+                                    '&.Mui-disabled': {
+                                        position: 'relative',
+                                        color: '#bbb',
+                                        backgroundColor: '#f9f9f9',
+                                        borderColor: '#eee',
+                                        cursor: 'not-allowed',
+                                        '&::after': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: '10%',
+                                            width: '80%',
+                                            height: '2px',
+                                            backgroundColor: '#bbb',
+                                            transform: 'rotate(-20deg)',
+                                            transformOrigin: 'center',
+                                        },
+                                    },
+                                }}
+                            >
+                                { size }
+                            </ToggleButton>
+                        );
+                    })}
                 </ToggleButtonGroup>
                 </Box>
 
