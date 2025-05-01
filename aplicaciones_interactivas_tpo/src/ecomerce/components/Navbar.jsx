@@ -89,40 +89,40 @@ export const Navbar = () => {
             onClose={handleCloseMenus}
           >
             <MenuItem onClick={() => handleNavigate('/contacto')}>Productos</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/contacto')}>Contacto</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/productos')}>Novedades</MenuItem>
             <MenuItem onClick={() => handleNavigate('/nosotros')}>Sobre Nosotros</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/#destacados')}>Destacados</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/nosotros')}>Contacto</MenuItem>
           </Menu>
         </>
       ) : (
         <Stack direction="row" spacing={3}>
           <Typography
             variant="body1"
-            onClick={() => handleNavigate('/contacto')}
+            onClick={() => handleNavigate('/catalogo')}
             sx={{ cursor: 'pointer', fontWeight: 500 }}
           >
             Productos
           </Typography>
           <Typography
             variant="body1"
+            onClick={() => handleNavigate('/inicio#destacados')}
+            sx={{ cursor: 'pointer', fontWeight: 500 }}
+          >
+            Destacados
+          </Typography>
+          <Typography
+            variant="body1"
             onClick={() => handleNavigate('/nosotros')}
             sx={{ cursor: 'pointer', fontWeight: 500 }}
           >
-            Contacto
-          </Typography>
-          <Typography
-            variant="body1"
-            onClick={() => handleNavigate('/productos')}
-            sx={{ cursor: 'pointer', fontWeight: 500 }}
-          >
-            Novedades
-          </Typography>
-          <Typography
-            variant="body1"
-            onClick={() => handleNavigate('/productos')}
-            sx={{ cursor: 'pointer', fontWeight: 500 }}
-          >
             Sobre Nosotros
+          </Typography>
+          <Typography
+            variant="body1"
+            onClick={() => handleNavigate('/nosotros#contacto')}
+            sx={{ cursor: 'pointer', fontWeight: 500 }}
+          >
+            Contacto
           </Typography>
         </Stack>
       )}

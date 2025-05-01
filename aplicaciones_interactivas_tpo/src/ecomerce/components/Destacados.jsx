@@ -9,7 +9,7 @@ export const Destacados = () => {
 
     return (
         <>
-            <Typography variant="h2" sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800, my: 10 }}>
+            <Typography variant="h2" id="destacados" sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800, my: 10 }}>
                 DESTACADOS
             </Typography>
             
