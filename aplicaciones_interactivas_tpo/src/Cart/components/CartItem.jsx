@@ -36,7 +36,7 @@ function CartItem({ product }) {
       </div>
 
       {/* Precio */}
-      <div className="price-section">
+      <div className="price-section" style={{ paddingRight: '20px' }}>
         ${price.toFixed(2)}
       </div>
     </div>
