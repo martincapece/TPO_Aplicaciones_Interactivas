@@ -105,11 +105,11 @@ export default function AdminDashboard() {
 
   return (
     <>
-    <h1>DashBoard</h1>
-    <Box display="flex" justifyContent="flex-end" mb={2} mr={4}>
-      <Button variant="contained" color="primary" onClick={() => console.log('Agregar producto')}>
-        Agregar producto
-      </Button>
+    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mr={4} mt={2} ml={2}>
+        <h1>DashBoard</h1>
+        <Button variant="contained" color="primary" onClick={() => console.log('Agregar producto')}>
+          Agregar producto
+        </Button>
     </Box>
     <Paper sx={{ height: 500, width: '100%' }}>
       <DataGrid
