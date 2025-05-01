@@ -5,20 +5,18 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
 import { AuthContext } from '../../auth/context/AuthContext';
 import { CartContext } from '../../Cart/context/CartContext';
-import './Navbar.css';
 
 export const Navbar = () => {
+  const { dispatch } = useContext(AuthContext);
+  const {cartSize} = useContext(CartContext)
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
-
+  const locaton = useLocation();
+  const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
   const { productList } = useContext(CartContext);
-  const cartItems = productList.length;
-
-  const { dispatch } = useContext(AuthContext);
 
   const closeAll = () => {
     setMenuOpen(false);

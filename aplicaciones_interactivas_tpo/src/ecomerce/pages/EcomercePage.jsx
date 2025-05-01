@@ -38,7 +38,7 @@ export const EcomercePage = () => {
               mb: { xs: 1, md: 0 }
             }}
             >
-              <ImageBackgroundChild title={'JORDAN 1'} subtitle={'VER PRODUCTOS'} url={jordan} />
+              <ImageBackgroundChild title={'JORDAN'} subtitle={'VER PRODUCTOS'} url={jordan} />
             </Grid>
             <Grid 
             size={{ xs: 12, md: 5.75 }}
@@ -46,13 +46,11 @@ export const EcomercePage = () => {
               my: { xs: 1, md: 0 }
             }}
             >
-              <ImageBackgroundChild title={'VANS KNU'} subtitle={'VER PRODUCTOS'} url={vans} />
+              <ImageBackgroundChild title={'VANS'} subtitle={'VER PRODUCTOS'} url={vans} />
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-
-      <Footer />
     </>
   )
 }
