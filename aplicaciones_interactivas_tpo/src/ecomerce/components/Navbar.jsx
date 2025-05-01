@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { IconButton, Badge, TextField } from '@mui/material';
+import { IconButton, Badge, TextField, useTheme, useMediaQuery, Box, Stack, Menu, MenuItem, Typography } from '@mui/material';
 import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/icons-material';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
@@ -7,131 +7,173 @@ import { AuthContext } from '../../auth/context/AuthContext';
 import { CartContext } from '../../Cart/context/CartContext';
 
 export const Navbar = () => {
-  const { dispatch } = useContext(AuthContext);
-  const {cartSize} = useContext(CartContext)
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [userAnchorEl, setUserAnchorEl] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
-  const locaton = useLocation();
-  const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
-  const { productList } = useContext(CartContext);
+  const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const closeAll = () => {
-    setMenuOpen(false);
-    setUserMenuOpen(false);
+  const { productList } = useContext(CartContext);
+  const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
+  const { dispatch, user } = useContext(AuthContext);
+
+
+  const isInicio = location.pathname === '/' || location.pathname === '/inicio';
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    handleCloseMenus();
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchText.trim()) {
+      navigate(`/search?query=${searchText}`);
+    }
+  };
+
+  const handleOpenMenu = (e) => {
+    setMenuAnchorEl(e.currentTarget);
+    setUserAnchorEl(null);
+    setSearchOpen(false);
+  };
+
+  const handleOpenUserMenu = (e) => {
+    setUserAnchorEl(e.currentTarget);
+    setMenuAnchorEl(null);
+    setSearchOpen(false);
+  };
+
+  const handleCloseMenus = () => {
+    setMenuAnchorEl(null);
+    setUserAnchorEl(null);
     setSearchOpen(false);
   };
 
   useEffect(() => {
-    const handleClickOutside = () => {
-      closeAll();
-    };
-
+    const handleClickOutside = () => handleCloseMenus();
     document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const handleMenuClick = (e) => {
-    e.stopPropagation();
-    setMenuOpen(!menuOpen);
-    setUserMenuOpen(false);
-    setSearchOpen(false);
-  };
-
-  const handleUserMenuClick = (e) => {
-    e.stopPropagation();
-    setUserMenuOpen(!userMenuOpen);
-    setMenuOpen(false);
-    setSearchOpen(false);
-  };
-
-  const handleSearchClick = (e) => {
-    e.stopPropagation();
-    setSearchOpen(!searchOpen);
-    setMenuOpen(false);
-    setUserMenuOpen(false);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
-  };
-
-  const handleSearchSubmit = () => {
-    console.log('Buscando:', searchText);
-    navigate(`/search?query=${searchText}`);
-  };
-
-  const handleNavigate = (path) => {
-    navigate(path);
-    closeAll();
-  };
-
-  const isInicio = location.pathname === '/' || location.pathname === '/inicio';
-
   return (
-    <div className="navbar" onClick={(e) => e.stopPropagation()}>
-      <IconButton onClick={(e) => (isInicio ? handleMenuClick(e) : navigate(-1))}>
-        {isInicio ? <MenuIcon /> : <ArrowBack />}
-      </IconButton>
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      px={2}
+      py={1}
+      boxShadow={2}
+      position="sticky"
+      top={0}
+      bgcolor="white"
+      zIndex={1000}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Logo */}
+      <Box onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
+        <img src="/assets/logo_ecomerce.jpg" alt="Logo" style={{ width: 50 }} />
+      </Box>
 
-      {menuOpen && isInicio && (
-        <div className="navbar-menu" onClick={(e) => e.stopPropagation()}>
-          <ul>
-            <li onClick={() => handleNavigate('/contacto')}>Contacto</li>
-            <li onClick={() => handleNavigate('/nosotros')}>Nosotros</li>
-            <li onClick={() => handleNavigate('/productos')}>Productos</li>
-          </ul>
-        </div>
+      {/* Menu (responsive) */}
+      {isMobile ? (
+        <>
+          <IconButton onClick={handleOpenMenu}>
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleCloseMenus}
+          >
+            <MenuItem onClick={() => handleNavigate('/contacto')}>Productos</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/contacto')}>Contacto</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/productos')}>Novedades</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/nosotros')}>Sobre Nosotros</MenuItem>
+          </Menu>
+        </>
+      ) : (
+        <Stack direction="row" spacing={3}>
+          <Typography
+            variant="body1"
+            onClick={() => handleNavigate('/contacto')}
+            sx={{ cursor: 'pointer', fontWeight: 500 }}
+          >
+            Productos
+          </Typography>
+          <Typography
+            variant="body1"
+            onClick={() => handleNavigate('/nosotros')}
+            sx={{ cursor: 'pointer', fontWeight: 500 }}
+          >
+            Contacto
+          </Typography>
+          <Typography
+            variant="body1"
+            onClick={() => handleNavigate('/productos')}
+            sx={{ cursor: 'pointer', fontWeight: 500 }}
+          >
+            Novedades
+          </Typography>
+          <Typography
+            variant="body1"
+            onClick={() => handleNavigate('/productos')}
+            sx={{ cursor: 'pointer', fontWeight: 500 }}
+          >
+            Sobre Nosotros
+          </Typography>
+        </Stack>
       )}
 
-      <div className="navbar-search-container">
-        <IconButton onClick={handleSearchClick}>
+      {/* Search */}
+      <Box display="flex" alignItems="center">
+        <IconButton onClick={(e) => {
+          e.stopPropagation();
+          setSearchOpen(!searchOpen);
+          setMenuAnchorEl(null);
+          setUserAnchorEl(null);
+        }}>
           <Search />
         </IconButton>
         {searchOpen && (
           <TextField
-            variant="outlined"
             size="small"
+            variant="outlined"
             placeholder="Buscar..."
             value={searchText}
-            onChange={handleSearchChange}
+            onChange={(e) => setSearchText(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
-            className="search-bar"
+            sx={{ ml: 1, width: 200 }}
             onClick={(e) => e.stopPropagation()}
           />
         )}
-      </div>
+      </Box>
 
-      <div className="navbar-logo" onClick={() => navigate('/')}>
-        <img src="/assets/logo_ecomerce.jpg" alt="Logo" />
-      </div>
-
-      <div className="navbar-user-menu-container">
-        <IconButton onClick={handleUserMenuClick}>
+      {/* User Menu */}
+      <Box>
+        <IconButton onClick={handleOpenUserMenu}>
           <Person />
         </IconButton>
-        {userMenuOpen && (
-          <div className="navbar-user-menu" onClick={(e) => e.stopPropagation()}>
-            <ul>
-              <li onClick={() => handleNavigate('/cuenta')}>Cuenta</li>
-              <li onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</li>
-              <li onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</li>
-            </ul>
-          </div>
-        )}
-      </div>
+        <Menu
+          anchorEl={userAnchorEl}
+          open={Boolean(userAnchorEl)}
+          onClose={handleCloseMenus}
+        >
+          <MenuItem onClick={() => handleNavigate('/cuenta')}>{ user }</MenuItem>
+          <MenuItem onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</MenuItem>
+          <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
+        </Menu>
+      </Box>
 
-      <IconButton LinkComponent={Link} to="/inicio/cart" onClick={() => navigate('/cart')}>
+      {/* Cart */}
+      <IconButton component={Link} to="/inicio/cart" onClick={() => navigate('/cart')}>
         <Badge badgeContent={cartItems} color="error">
           <ShoppingCart />
         </Badge>
       </IconButton>
-    </div>
+    </Box>
   );
 };
-
