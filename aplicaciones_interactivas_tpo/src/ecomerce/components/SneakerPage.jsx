@@ -30,7 +30,7 @@ return (
     container
     sx={{
         margin: '0 auto',
-        maxWidth: { xs: '300px', sm: '600px', md: '800px', lg: '1000px' },
+        maxWidth: { xs: '300px', sm: '600px', md: '800px', lg: '1300px' },
     }}
     >
         <Grid 
@@ -42,45 +42,56 @@ return (
             my: 10
         }}
         >
-            <Grid size={{ xs: 12, md: 6 }}>
-                <Box
-                sx={{
-                    height: 1
-                }}
-                >
+            <Grid item xs={12} md={6}>
+                <Box sx={{ maxWidth: 550, width: "100%" }}>
+                    {/* Contenedor de imagen principal con relación fija */}
                     <Box
-                    component="img"
-                    src={currentPhoto}
-                    alt={sneaker.model}
-                    size={{ xs: 12 }}
                     sx={{
                         width: "100%",
-                        maxWidth: 600,
-                        height: 'auto',
+                        aspectRatio: "1", // cuadrado responsivo
+                        backgroundColor: "#ffff",
                         borderRadius: 2,
+                        overflow: "hidden",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                     }}
+                    >
+                    <Box
+                        component="img"
+                        src={currentPhoto}
+                        alt={sneaker.model}
+                        sx={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        }}
                     />
+                    </Box>
+
+                    {/* Miniaturas */}
                     {sneaker.image.length > 1 && (
-                        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                            {sneaker.image.map((img, index) => (
-                                <Box
-                                key={index}
-                                component="img"
-                                src={img}
-                                onClick={() => handleImageClick(img)}
-                                alt={`${sneaker.model} - ${index + 2}`}
-                                sx={{
-                                    width: 70,
-                                    height: 70,
-                                    objectFit: "cover",
-                                    borderRadius: 1,
-                                    border: "1px solid #ccc",
-                                    cursor: "pointer"
-                                }}
-                                />
-                            ))}
-                        </Box>
-                    )}          
+                    <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+                        {sneaker.image.map((img, index) => (
+                        <Box
+                            key={index}
+                            component="img"
+                            src={img}
+                            onClick={() => handleImageClick(img)}
+                            alt={`${sneaker.model} - ${index + 1}`}
+                            sx={{
+                            width: 60,
+                            height: 60,
+                            objectFit: "cover",
+                            borderRadius: 1,
+                            border: currentPhoto === img ? "2px solid black" : "1px solid #ccc",
+                            cursor: "pointer",
+                            transition: "border 0.2s ease-in-out",
+                            }}
+                        />
+                        ))}
+                    </Box>
+                    )}
                 </Box>
             </Grid>
 
@@ -200,7 +211,7 @@ return (
             </DialogActions>
         </Dialog>
 
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ mt: 8,width: "100%" }}>
             <Typography variant="h5" gutterBottom sx={{ fontFamily: "Inter" }}>Información adicional</Typography>
 
             <Accordion>
