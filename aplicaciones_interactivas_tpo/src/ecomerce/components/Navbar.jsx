@@ -1,77 +1,131 @@
-import React, { useContext, useState } from 'react';
-import { IconButton, Badge } from '@mui/material';
+import React, { useContext, useState, useEffect } from 'react';
+import { IconButton, Badge, TextField } from '@mui/material';
 import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/icons-material';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
 import { AuthContext } from '../../auth/context/AuthContext';
+import { CartContext } from '../../Cart/context/CartContext';
 
 export const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const cartItems = 3; // Cambia esto por el número real de artículos en el carrito
   const { dispatch } = useContext(AuthContext);
+  const {cartSize} = useContext(CartContext)
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const navigate = useNavigate();
+  const locaton = useLocation();
+  const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
+  const { productList } = useContext(CartContext);
 
-  const handleMenuClick = () => {
-    setMenuOpen(!menuOpen);
+  const closeAll = () => {
+    setMenuOpen(false);
+    setUserMenuOpen(false);
+    setSearchOpen(false);
   };
 
-  const handleMenuClose = () => {
+  useEffect(() => {
+    const handleClickOutside = () => {
+      closeAll();
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  const handleMenuClick = (e) => {
+    e.stopPropagation();
+    setMenuOpen(!menuOpen);
+    setUserMenuOpen(false);
+    setSearchOpen(false);
+  };
+
+  const handleUserMenuClick = (e) => {
+    e.stopPropagation();
+    setUserMenuOpen(!userMenuOpen);
     setMenuOpen(false);
+    setSearchOpen(false);
+  };
+
+  const handleSearchClick = (e) => {
+    e.stopPropagation();
+    setSearchOpen(!searchOpen);
+    setMenuOpen(false);
+    setUserMenuOpen(false);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    console.log('Buscando:', searchText);
+    navigate(`/search?query=${searchText}`);
   };
 
   const handleNavigate = (path) => {
     navigate(path);
-    handleMenuClose();
+    closeAll();
   };
 
   const isInicio = location.pathname === '/' || location.pathname === '/inicio';
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', position: 'relative' }}>
-      {/* Condicional para mostrar el ícono */}
-      <IconButton onClick={() => (isInicio ? handleMenuClick() : navigate(-1))}>
+    <div className="navbar" onClick={(e) => e.stopPropagation()}>
+      <IconButton onClick={(e) => (isInicio ? handleMenuClick(e) : navigate(-1))}>
         {isInicio ? <MenuIcon /> : <ArrowBack />}
       </IconButton>
 
-      {/* Menú desplegable */}
       {menuOpen && isInicio && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '50px',
-            left: '0',
-            width: '100%',
-            background: '#fff',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-            zIndex: 10,
-          }}
-        >
-          <ul style={{ listStyle: 'none', margin: 0, padding: '10px' }}>
-            <li style={{ padding: '5px 0', cursor: 'pointer' }} onClick={() => handleNavigate('/contacto')}>
-              Contacto
-            </li>
-            <li style={{ padding: '5px 0', cursor: 'pointer' }} onClick={() => handleNavigate('/nosotros')}>
-              Nosotros
-            </li>
-            <li style={{ padding: '5px 0', cursor: 'pointer' }} onClick={() => handleNavigate('/productos')}>
-              Productos
-            </li>
+        <div className="navbar-menu" onClick={(e) => e.stopPropagation()}>
+          <ul>
+            <li onClick={() => handleNavigate('/contacto')}>Contacto</li>
+            <li onClick={() => handleNavigate('/nosotros')}>Nosotros</li>
+            <li onClick={() => handleNavigate('/productos')}>Productos</li>
           </ul>
         </div>
       )}
 
-      <IconButton onClick={() => navigate('/search')}>
-        <Search />
-      </IconButton>
-
-      <div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => navigate('/')}>
-        <img src="/assets/logo_ecomerce.jpg" style={{ width: 50 }} alt="" />
+      <div className="navbar-search-container">
+        <IconButton onClick={handleSearchClick}>
+          <Search />
+        </IconButton>
+        {searchOpen && (
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Buscar..."
+            value={searchText}
+            onChange={handleSearchChange}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
+            className="search-bar"
+            onClick={(e) => e.stopPropagation()}
+          />
+        )}
       </div>
 
-      <IconButton onClick={() => logoutFirebase( dispatch ) }>
-        <Person />
-      </IconButton>
+      <div className="navbar-logo" onClick={() => navigate('/')}>
+        <img src="/assets/logo_ecomerce.jpg" alt="Logo" />
+      </div>
+
+      <div className="navbar-user-menu-container">
+        <IconButton onClick={handleUserMenuClick}>
+          <Person />
+        </IconButton>
+        {userMenuOpen && (
+          <div className="navbar-user-menu" onClick={(e) => e.stopPropagation()}>
+            <ul>
+              <li onClick={() => handleNavigate('/cuenta')}>Cuenta</li>
+              <li onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</li>
+              <li onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</li>
+            </ul>
+          </div>
+        )}
+      </div>
+
       <IconButton LinkComponent={Link} to="/inicio/cart" onClick={() => navigate('/cart')}>
         <Badge badgeContent={cartItems} color="error">
           <ShoppingCart />
