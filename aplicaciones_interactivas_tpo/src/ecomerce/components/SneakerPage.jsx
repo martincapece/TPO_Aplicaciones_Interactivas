@@ -12,13 +12,17 @@ import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material
 export default function SneakerPage() {
     const { id } = useParams();
     const sneaker = dataDestacados.find((item) => item.id === parseInt(id));
-    const [selectedSize, setSelectedSize] = useState("");
+    const [ selectedSize, setSelectedSize ] = useState("");
     const { addProduct } = useCart();
-    const [dialogOpen, setDialogOpen] = useState(false);
-
+    const [ dialogOpen, setDialogOpen ] = useState(false);
+    const [ currentPhoto, setCurrentPhoto ] = useState(sneaker.image[0]);
 
     if (!sneaker) {
         return <Typography variant="h6">Producto no encontrado</Typography>;
+    }
+
+    const handleImageClick = (image) => {
+        setCurrentPhoto(image);
     }
 
 return (
@@ -40,30 +44,44 @@ return (
         >
             <Grid size={{ xs: 12, md: 6 }}>
                 <Box
-                component="img"
-                src={sneaker.image}
-                alt={sneaker.model}
-                size={{ xs: 12 }}
                 sx={{
-                    width: "100%",
-                    maxWidth: 550,
-                    height: "auto",
-                    borderRadius: 2,
+                    height: 1
                 }}
-                />
-                <Box
-                component="img"
-                src={sneaker.image}
-                alt={sneaker.model}
-                size={{ xs: 12}}
-                sx={{
-                    width: 70,
-                    height: 70,
-                    objectFit: "cover",
-                    borderRadius: 1,
-                    border: "1px solid #ccc",
-                }}
-                />
+                >
+                    <Box
+                    component="img"
+                    src={currentPhoto}
+                    alt={sneaker.model}
+                    size={{ xs: 12 }}
+                    sx={{
+                        width: "100%",
+                        maxWidth: 600,
+                        height: 'auto',
+                        borderRadius: 2,
+                    }}
+                    />
+                    {sneaker.image.length > 1 && (
+                        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                            {sneaker.image.map((img, index) => (
+                                <Box
+                                key={index}
+                                component="img"
+                                src={img}
+                                onClick={() => handleImageClick(img)}
+                                alt={`${sneaker.model} - ${index + 2}`}
+                                sx={{
+                                    width: 70,
+                                    height: 70,
+                                    objectFit: "cover",
+                                    borderRadius: 1,
+                                    border: "1px solid #ccc",
+                                    cursor: "pointer"
+                                }}
+                                />
+                            ))}
+                        </Box>
+                    )}          
+                </Box>
             </Grid>
 
             {/* Info del producto */}
@@ -241,7 +259,7 @@ return (
                     <Typography variant="body2" color="text.secondary">
                     ${prod.price}
                     </Typography>
-                    <Link to={`/producto/${prod.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    <Link to={`/producto/${prod.id}`} style={{ color: "inherit" }}>
                         <Box>Ver Producto</Box>
                     </Link>
                 </Box>

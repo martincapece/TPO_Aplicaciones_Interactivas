@@ -1,4 +1,7 @@
 import jordan1HighTravisMarron from '/assets/jordan1HighTravisMarron.png';
+import jordan1HighTravisMarron2 from '/assets/jordan1HighTravisMarron2.jpg';
+import jordan1HighTravisMarron3 from '/assets/jordan1HighTravisMarron3.jpg';
+import jordan1HighTravisMarron4 from '/assets/jordan1HighTravisMarron4.jpg';
 
 export const dataDestacados = [
     {
@@ -8,7 +11,7 @@ export const dataDestacados = [
         price: 150,
         colors: ['Red', 'Black', 'White'],
         sizes: ['7', '8', '9', '10', '11'],
-        image: jordan1HighTravisMarron,
+        image: [jordan1HighTravisMarron,jordan1HighTravisMarron2,jordan1HighTravisMarron3,jordan1HighTravisMarron4]
     },
     {
         id: 2,
