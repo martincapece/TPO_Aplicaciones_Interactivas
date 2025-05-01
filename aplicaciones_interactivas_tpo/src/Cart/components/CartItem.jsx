@@ -3,8 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useCart } from '../hooks/useCart';
 
 function CartItem({ product }) {
-  const { id, name, type, color, size, price, img, quantity} = product;
-
+  const { id, model, brand, color = 'red', sizes, price, image, quantity } = product;
   const {handleIncreaseQuantity, handleDecreaseQuantity} = useCart();
 
 
@@ -12,7 +11,7 @@ function CartItem({ product }) {
     <div className="cart-item">
       {/* Imagen + acciones */}
       <div className="image-section">
-        <img src={img} alt={name} className="product-image" />
+        <img src={image[0]} alt={model} className="product-image" />
         <div className="actions">   
           {/* Control de cantidad */}
           <div className="quantity-control">
@@ -29,16 +28,15 @@ function CartItem({ product }) {
 
       {/* Info del producto */}
       <div className="info-section">
-        <h3>{name}</h3>
-        <p>{type}</p>
-        <p>{color}</p>
+        <h3>{model}</h3>
+        <p>{brand}</p>
         <p className="size">
-          Talla <span>{size}</span>
+          Talle <span>{sizes}</span>
         </p>
       </div>
 
       {/* Precio */}
-      <div className="price-section">
+      <div className="price-section" style={{ paddingRight: '20px' }}>
         ${price.toFixed(2)}
       </div>
     </div>

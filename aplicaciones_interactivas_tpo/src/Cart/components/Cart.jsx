@@ -3,6 +3,7 @@ import CartItemList from './CartItemList';
 import PurchaseDetail from './PurchaseDetail';
 import { useCart } from '../hooks/useCart';
 import { useNavigate } from 'react-router-dom'; // Importamos useNavigate
+import { Grid } from '@mui/material';
 
 function Cart() {
     const { productList, subtotal } = useCart()
@@ -15,7 +16,13 @@ function Cart() {
     }
 
     return (
-        <div className="cart-container">
+        <Grid
+        container
+        sx={{
+            margin: '0 auto',
+            maxWidth: '50%',
+        }}
+        >
             {
                 isEmpty
                     ? (
@@ -31,7 +38,7 @@ function Cart() {
                         </>
                     )
             }
-        </div>
+        </Grid>
     );
 }
 

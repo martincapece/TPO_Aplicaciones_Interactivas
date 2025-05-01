@@ -1,0 +1,98 @@
+/* Estilo por defecto para la barra de búsqueda */
+.search-bar {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 350px;
+  z-index: 999;
+  background: transparent;
+  border: none;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilo responsivo para pantallas pequeñas */
+@media (max-width: 768px) {
+  .search-bar {
+    position: relative;
+    top: 0px;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    background: transparent; /* Asegura que no tenga fondo */
+    border: none; /* Elimina el borde */
+    padding: 5px;
+    box-sizing: border-box;
+  }
+}
+
+/* Estilo general del navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  position: relative;
+}
+
+/* Menú desplegable */
+.navbar-menu {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  width: 200px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.navbar-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.navbar-menu li {
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+/* Campo de búsqueda */
+.navbar-search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Logo */
+.navbar-logo {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.navbar-logo img {
+  width: 50px;
+}
+
+/* Menú del usuario */
+.navbar-user-menu {
+  position: absolute;
+  top: 50px;
+  width: 200px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.navbar-user-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.navbar-user-menu li {
+  padding: 5px 0;
+  cursor: pointer;
+}
