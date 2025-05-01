@@ -1,18 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import { EcomercePage } from "../pages"
 import Cart from "../../Cart/components/Cart"
-<<<<<<< HEAD
-import AdminDashboard from "../components/AdminDashboard"
-
-export const EcomerceRoutes = () => {
-    
-    
-    return (
-        <Routes>
-            <Route path="inicio" element={ <EcomercePage /> } />
-            <Route path="inicio/cart" element={ <Cart /> } />
-            <Route path="inicio/admin" element={ <AdminDashboard /> } />
-=======
 import { Footer, Navbar } from "../components"
 import SneakerPage from "../components/SneakerPage"
 import { AnimatePresence } from "framer-motion";
@@ -21,11 +9,10 @@ import { Box } from "@mui/material";
 import { Nosotros } from "../pages/Nosotros"
 import { Legales } from "../pages/Legales"
 import { Catalogo } from "../pages/Catalogo"
+import AdminDashboard from "../components/AdminDashboard"
 
 export const EcomerceRoutes = () => {
     const location = useLocation();
->>>>>>> develop
-
     return (
         <Box display="flex" flexDirection="column" minHeight="100vh">
             
@@ -36,6 +23,7 @@ export const EcomerceRoutes = () => {
                     <Routes location={location} key={location.pathname}>
                         <Route path="inicio" element={<EcomercePage />} />
                         <Route path="inicio/cart" element={<Cart />} />
+                        <Route path="inicio/admin" element={<AdminDashboard />} />
                         <Route path="/producto/:id" element={<SneakerPage />} />
                         <Route path="/nosotros/" element={<Nosotros />} />
                         <Route path="/legales/" element={<Legales />} />
