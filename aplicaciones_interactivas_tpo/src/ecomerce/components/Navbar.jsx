@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { IconButton, Badge, TextField, useTheme, useMediaQuery, Box, Stack, Menu, MenuItem, Typography } from '@mui/material';
+import { IconButton, Badge, TextField, useTheme, useMediaQuery, Box, Stack, Menu, MenuItem, Typography, Grid } from '@mui/material';
 import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/icons-material';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
@@ -59,7 +59,8 @@ export const Navbar = () => {
   }, []);
 
   return (
-    <Box
+    <Grid
+      container
       display="flex"
       alignItems="center"
       justifyContent="space-between"
@@ -73,106 +74,123 @@ export const Navbar = () => {
       onClick={(e) => e.stopPropagation()}
     >
       {/* Logo */}
-      <Box onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
+      <Grid onClick={() => navigate('/')} size={{ md: 3, lg: 4.5 }} display={(isMobile) ? 'none' : ''} sx={{ cursor: 'pointer' }}>
         <img src="/assets/logo_ecomerce.jpg" alt="Logo" style={{ width: 50 }} />
-      </Box>
+      </Grid>
 
       {/* Menu (responsive) */}
       {isMobile ? (
         <>
-          <IconButton onClick={handleOpenMenu}>
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={handleCloseMenus}
-          >
-            <MenuItem onClick={() => handleNavigate('/catalogo')}>Productos</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/inicio#destacados')}>Destacados</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/nosotros#sobre')}>Sobre Nosotros</MenuItem>
-            <MenuItem onClick={() => handleNavigate('/nosotros#contacto')}>Contacto</MenuItem>
-          </Menu>
+          <Grid size={ 4.5 }>
+            <IconButton onClick={handleOpenMenu}>
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={handleCloseMenus}
+            >
+              <MenuItem onClick={() => handleNavigate('/catalogo')}>Productos</MenuItem>
+              <MenuItem onClick={() => handleNavigate('/inicio#destacados')}>Destacados</MenuItem>
+              <MenuItem onClick={() => handleNavigate('/nosotros#sobre')}>Sobre Nosotros</MenuItem>
+              <MenuItem onClick={() => handleNavigate('/nosotros#contacto')}>Contacto</MenuItem>
+            </Menu>
+          </Grid>
+
+          <Grid onClick={() => navigate('/')} size={ 1 } sx={{ cursor: 'pointer' }}>
+            <img src="/assets/logo_ecomerce.jpg" alt="Logo" style={{ width: 50 }} />
+          </Grid>
         </>
       ) : (
-        <Stack direction="row" spacing={3}>
-          <Typography
-            variant="body1"
-            onClick={() => handleNavigate('/catalogo')}
-            sx={{ cursor: 'pointer', fontWeight: 500 }}
-          >
-            Productos
-          </Typography>
-          <Typography
-            variant="body1"
-            onClick={() => handleNavigate('/inicio#destacados')}
-            sx={{ cursor: 'pointer', fontWeight: 500 }}
-          >
-            Destacados
-          </Typography>
-          <Typography
-            variant="body1"
-            onClick={() => handleNavigate('/nosotros#sobre')}
-            sx={{ cursor: 'pointer', fontWeight: 500 }}
-          >
-            Sobre Nosotros
-          </Typography>
-          <Typography
-            variant="body1"
-            onClick={() => handleNavigate('/nosotros#contacto')}
-            sx={{ cursor: 'pointer', fontWeight: 500 }}
-          >
-            Contacto
-          </Typography>
-        </Stack>
+        <Grid container spacing={3} size={{ md: 6, lg: 4.5 }}>
+          <Grid>
+            <Typography
+              variant="body1"
+              onClick={() => handleNavigate('/catalogo')}
+              sx={{ cursor: 'pointer', fontWeight: 500 }}
+            >
+              Productos
+            </Typography>
+          </Grid>
+          <Grid>
+            <Typography
+              variant="body1"
+              onClick={() => handleNavigate('/inicio#destacados')}
+              sx={{ cursor: 'pointer', fontWeight: 500 }}
+            >
+              Destacados
+            </Typography>
+          </Grid>
+          <Grid>
+            <Typography
+              variant="body1"
+              onClick={() => handleNavigate('/nosotros#sobre')}
+              sx={{ cursor: 'pointer', fontWeight: 500 }}
+            >
+              Sobre Nosotros
+            </Typography>
+          </Grid>
+          <Grid>
+            <Typography
+              variant="body1"
+              onClick={() => handleNavigate('/nosotros#contacto')}
+              sx={{ cursor: 'pointer', fontWeight: 500 }}
+            >
+              Contacto
+            </Typography>
+          </Grid>
+        </Grid>
+
       )}
 
-      {/* Search */}
-      <Box display="flex" alignItems="center">
-        <IconButton onClick={(e) => {
-          e.stopPropagation();
-          setSearchOpen(!searchOpen);
-          setMenuAnchorEl(null);
-          setUserAnchorEl(null);
-        }}>
-          <Search />
-        </IconButton>
-        {searchOpen && (
-          <TextField
-            size="small"
-            variant="outlined"
-            placeholder="Buscar..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
-            sx={{ ml: 1, width: 200 }}
-            onClick={(e) => e.stopPropagation()}
-          />
-        )}
-      </Box>
+      <Grid container alignItems="center" justifyContent="flex-end" size={ 3 } sx={{ flexGrow: 1 }}>
+        {/* Search */}
+        <Box display="flex" alignItems="center">
+          <IconButton onClick={(e) => {
+            e.stopPropagation();
+            setSearchOpen(!searchOpen);
+            setMenuAnchorEl(null);
+            setUserAnchorEl(null);
+          }}>
+            <Search />
+          </IconButton>
+          {searchOpen && (
+            <TextField
+              size="small"
+              variant="outlined"
+              placeholder="Buscar..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
+              sx={{ ml: 1, width: 200 }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
+        </Box>
 
-      {/* User Menu */}
-      <Box>
-        <IconButton onClick={handleOpenUserMenu}>
-          <Person />
-        </IconButton>
-        <Menu
-          anchorEl={userAnchorEl}
-          open={Boolean(userAnchorEl)}
-          onClose={handleCloseMenus}
-        >
-          <MenuItem onClick={() => handleNavigate('/cuenta')}>{ user?.email || 'user' }</MenuItem>
-          <MenuItem onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</MenuItem>
-          <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
-        </Menu>
-      </Box>
+        {/* User Menu */}
+        <Box>
+          <IconButton onClick={handleOpenUserMenu}>
+            <Person />
+          </IconButton>
+          <Menu
+            anchorEl={userAnchorEl}
+            open={Boolean(userAnchorEl)}
+            onClose={handleCloseMenus}
+          >
+            <Typography variant='p' sx={{ fontFamily: 'Inter', fontWeight: '600', px: 1 }}>{ user?.email || 'user' }</Typography>
+            <MenuItem onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</MenuItem>
+            <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
+          </Menu>
+        </Box>
 
-      {/* Cart */}
-      <IconButton component={Link} to="/inicio/cart" onClick={() => navigate('/cart')}>
-        <Badge badgeContent={cartItems} color="error">
-          <ShoppingCart />
-        </Badge>
-      </IconButton>
-    </Box>
+        {/* Cart */}
+        <IconButton component={Link} to="/inicio/cart" onClick={() => navigate('/cart')}>
+          <Badge badgeContent={cartItems} color="error">
+            <ShoppingCart />
+          </Badge>
+        </IconButton>
+      </Grid>
+    </Grid>
   );
 };
