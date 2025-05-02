@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 import { Select, MenuItem } from '@mui/material';
 import { Button, Box } from '@mui/material';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
 
@@ -101,13 +102,13 @@ const handleDelete = (id) => {
 };
 
 export default function AdminDashboard() {
-  console.log(products)
+  const navigate = useNavigate();
 
   return (
     <>
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mr={4} mt={2} ml={2}>
         <h1>DashBoard</h1>
-        <Button variant="contained" color="primary" onClick={() => console.log('Agregar producto')}>
+        <Button variant="contained" color="primary" onClick={() => navigate('/inicio/admin/new-product')}>
           Agregar producto
         </Button>
     </Box>

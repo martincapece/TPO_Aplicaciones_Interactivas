@@ -9,8 +9,9 @@ import { Box } from "@mui/material";
 import { Nosotros } from "../pages/Nosotros"
 import { Legales } from "../pages/Legales"
 import { Catalogo } from "../pages/Catalogo"
-import AdminDashboard from "../components/AdminDashboard"
-import NewProduct from "../components/NewProduct"
+import AdminDashboard from "../../Admin/components/AdminDashboard"
+import NewProduct from "../../Admin/components/NewProduct"
+
 
 export const EcomerceRoutes = () => {
     const location = useLocation();
