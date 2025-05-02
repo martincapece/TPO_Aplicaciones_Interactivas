@@ -4,7 +4,7 @@ import { useCart } from "../../Cart/hooks/useCart";
 import { Link ,useParams,useLocation } from "react-router-dom";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Accordion, AccordionSummary, AccordionDetails,Box,Typography,Button,Grid,ToggleButton,ToggleButtonGroup, } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import Swal from 'sweetalert2'
 
 export default function SneakerPage()  {
     const { id } = useParams();
@@ -14,8 +14,8 @@ export default function SneakerPage()  {
     const { addProduct } = useCart();
     const [ dialogOpen, setDialogOpen ] = useState(false);
     const [ currentPhoto, setCurrentPhoto ] = useState(sneaker.image[0]);
-    const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12]
-
+    const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12] 
+    
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id, location.pathname]);
@@ -190,7 +190,9 @@ return (
                     color="primary"
                     sx={{ my: { xs: 6 }, borderRadius: 999, px: 4 }}
                     onClick={() => {
-                        setDialogOpen(true);
+                        (selectedSize === "") 
+                            ? Swal.fire({title: "¡Un momento!", text: "Para poder agregar el sneaker al carrito debes seleccionar un talle", icon: "error"}) 
+                            : setDialogOpen(true);
                     }}
 
                 >
@@ -230,17 +232,17 @@ return (
                 },
             }}
             >
-            <DialogTitle>Producto agregado</DialogTitle>
+            <DialogTitle>Confirmar compra</DialogTitle>
             <DialogContent>
                 <Typography>
-                ¿Deseás confirmar agregar el producto <strong>{sneaker.model}</strong> al carrito?
+                ¿Deseás agregar <strong>{sneaker.model}</strong> al carrito?
                 </Typography>
             </DialogContent>
             <DialogActions sx={{ justifyContent: "center" }}>
                 <Button
                 onClick={() => {
                     addProduct({
-                        ... sneaker,
+                        ...sneaker,
                         size: selectedSize,
                     });
                     setDialogOpen(false);
