@@ -5,6 +5,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
 import { AuthContext } from '../../auth/context/AuthContext';
 import { CartContext } from '../../Cart/context/CartContext';
+import { dataDestacados } from '../data/dataDestacados'; // Importa la lista de productos
 
 export const Navbar = () => {
   const { productList, cartSize } = useContext(CartContext);
@@ -12,12 +13,13 @@ export const Navbar = () => {
   const [userAnchorEl, setUserAnchorEl] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState([]); // Estado para los productos filtrados
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const cartItems = cartSize// Cambia esto por el número real de artículos en el carrito
+  const cartItems = cartSize; // Cambia esto por el número real de artículos en el carrito
   const { dispatch, authState } = useContext(AuthContext);
   const { user } = authState;
 
@@ -31,6 +33,21 @@ export const Navbar = () => {
   const handleSearchSubmit = () => {
     if (searchText.trim()) {
       navigate(`/search?query=${searchText}`);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Filtrar productos que coincidan con el texto ingresado
+    if (value.trim()) {
+      const results = dataDestacados.filter((product) =>
+        product.model.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredProducts(results);
+    } else {
+      setFilteredProducts([]);
     }
   };
 
@@ -145,7 +162,7 @@ export const Navbar = () => {
 
       <Grid container alignItems="center" justifyContent="flex-end" size={ 3 } sx={{ flexGrow: 1 }}>
         {/* Search */}
-        <Box display="flex" alignItems="center">
+        <Box display="flex" alignItems="center" position="relative">
           <IconButton onClick={(e) => {
             e.stopPropagation();
             setSearchOpen(!searchOpen);
@@ -160,11 +177,52 @@ export const Navbar = () => {
               variant="outlined"
               placeholder="Buscar..."
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={handleSearchChange}
               onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
               sx={{ ml: 1, width: 200 }}
               onClick={(e) => e.stopPropagation()}
             />
+          )}
+          {searchOpen && filteredProducts.length > 0 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '40px',
+                left: 0,
+                width: '100%',
+                maxHeight: '200px',
+                overflowY: 'auto',
+                backgroundColor: 'white',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                zIndex: 1000,
+              }}
+            >
+              {filteredProducts.map((product) => (
+                <Box
+                  key={product.id}
+                  display="flex"
+                  alignItems="center"
+                  p={1}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': { backgroundColor: '#f5f5f5' },
+                  }}
+                  onClick={() => {
+                    navigate(`/producto/${product.id}`);
+                    setSearchOpen(false);
+                    setFilteredProducts([]);
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={product.image[0]} // Usa la primera imagen del producto
+                    alt={product.model}
+                    sx={{ width: 40, height: 40, borderRadius: 1, mr: 2 }}
+                  />
+                  <Typography variant="body2">{product.model}</Typography>
+                </Box>
+              ))}
+            </Box>
           )}
         </Box>
 
