@@ -19,6 +19,7 @@ export default function NewProduct() {
     const [image, setImage] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
     const [sizes, setSizes] = useState([]);
+    const [extraImages, setExtraImages] = useState([null, null, null]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -34,6 +35,19 @@ export default function NewProduct() {
         }
     };
 
+    const handleExtraImageUpload = (e, index) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const updated = [...extraImages];
+                updated[index] = reader.result;
+                setExtraImages(updated);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleAddProduct = () => {
         console.log({
             model,
@@ -42,9 +56,15 @@ export default function NewProduct() {
             stock,
             image,
             sizes,
+            extraImages: extraImages.filter(img => img !== null),
         });
 
         navigate(`/producto/${model}`);
+    };
+
+    const handleImageRemove = () => {
+        setImage('');
+        setImagePreview(null);
     };
 
     return (
@@ -58,64 +78,163 @@ export default function NewProduct() {
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
-                {/* Imagen */}
-                <Box
-                    sx={{
-                        width: '300px',
-                        height: '300px',
-                        borderRadius: 2,
-                        border: '1px solid #ccc',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: '#f5f5f5',
-                    }}
-                >
-                    {imagePreview ? (
-                        <Box
-                            component="img"
-                            src={imagePreview}
-                            alt="Vista previa"
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                            }}
-                        />
-                    ) : (
-                        <>
-                            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>
-                                Subir Imagen
-                            </Typography>
-                            <Button variant="outlined" component="label">
-                                Seleccionar archivo
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageUpload}
-                                    hidden
+                {/* Imagen principal */}
+                <Box>
+                    <Box
+                        sx={{
+                            width: '300px',
+                            height: '300px',
+                            borderRadius: 2,
+                            border: '1px solid #ccc',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: '#f5f5f5',
+                            position: 'relative',
+                        }}
+                    >
+                        {imagePreview ? (
+                            <>
+                                <Box
+                                    component="img"
+                                    src={imagePreview}
+                                    alt="Vista previa"
+                                    sx={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                    }}
                                 />
-                            </Button>
-                        </>
-                    )}
+                                <Button
+                                    size="small"
+                                    onClick={handleImageRemove}
+                                    sx={{
+                                        minWidth: 0,
+                                        padding: '2px',
+                                        position: 'absolute',
+                                        top: 2,
+                                        right: 2,
+                                        backgroundColor: '#fff',
+                                        borderRadius: '50%',
+                                        lineHeight: 1,
+                                        fontSize: '10px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    ✕
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>
+                                    Subir Imagen
+                                </Typography>
+                                <Button
+                                    variant="outlined"
+                                    component="label"
+                                >
+                                    Seleccionar archivo
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        hidden
+                                    />
+                                </Button>
+                            </>
+                        )}
+                    </Box>
+
+                    {/* Imágenes adicionales */}
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                        {[0, 1, 2].map((index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    width: 90,
+                                    height: 90,
+                                    borderRadius: 2,
+                                    border: '1px dashed #aaa',
+                                    position: 'relative',
+                                    backgroundColor: '#fafafa',
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                {extraImages[index] ? (
+                                    <>
+                                        <Box
+                                            component="img"
+                                            src={extraImages[index]}
+                                            alt={`extra-${index}`}
+                                            sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                        <Button
+                                            size="small"
+                                            onClick={() => {
+                                                const updated = [...extraImages];
+                                                updated[index] = null;
+                                                setExtraImages(updated);
+                                            }}
+                                            sx={{
+                                                minWidth: 0,
+                                                padding: '2px',
+                                                position: 'absolute',
+                                                top: 2,
+                                                right: 2,
+                                                backgroundColor: '#fff',
+                                                borderRadius: '50%',
+                                                lineHeight: 1,
+                                                fontSize: '10px',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            ✕
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button
+                                        component="label"
+                                        sx={{
+                                            width: '100%',
+                                            height: '100%',
+                                            fontSize: '10px',
+                                            px: 1,
+                                            textTransform: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        Añadir
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            hidden
+                                            onChange={(e) => handleExtraImageUpload(e, index)}
+                                        />
+                                    </Button>
+                                )}
+                            </Box>
+                        ))}
+                    </Box>
                 </Box>
 
                 {/* Formulario */}
                 <Box
                     sx={{
                         flex: 1,
-                        minHeight: '400px',
                         borderRadius: 2,
                         border: '1px solid #ccc',
-                        p: 3,
+                        padding: 2,
                         backgroundColor: '#fafafa',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
                         minWidth: '300px',
-                        overflow: 'auto',
+                        height: '100%',
+                        overflow: 'hidden',
                     }}
                 >
                     <TextField
@@ -123,14 +242,14 @@ export default function NewProduct() {
                         fullWidth
                         value={model}
                         onChange={(e) => setModel(e.target.value)}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 1 }}
                     />
                     <TextField
                         label="Marca"
                         fullWidth
                         value={brand}
                         onChange={(e) => setBrand(e.target.value)}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 1 }}
                     />
                     <TextField
                         label="Precio"
@@ -138,7 +257,7 @@ export default function NewProduct() {
                         fullWidth
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 1 }}
                     />
                     <TextField
                         label="Stock"
@@ -146,7 +265,7 @@ export default function NewProduct() {
                         fullWidth
                         value={stock}
                         onChange={(e) => setStock(e.target.value)}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 1 }}
                     />
                     <TextField
                         label="Tallas (separadas por comas)"
@@ -155,7 +274,7 @@ export default function NewProduct() {
                         onChange={(e) =>
                             setSizes(e.target.value.split(',').map((size) => size.trim()))
                         }
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 1 }}
                     />
                     <Button
                         variant="contained"
@@ -168,7 +287,7 @@ export default function NewProduct() {
                 </Box>
             </Box>
 
-            {/* Confirmación */}
+            {/* Diálogo de confirmación */}
             <Dialog
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
