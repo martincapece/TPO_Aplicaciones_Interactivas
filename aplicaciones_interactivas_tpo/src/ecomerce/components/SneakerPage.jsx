@@ -241,7 +241,7 @@ return (
                 onClick={() => {
                     addProduct({
                         ... sneaker,
-                        sizes: selectedSize,
+                        size: selectedSize,
                     });
                     setDialogOpen(false);
                 }}

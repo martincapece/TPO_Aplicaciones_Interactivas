@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useCart } from '../hooks/useCart';
 
 function CartItem({ product }) {
-  const { id, model, brand, color = 'red', sizes, price, image, quantity } = product;
+  const { id, model, brand, color = 'red', size, price, image, quantity } = product;
   const {handleIncreaseQuantity, handleDecreaseQuantity} = useCart();
 
 
@@ -31,7 +31,7 @@ function CartItem({ product }) {
         <h3>{model}</h3>
         <p>{brand}</p>
         <p className="size">
-          Talle <span>{sizes}</span>
+          Talle <span>{size}</span>
         </p>
       </div>
 
