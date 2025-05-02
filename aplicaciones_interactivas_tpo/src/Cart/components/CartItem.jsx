@@ -15,11 +15,11 @@ function CartItem({ product }) {
         <div className="actions">   
           {/* Control de cantidad */}
           <div className="quantity-control">
-            <button onClick={() => handleDecreaseQuantity(id)}>
+            <button onClick={() => handleDecreaseQuantity(id, size)}>
               <DeleteOutlineIcon fontSize="small" />
             </button>
             <span>{quantity}</span>
-            <button onClick={() => handleIncreaseQuantity(id)}>
+            <button onClick={() => handleIncreaseQuantity(id, size)}>
               <AddIcon fontSize="small" />
             </button>
           </div>
