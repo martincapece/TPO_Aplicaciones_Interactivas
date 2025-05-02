@@ -33,7 +33,7 @@ return (
     container
     sx={{
         margin: '0 auto',
-        maxWidth: { xs: '300px', sm: '600px', md: '800px', lg: '1300px' },
+        maxWidth: { xs: '300px', sm: '500px', md: '900px', lg: '1200px' },
     }}
     >
         <Grid 
@@ -45,7 +45,7 @@ return (
             my: 10
         }}
         >
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <Box sx={{ maxWidth: 550, width: "100%" }}>
                     {/* Contenedor de imagen princigitpal con relación fija */}
                     <Box
@@ -61,14 +61,14 @@ return (
                     }}
                     >
                     <Box
-                        component="img"
-                        src={currentPhoto}
-                        alt={sneaker.model}
-                        sx={{
+                    component="img"
+                    src={currentPhoto}
+                    alt={sneaker.model}
+                    sx={{
                         width: "100%",
                         height: "100%",
                         objectFit: "contain",
-                        }}
+                    }}
                     />
                     </Box>
 
@@ -83,13 +83,13 @@ return (
                             onClick={() => handleImageClick(img)}
                             alt={`${sneaker.model} - ${index + 1}`}
                             sx={{
-                            width: 60,
-                            height: 60,
-                            objectFit: "cover",
-                            borderRadius: 1,
-                            border: currentPhoto === img ? "2px solid black" : "1px solid #ccc",
-                            cursor: "pointer",
-                            transition: "border 0.2s ease-in-out",
+                                width: { xs: 50, sm: 60 },
+                                height: { xs: 50, sm: 60 },
+                                objectFit: "cover",
+                                borderRadius: 1,
+                                border: currentPhoto === img ? "2px solid black" : "1px solid #ccc",
+                                cursor: "pointer",
+                                transition: "border 0.2s ease-in-out",
                             }}
                         />
                         ))}
@@ -146,8 +146,8 @@ return (
                                 selected={selectedSize === size}
                                 color="primary"
                                 sx={{
-                                    width: 50,
-                                    height: 50,
+                                    width: 55,
+                                    height: 55,
                                     borderRadius: "12px",
                                     color: selectedSize === size ? "#fff" : "#000",
                                     fontWeight: 500,
@@ -304,14 +304,14 @@ return (
             )
             .slice(0, 6)
             .map((prod) => (
-                <Grid item xs={12} sm={4} key={prod.id}>
+                <Grid size={{ sm: 4, md: 2 }} width='100%' key={prod.id}>
                 <Link to={`/producto/${prod.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                     <Box sx={{ textAlign: "center" }}>
                     <Box
                         component="img"
                         src={prod.image[0]}
                         alt={prod.model}
-                        sx={{ width: "100%", maxWidth: 180, mb: 1 }}
+                        sx={{ width: "100%", maxWidth: { xs: 250, sm: 180}, mb: 1 }}
                     />
                     <Typography variant="body1">{prod.model}</Typography>
                     <Typography variant="body2" color="text.secondary">
