@@ -3,7 +3,6 @@ import {
     Box,
     Typography,
     Button,
-    Grid,
     TextField,
     Dialog,
     DialogTitle,
@@ -16,6 +15,7 @@ export default function NewProduct() {
     const [model, setModel] = useState('');
     const [brand, setBrand] = useState('');
     const [price, setPrice] = useState('');
+    const [stock, setStock] = useState('');
     const [image, setImage] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
     const [sizes, setSizes] = useState([]);
@@ -39,6 +39,7 @@ export default function NewProduct() {
             model,
             brand,
             price,
+            stock,
             image,
             sizes,
         });
@@ -47,8 +48,7 @@ export default function NewProduct() {
     };
 
     return (
-        <Box sx={{ maxWidth: '1300px', margin: '0 auto', px: 2 }}>
-            {/* Título arriba de todo */}
+        <Box sx={{ maxWidth: '1300px', margin: '40px auto', px: 2 }}>
             <Typography
                 variant="h3"
                 sx={{ fontFamily: 'Inter', fontWeight: 'bold', fontSize: '30px', mb: 5 }}
@@ -57,119 +57,116 @@ export default function NewProduct() {
                 Crear Nuevo Producto
             </Typography>
 
-            <Grid container spacing={4}>
-                {/* Imagen a la izquierda */}
-                <Grid
-                    item
-                    xs={12}
-                    md={6}
+            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
+                {/* Imagen */}
+                <Box
                     sx={{
+                        width: '300px',
+                        height: '300px',
+                        borderRadius: 2,
+                        border: '1px solid #ccc',
+                        overflow: 'hidden',
                         display: 'flex',
                         flexDirection: 'column',
+                        justifyContent: 'center',
                         alignItems: 'center',
+                        backgroundColor: '#f5f5f5',
                     }}
                 >
-                    <Box
-                        sx={{
-                            width: '300px',
-                            height: '300px',
-                            aspectRatio: '1 / 1',
-                            borderRadius: 2,
-                            border: '1px solid #ccc',
-                            overflow: 'hidden',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: '#f5f5f5',
-                        }}
-                    >
-                        {imagePreview ? (
-                            <Box
-                                component="img"
-                                src={imagePreview}
-                                alt="Vista previa"
-                                sx={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                }}
-                            />
-                        ) : (
-                            <>
-                                <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>
-                                    Subir Imagen
-                                </Typography>
-                                <Button
-                                    variant="outlined"
-                                    component="label"
-                                >
-                                    Seleccionar archivo
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleImageUpload}
-                                        hidden
-                                    />
-                                </Button>
-                            </>
-                        )}
-                    </Box>
-                </Grid>
-
-                {/* Formulario a la derecha */}
-                <Grid item xs={12} md={6}>
-                    <Box>
-                        <TextField
-                            label="Modelo"
-                            fullWidth
-                            value={model}
-                            onChange={(e) => setModel(e.target.value)}
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            label="Marca"
-                            fullWidth
-                            value={brand}
-                            onChange={(e) => setBrand(e.target.value)}
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            label="Precio"
-                            type="number"
-                            fullWidth
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            label="Imagen URL (opcional)"
-                            fullWidth
-                            value={image}
-                            onChange={(e) => {
-                                setImage(e.target.value);
-                                setImagePreview(e.target.value);
+                    {imagePreview ? (
+                        <Box
+                            component="img"
+                            src={imagePreview}
+                            alt="Vista previa"
+                            sx={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
                             }}
-                            sx={{ mb: 2 }}
                         />
-                        <TextField
-                            label="Tallas (separadas por comas)"
-                            fullWidth
-                            value={sizes.join(', ')}
-                            onChange={(e) => setSizes(e.target.value.split(',').map((size) => size.trim()))}
-                            sx={{ mb: 2 }}
-                        />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            sx={{ mt: 3, borderRadius: 999, px: 4 }}
-                            onClick={() => setDialogOpen(true)}
-                        >
-                            Crear Producto
-                        </Button>
-                    </Box>
-                </Grid>
-            </Grid>
+                    ) : (
+                        <>
+                            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>
+                                Subir Imagen
+                            </Typography>
+                            <Button variant="outlined" component="label">
+                                Seleccionar archivo
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    hidden
+                                />
+                            </Button>
+                        </>
+                    )}
+                </Box>
+
+                {/* Formulario */}
+                <Box
+                    sx={{
+                        flex: 1,
+                        minHeight: '400px',
+                        borderRadius: 2,
+                        border: '1px solid #ccc',
+                        p: 3,
+                        backgroundColor: '#fafafa',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        minWidth: '300px',
+                        overflow: 'auto',
+                    }}
+                >
+                    <TextField
+                        label="Modelo"
+                        fullWidth
+                        value={model}
+                        onChange={(e) => setModel(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="Marca"
+                        fullWidth
+                        value={brand}
+                        onChange={(e) => setBrand(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="Precio"
+                        type="number"
+                        fullWidth
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="Stock"
+                        type="number"
+                        fullWidth
+                        value={stock}
+                        onChange={(e) => setStock(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="Tallas (separadas por comas)"
+                        fullWidth
+                        value={sizes.join(', ')}
+                        onChange={(e) =>
+                            setSizes(e.target.value.split(',').map((size) => size.trim()))
+                        }
+                        sx={{ mb: 2 }}
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setDialogOpen(true)}
+                        sx={{ borderRadius: 999 }}
+                    >
+                        Crear Producto
+                    </Button>
+                </Box>
+            </Box>
 
             {/* Confirmación */}
             <Dialog
