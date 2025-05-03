@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider } from "@mui/material";
 import { dataDestacados } from "../data/dataDestacados";
 import { SneakerCard } from "./SneakerCard";
+import { DashboardSharp } from "@mui/icons-material";
 
 export const Productos = () => {
     // Estado para filtros

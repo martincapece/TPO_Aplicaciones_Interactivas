@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@mui/material"
-import portada from "/assets/portada.png"
+import portada from "/assets/skatePark.jpg"
 import { Link } from 'react-router-dom';
 
 export const ImageBackground = ({ title, subtitle }) => {
