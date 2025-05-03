@@ -1,4 +1,5 @@
 import { Button, Grid, Typography } from "@mui/material"
+import { Link } from 'react-router-dom';
 
 export const ImageBackgroundChild = ({ title = '', subtitle = '', url=''}) => {
     return (
@@ -31,6 +32,8 @@ export const ImageBackgroundChild = ({ title = '', subtitle = '', url=''}) => {
                     { title }
                 </Typography>
                 <Button
+                component={Link} // lo convierte en un enlace
+                to="/catalogo" // ruta interna + id de sección
                 fullWidth
                 sx={{
                     alignSelf: 'center',

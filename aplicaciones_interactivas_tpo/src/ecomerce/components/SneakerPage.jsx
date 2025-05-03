@@ -1,24 +1,25 @@
-import React from 'react'
-import { useParams } from "react-router-dom";
 import { dataDestacados } from "../data/dataDestacados";
-import {Box,Typography,Button,Grid,Chip,Stack,Divider,ToggleButton,ToggleButtonGroup,} from "@mui/material";
-import { useState } from "react";
+import { useState,React, useEffect } from "react";
 import { useCart } from "../../Cart/hooks/useCart";
-import { Link } from "react-router-dom";
-import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Link ,useParams,useLocation } from "react-router-dom";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Accordion, AccordionSummary, AccordionDetails,Box,Typography,Button,Grid,ToggleButton,ToggleButtonGroup, } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import Swal from 'sweetalert2'
 
-
-export default function SneakerPage() {
+export default function SneakerPage()  {
     const { id } = useParams();
+    const location = useLocation();
     const sneaker = dataDestacados.find((item) => item.id === parseInt(id));
     const [ selectedSize, setSelectedSize ] = useState("");
     const { addProduct } = useCart();
     const [ dialogOpen, setDialogOpen ] = useState(false);
     const [ currentPhoto, setCurrentPhoto ] = useState(sneaker.image[0]);
-    const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12]
-
+    const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12] 
+    
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [id, location.pathname]);
+    
     if (!sneaker) {
         return <Typography variant="h6">Producto no encontrado</Typography>;
     }
@@ -32,7 +33,7 @@ return (
     container
     sx={{
         margin: '0 auto',
-        maxWidth: { xs: '300px', sm: '600px', md: '800px', lg: '1300px' },
+        maxWidth: { xs: '300px', sm: '500px', md: '900px', lg: '1200px' },
     }}
     >
         <Grid 
@@ -44,7 +45,7 @@ return (
             my: 10
         }}
         >
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <Box sx={{ maxWidth: 550, width: "100%" }}>
                     {/* Contenedor de imagen princigitpal con relación fija */}
                     <Box
@@ -60,14 +61,14 @@ return (
                     }}
                     >
                     <Box
-                        component="img"
-                        src={currentPhoto}
-                        alt={sneaker.model}
-                        sx={{
+                    component="img"
+                    src={currentPhoto}
+                    alt={sneaker.model}
+                    sx={{
                         width: "100%",
                         height: "100%",
                         objectFit: "contain",
-                        }}
+                    }}
                     />
                     </Box>
 
@@ -82,13 +83,13 @@ return (
                             onClick={() => handleImageClick(img)}
                             alt={`${sneaker.model} - ${index + 1}`}
                             sx={{
-                            width: 60,
-                            height: 60,
-                            objectFit: "cover",
-                            borderRadius: 1,
-                            border: currentPhoto === img ? "2px solid black" : "1px solid #ccc",
-                            cursor: "pointer",
-                            transition: "border 0.2s ease-in-out",
+                                width: { xs: 50, sm: 60 },
+                                height: { xs: 50, sm: 60 },
+                                objectFit: "cover",
+                                borderRadius: 1,
+                                border: currentPhoto === img ? "2px solid black" : "1px solid #ccc",
+                                cursor: "pointer",
+                                transition: "border 0.2s ease-in-out",
                             }}
                         />
                         ))}
@@ -145,8 +146,8 @@ return (
                                 selected={selectedSize === size}
                                 color="primary"
                                 sx={{
-                                    width: 50,
-                                    height: 50,
+                                    width: 55,
+                                    height: 55,
                                     borderRadius: "12px",
                                     color: selectedSize === size ? "#fff" : "#000",
                                     fontWeight: 500,
@@ -189,7 +190,9 @@ return (
                     color="primary"
                     sx={{ my: { xs: 6 }, borderRadius: 999, px: 4 }}
                     onClick={() => {
-                        setDialogOpen(true);
+                        (selectedSize === "") 
+                            ? Swal.fire({title: "¡Un momento!", text: "Para poder agregar el sneaker al carrito debes seleccionar un talle", icon: "error"}) 
+                            : setDialogOpen(true);
                     }}
 
                 >
@@ -229,18 +232,18 @@ return (
                 },
             }}
             >
-            <DialogTitle>Producto agregado</DialogTitle>
+            <DialogTitle>Confirmar compra</DialogTitle>
             <DialogContent>
                 <Typography>
-                ¿Deseás confirmar agregar el producto <strong>{sneaker.model}</strong> al carrito?
+                ¿Deseás agregar <strong>{sneaker.model}</strong> al carrito?
                 </Typography>
             </DialogContent>
             <DialogActions sx={{ justifyContent: "center" }}>
                 <Button
                 onClick={() => {
                     addProduct({
-                        ... sneaker,
-                        sizes: selectedSize,
+                        ...sneaker,
+                        size: selectedSize,
                     });
                     setDialogOpen(false);
                 }}
@@ -303,14 +306,14 @@ return (
             )
             .slice(0, 6)
             .map((prod) => (
-                <Grid item xs={12} sm={4} key={prod.id}>
+                <Grid size={{ sm: 4, md: 2 }} width='100%' key={prod.id}>
                 <Link to={`/producto/${prod.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                     <Box sx={{ textAlign: "center" }}>
                     <Box
                         component="img"
                         src={prod.image[0]}
                         alt={prod.model}
-                        sx={{ width: "100%", maxWidth: 180, mb: 1 }}
+                        sx={{ width: "100%", maxWidth: { xs: 250, sm: 180}, mb: 1 }}
                     />
                     <Typography variant="body1">{prod.model}</Typography>
                     <Typography variant="body2" color="text.secondary">

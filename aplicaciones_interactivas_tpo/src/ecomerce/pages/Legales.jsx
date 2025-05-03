@@ -6,9 +6,26 @@ import {
     Grid,
     Container,
 } from '@mui/material';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 
 export const Legales = () => {
+    const location = useLocation();
+    useEffect(() => {
+        if (location.hash) {
+            const id = location.hash.replace("#", "");
+            const element = document.getElementById(id);
+            if (element) {
+                setTimeout(() => {
+                const yOffset = -80;
+                const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: "smooth" });
+                }, 100);
+            }
+        }
+    }, [location]);
+
     return (
         
         <Grid container
@@ -16,9 +33,14 @@ export const Legales = () => {
             margin: '0 auto',
             maxWidth: { xs: '300px', sm: '600px', md: '800px', lg: '1000px' },
         }}>
+
             <Container maxWidth="md" sx={{ py: 4 }}>
+                <Typography variant="h3" gutterBottom fontWeight="bold" > 
+                    Políticas Legales
+                </Typography>
+
                 {/* Título principal de la sección */}
-                <Typography variant="h4" gutterBottom fontWeight="bold">
+                <Typography variant="h4" gutterBottom fontWeight="bold" id="envios">
                     ENVÍO GRATIS
                 </Typography>
                 <Typography variant="body1" paragraph>
@@ -59,7 +81,7 @@ export const Legales = () => {
                 <Divider sx={{ my: 5 }} />
 
                 {/* Términos y condiciones para el cupón Nike20 */}
-                <Typography variant="h4" gutterBottom fontWeight="bold">
+                <Typography variant="h4" gutterBottom fontWeight="bold" id="terminos">
                     TÉRMINOS Y CONDICIONES CUPÓN SAPÁH20
                 </Typography>
                 <Typography variant="body1" paragraph>
@@ -152,8 +174,27 @@ export const Legales = () => {
                     En Buenos Aires, a los 29 del mes de noviembre de 2024, SOUTHBAY S.R.L (CUIT 30-67815546-9), con domicilio en Av. del Libertador 2442, Piso 5to, Olivos, Provincia de Buenos Aires, Argentina y BRANDLIVE S.A. (CUIT 30-7070996436-0) con domicilio en Soler 5692, Oficina 302, Ciudad Autónoma de Buenos Aires, Argentina (en adelante, denominados los “ORGANIZADORES") han decidido realizar una promoción especial (en adelante, la "SPECIAL FRIDAY"), a través de su sitio web www.SAPÁH.com.ar (en adelante, el “Sitio Web”), a realizarse desde las 00hs hasta las 24hs del día 30 de noviembre de 2024, o hasta agotar stock de los productos dentro del “SPECIAL FRIDAY”.
                 </Typography>
 
-                {/* Agregar el resto de la sección sobre condiciones de “Special Friday” aquí */}
-                {/* Aquí se seguiría con la estructura de títulos y párrafos de las secciones siguientes */}
+                <Divider sx={{ my: 5 }} />
+
+                <Typography variant="h4" gutterBottom fontWeight="bold" id="devoluciones">
+                    DEVOLUCIONES Y CAMBIOS
+                </Typography>
+
+                <Typography variant="body1" paragraph>
+                    En SAPÁH queremos que estés 100% satisfecho con tu compra. Si necesitás hacer un cambio o devolución, tenés hasta 30 días desde la recepción del pedido.
+                </Typography>
+
+                <Typography variant="body1" paragraph>
+                    Los productos deben estar en perfectas condiciones, sin uso y con el packaging original. Las devoluciones se gestionan a través de nuestro centro de atención o directamente desde tu cuenta si hiciste la compra online.
+                </Typography>
+
+                <Typography variant="body1" paragraph>
+                    Los cambios en tiendas físicas están sujetos a disponibilidad y se realizan únicamente con comprobante de compra. En productos adquiridos con cupones, puede que apliquen restricciones de cambio.
+                </Typography>
+
+                <Typography variant="body1" paragraph>
+                    Para más información, contactanos a <strong>contacto@sapah.com</strong> o por WhatsApp.
+                </Typography>
 
                 <Divider sx={{ my: 5 }} />
 

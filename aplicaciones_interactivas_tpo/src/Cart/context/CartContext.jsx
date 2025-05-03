@@ -20,27 +20,28 @@ export const CartProvider = ({ children }) => {
   }, [productList]);
 
   const addProduct = (product) => {
+    console.log(product)
     setProductList((prev) => {
-      const existing = prev.find(p => p.id === product.id);
+      const existing = prev.find(p => p.id === product.id && p.size === product.size);
       if (existing) {
-        return prev.map(p => p.id === product.id && p.size === product.size ? { ...p, quantity: p.quantity + 1 } : p);
+        return prev.map(p => (p.id === product.id && p.size === product.size ? { ...p, quantity: p.quantity + 1 } : p));
       } else {
         return [...prev, { ...product, quantity: 1 }];
       }
     });
   };
 
-  const handleIncreaseQuantity = (productId) => {
+  const handleIncreaseQuantity = (productId, size) => {
     setProductList(prev =>
       prev.map(item =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+        item.id === productId && item.size === size ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  const handleDecreaseQuantity = (productId) => {
+  const handleDecreaseQuantity = (productId, size) => {
     setProductList((prev) =>
-      prev.map(item => item.id === productId ? { ...item, quantity: item.quantity - 1 } : item)
+      prev.map(item => item.id === productId && item.size === size ? { ...item, quantity: item.quantity - 1 } : item)
         .filter(item => item.quantity > 0)
     );
   };

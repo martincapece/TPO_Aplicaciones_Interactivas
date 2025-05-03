@@ -1,20 +1,36 @@
 import { Image } from '@mui/icons-material';
 import { Box, Divider, Grid, Typography } from '@mui/material';
-import React from 'react'
+import { React,useEffect } from 'react'
+import { useLocation } from "react-router-dom";
 
 export const Nosotros = () => {
+    const location = useLocation();
+    useEffect(() => {
+        if (location.hash) {
+        const id = location.hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+            setTimeout(() => {
+            const yOffset = -100; // altura aproximada de tu navbar
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+            }, 60);
+        }
+        }
+    }, [location]);
+
     return (
         <Grid container
         sx={{
             margin: '0 auto',
             maxWidth: { xs: '300px', sm: '600px', md: '800px', lg: '1000px' },
         }}>
-            <Box p={4}>
+            <Box p={4} id="sobre">
                 <img src="/assets/subtitulo.webp" width={"100%"}></img>
             </Box>
             <Box p={4}>
             {/* Introducción */}
-            <Typography variant="h4" gutterBottom fontWeight="bold" id="quienes-somos">
+            <Typography variant="h4" gutterBottom fontWeight="bold" >
                 Sobre Nosotros
             </Typography>
             <Typography variant="h6" mb={3}>

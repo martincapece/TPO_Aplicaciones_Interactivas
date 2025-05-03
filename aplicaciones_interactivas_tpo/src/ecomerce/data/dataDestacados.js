@@ -13,7 +13,9 @@ export const dataDestacados = [
             '/assets/jordan1HighTravisMarron2.jpg',
             '/assets/jordan1HighTravisMarron3.jpg',
             '/assets/jordan1HighTravisMarron4.jpg'
-        ]
+        ],
+        featured: true,
+        new: true
     },
     {
         id: 2,
@@ -29,6 +31,8 @@ export const dataDestacados = [
             '/assets/jordan1LowSE4.webp',
             '/assets/jordan1LowSE5.webp',
         ],
+        featured: true,
+        new: true
     },
     {
         id: 3,
@@ -44,6 +48,8 @@ export const dataDestacados = [
             '/assets/jordan1RetroHighOG4.webp',
             '/assets/jordan1RetroHighOG5.webp',
         ],
+        featured: true,
+        new: true
     },
     {
         id: 4,
@@ -59,6 +65,8 @@ export const dataDestacados = [
             '/assets/jordan3Retro4.webp',
             '/assets/jordan3Retro5.webp',
         ],
+        featured: true,
+        new: true
     },
     {
         id: 5,
@@ -74,6 +82,8 @@ export const dataDestacados = [
             '/assets/jordan4Retro4.webp',
             '/assets/jordan4Retro5.webp',
         ],
+        featured: true,
+        new: true
     },
     {
         id: 6,
@@ -89,6 +99,8 @@ export const dataDestacados = [
             '/assets/jordanSpizikeLow4.webp',
             '/assets/jordanSpizikeLow5.webp',
         ],
+        featured: true,
+        new: true
     },
     {
         id: 7,
@@ -103,6 +115,8 @@ export const dataDestacados = [
             '/assets/knu3.jpg',
             '/assets/knu4.jpg',
         ],
+        featured: true,
+        new: false
     },
     {
         id: 8,
@@ -117,6 +131,8 @@ export const dataDestacados = [
             '/assets/hylane3.jpg',
             '/assets/hylane4.jpg',
         ],
+        featured: true,
+        new: false
     },
     {
         id: 9,
@@ -130,8 +146,9 @@ export const dataDestacados = [
             '/assets/oldskool2.jpg',
             '/assets/oldskool3.jpg',
             '/assets/oldskool4.jpg',
-
         ],
+        featured: true,
+        new: false
     },
     {
         id: 10,
@@ -146,6 +163,8 @@ export const dataDestacados = [
             '/assets/upland3.jpg',
             '/assets/upland4.jpg',
         ],
+        featured: true,
+        new: false
     },
     {
         id: 11,
@@ -160,5 +179,7 @@ export const dataDestacados = [
             '/assets/sk84.jpg',
             '/assets/sk3.jpg',
         ],
+        featured: false,
+        new: false
     },
-]
+];

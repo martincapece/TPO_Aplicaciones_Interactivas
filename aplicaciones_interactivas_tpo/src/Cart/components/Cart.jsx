@@ -18,9 +18,12 @@ function Cart() {
     return (
         <Grid
         container
+        justifyContent='space-between'
         sx={{
             margin: '0 auto',
-            maxWidth: '50%',
+            maxWidth: '65%',
+            marginTop: 5,
+            mb: 15,
         }}
         >
             {
@@ -32,10 +35,14 @@ function Cart() {
                         </div>
                     )
                     : (
-                        <>
-                            <CartItemList productList={productList} />
-                            <PurchaseDetail subtotal={subtotal} />
-                        </>
+                        <Grid container spacing={ 2 } width='100%' >
+                            <Grid size={{ xs: 12, md: 9 }} mb={ 8 } >
+                                <CartItemList productList={productList} />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 3 }} > 
+                                <PurchaseDetail subtotal={subtotal} />
+                            </Grid>
+                        </Grid>
                     )
             }
         </Grid>
