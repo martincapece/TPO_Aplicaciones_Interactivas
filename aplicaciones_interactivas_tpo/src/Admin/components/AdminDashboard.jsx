@@ -116,7 +116,7 @@ export default function AdminDashboard() {
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mr={4} mt={2} ml={2}>
         <h1>Dashboard</h1>
-        <Button variant="contained" color="primary" onClick={() => navigate('/inicio/admin/new-product')}>
+        <Button variant="contained" color="primary" onClick={() => navigate('/admin/new-product')}>
           Agregar producto
         </Button>
       </Box>

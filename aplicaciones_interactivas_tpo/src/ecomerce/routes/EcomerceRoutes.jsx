@@ -25,8 +25,8 @@ export const EcomerceRoutes = () => {
                     <Routes location={location} key={location.pathname}>
                         <Route path="inicio" element={<EcomercePage />} />
                         <Route path="inicio/cart" element={<Cart />} />
-                        <Route path="inicio/admin" element={<AdminDashboard />} />
-                        <Route path="inicio/admin/new-product" element={<NewProduct />} />
+                        <Route path="admin" element={<AdminDashboard />} />
+                        <Route path="admin/new-product" element={<NewProduct />} />
                         <Route path="/producto/:id" element={<SneakerPage />} />
 
                         <Route path="/nosotros/" element={<Nosotros />} />
