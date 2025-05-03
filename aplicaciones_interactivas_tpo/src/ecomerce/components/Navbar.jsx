@@ -92,7 +92,7 @@ export const Navbar = () => {
     >
       {/* Logo */}
       <Grid onClick={() => navigate('/')} size={{ md: 3, lg: 4.5 }} display={(isMobile) ? 'none' : ''} sx={{ cursor: 'pointer' }}>
-        <img src="/assets/logo_ecomerce.jpg" alt="Logo" style={{ width: 50 }} />
+        <img src="/assets/logo_ecomerce.png" alt="Logo" style={{ width: 100 }} />
       </Grid>
 
       {/* Menu (responsive) */}
@@ -115,7 +115,7 @@ export const Navbar = () => {
           </Grid>
 
           <Grid onClick={() => navigate('/')} size={ 1 } sx={{ cursor: 'pointer' }}>
-            <img src="/assets/logo_ecomerce.jpg" alt="Logo" style={{ width: 50 }} />
+            <img src="/assets/logo_ecomerce.png" alt="Logo" style={{ width: 50 }} />
           </Grid>
         </>
       ) : (
