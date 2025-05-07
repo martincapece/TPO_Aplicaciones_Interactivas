@@ -96,6 +96,27 @@ export default function AdminDashboard() {
       align: 'center'
     },
     {
+      field: 'new',
+      headerName: 'Nuevo',
+      flex: 0.1,
+      renderCell: (params) => (
+        <Checkbox
+          checked={params.row.new}
+          onChange={() => {
+            const updatedRows = productRows.map((row) =>
+              row.id === params.row.id ? { ...row, new: !row.new } : row
+            );
+            setProductRows(updatedRows);
+          }}
+          color="primary"
+        />
+      ),
+      sortable: false,
+      filterable: false,
+      headerAlign: 'center',
+      align: 'center'
+    },
+    {
       field: 'actions',
       headerName: 'Acciones',
       flex: 0.2,

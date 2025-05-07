@@ -68,9 +68,10 @@ export default function NewProduct() {
     //TODO: Agregarlo al json.
     const handleAddProduct = () => {
         const imageArray = [mainImage, ...extraImages.filter(img => img !== null)];
-        const idValue = dataDestacados.length;
-        console.log({
-            id: idValue + 1,
+        const newId = dataDestacados.length > 0 ? Math.max(...dataDestacados.map(p => p.id)) + 1 : 1;
+    
+        const newProduct = {
+            id: newId,
             model,
             brand,
             price,
@@ -79,20 +80,47 @@ export default function NewProduct() {
             image: imageArray,
             featured: true,
             new: true
-        });
-        navigate(`/producto/${model}`);
+        };
+    
+        dataDestacados.push(newProduct); // Esto solo vive en memoria
+        console.log("Producto agregado al array:", newProduct);
+    
+        navigate(`/producto/${id}`);
     };
+    
 
     const handleUpdateProduct = () => {
-        console.log("Actualizar producto con ID:", id);
+        const updatedProduct = {
+            id: Number(id),
+            model,
+            brand,
+            price,
+            stock,
+            sizes,
+            image: [mainImage, ...extraImages.filter(img => img !== null)],
+        };
+    
+        const index = dataDestacados.findIndex(p => p.id === Number(id));
+        if (index !== -1) {
+            dataDestacados[index] = updatedProduct;
+            console.log("Producto actualizado:", updatedProduct);
+            navigate(`/producto/${id}`);
+        } else {
+            console.warn("Producto no encontrado para editar.");
+        }
     };
+    
 
     return (
         <Box sx={{ maxWidth: '1300px', margin: '40px auto', px: 2 }}>
-            <Typography variant="h3" sx={{ fontFamily: 'Inter', fontWeight: 'bold', fontSize: '30px', mb: 5 }} textAlign="center">
-                {isEditable ? "Editar Producto" : "Crear Nuevo Producto"}
+            <Typography
+                variant="h3"
+                sx={{ fontFamily: 'Inter', fontWeight: 'bold', fontSize: '30px', mb: 5 }}
+                textAlign="center"
+            >
+                {isEditable ? `Editando: ${model}` : "Crear Nuevo Producto"}
             </Typography>
-
+    
             <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
                 <ImageUpload
                     mainImage={mainImage}
@@ -114,9 +142,10 @@ export default function NewProduct() {
                     setStock={setStock}
                     setSizes={setSizes}
                     onSubmit={() => setDialogOpen(true)}
+                    buttonLabel={isEditable ? "Guardar Cambios" : "Agregar Producto"}
                 />
             </Box>
-
+    
             <ConfirmationDialog
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
@@ -125,7 +154,8 @@ export default function NewProduct() {
                     setDialogOpen(false);
                 }}
                 model={model}
+                confirmText={isEditable ? "Sí, actualizar" : "Sí, crear"}
             />
         </Box>
-    );
+    );    
 }
