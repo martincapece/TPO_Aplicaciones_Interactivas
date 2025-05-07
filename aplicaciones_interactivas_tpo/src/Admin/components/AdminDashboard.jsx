@@ -9,12 +9,16 @@ import { dataDestacados } from '../../ecomerce/data/dataDestacados'; // Asegúra
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [productRows, setProductRows] = React.useState(
-    dataDestacados.map(producto => ({ ...producto, featured: false })) // Añadir la propiedad 'featured'
-  );
+  const [productRows, setProductRows] = React.useState();
 
+  React.useEffect(() => {
+    // TODO: aqui ira el llamado a la API
+    setProductRows(dataDestacados); //carga todos los productos.
+  }, []);
+
+  //  Funcion que maneja la edición de un producto
   const handleEdit = (id) => {
-    console.log(`Edit product with id: ${id}`);
+    navigate(`/admin/edit-product/${id}`);
   };
 
   const handleDelete = (id) => {
@@ -126,7 +130,7 @@ export default function AdminDashboard() {
           columns={columns}
           getRowId={(row) => row.id}
           pageSize={5} // Tamaño de página inicial
-          pageSizeOptions={[5, 10, productRows.length]} // Opciones de tamaño de página disponibles
+          pageSizeOptions={[5, 10, productRows?.length || 5]} // Opciones de tamaño de página disponibles
           checkboxSelection
           rowHeight={80}
           disableRowSelectionOnClick

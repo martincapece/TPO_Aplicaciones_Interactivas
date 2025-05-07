@@ -2,14 +2,13 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 
 export default function ImageUpload({
-    images,
+    mainImage,
+    extraImages,
     handleImageUpload,
     handleImageRemove,
     handleExtraImageUpload,
-    setImages
+    handleExtraImageRemove
 }) {
-    const imagePreview = images[0];
-
     return (
         <Box>
             {/* Imagen principal */}
@@ -28,11 +27,11 @@ export default function ImageUpload({
                     position: 'relative',
                 }}
             >
-                {imagePreview ? (
+                {mainImage ? (
                     <>
                         <Box
                             component="img"
-                            src={imagePreview}
+                            src={mainImage}
                             alt="Vista previa"
                             sx={{
                                 width: '100%',
@@ -78,7 +77,7 @@ export default function ImageUpload({
 
             {/* Imágenes adicionales */}
             <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                {[1, 2, 3].map((index) => (
+                {[0, 1, 2].map((index) => (
                     <Box
                         key={index}
                         sx={{
@@ -91,21 +90,17 @@ export default function ImageUpload({
                             overflow: 'hidden',
                         }}
                     >
-                        {images[index] ? (
+                        {extraImages[index] ? (
                             <>
                                 <Box
                                     component="img"
-                                    src={images[index]}
+                                    src={extraImages[index]}
                                     alt={`extra-${index}`}
                                     sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
                                 <Button
                                     size="small"
-                                    onClick={() => {
-                                        const updated = [...images];
-                                        updated[index] = null;
-                                        setImages(updated);
-                                    }}
+                                    onClick={() => handleExtraImageRemove(index)}
                                     sx={{
                                         minWidth: 0,
                                         padding: '2px',
@@ -140,7 +135,7 @@ export default function ImageUpload({
                                     type="file"
                                     accept="image/*"
                                     hidden
-                                    onChange={(e) => handleExtraImageUpload(e, index - 1)}
+                                    onChange={(e) => handleExtraImageUpload(e, index)}
                                 />
                             </Button>
                         )}
