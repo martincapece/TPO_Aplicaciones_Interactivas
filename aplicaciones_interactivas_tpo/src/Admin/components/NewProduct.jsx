@@ -65,14 +65,19 @@ export default function NewProduct() {
         setMainImage(null);
     };
 
+    // Eliminar imagen extra
+    const handleExtraImageRemove = (index) => {
+        const updated = [...extraImages];
+        updated[index] = null; // Borra la imagen en el índice especificado
+        setExtraImages(updated); // Actualiza el estado
+    };
 
-    //creacion del nuevo producto
-    //TODO: Agregarlo al json.
+    // Creación del nuevo producto
     const handleAddProduct = () => {
         const imageArray = [mainImage, ...extraImages.filter(img => img !== null)];
         const newId = dataDestacados.length > 0 ? Math.max(...dataDestacados.map(p => p.id)) + 1 : 1;
-        const parsePrice = parseInt(price)
-        const parseStock = parseInt(stock)
+        const parsePrice = parseInt(price);
+        const parseStock = parseInt(stock);
 
         const newProduct = {
             id: newId,
@@ -91,7 +96,6 @@ export default function NewProduct() {
 
         navigate(`/producto/${newId}`);
     };
-
 
     const handleUpdateProduct = () => {
         const updatedProduct = {
@@ -114,7 +118,6 @@ export default function NewProduct() {
         }
     };
 
-
     return (
         <Box sx={{ maxWidth: '1300px', margin: '40px auto', px: 2 }}>
             <Typography
@@ -132,7 +135,7 @@ export default function NewProduct() {
                     handleImageUpload={handleImageUpload}
                     handleImageRemove={handleImageRemove}
                     handleExtraImageUpload={handleExtraImageUpload}
-                    setExtraImages={setExtraImages}
+                    handleExtraImageRemove={handleExtraImageRemove} // Pasa el handler de eliminación de imagen
                 />
                 <ProductForm
                     model={model}
@@ -155,7 +158,6 @@ export default function NewProduct() {
                 onClose={() => setDialogOpen(false)}
                 onConfirm={() => {
                     setDialogOpen(false); // Cierra el diálogo primero
-                
                     setTimeout(() => {
                         if (isEditable) {
                             handleUpdateProduct();
@@ -164,7 +166,6 @@ export default function NewProduct() {
                         }
                     }, 0); // Ejecuta la acción justo después
                 }}
-                
                 title={isEditable ? "Confirmar actualización" : "Confirmar creación"}
                 message={`¿Estás seguro de que deseas ${isEditable ? 'actualizar' : 'crear'} el producto "${model}"?`}
             />
