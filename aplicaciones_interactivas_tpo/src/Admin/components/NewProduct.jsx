@@ -22,8 +22,10 @@ export default function NewProduct() {
 
     useEffect(() => {
         if (isEditable) {
+            console.log("editando producto", id)
             const productToEdit = dataDestacados.find(p => p.id === Number(id));
             if (productToEdit) {
+                console.log("Producto encontrado:", productToEdit);
                 setModel(productToEdit.model);
                 setBrand(productToEdit.brand);
                 setPrice(productToEdit.price);
@@ -69,25 +71,27 @@ export default function NewProduct() {
     const handleAddProduct = () => {
         const imageArray = [mainImage, ...extraImages.filter(img => img !== null)];
         const newId = dataDestacados.length > 0 ? Math.max(...dataDestacados.map(p => p.id)) + 1 : 1;
-    
+        const parsePrice = parseInt(price)
+        const parseStock = parseInt(stock)
+
         const newProduct = {
             id: newId,
             model,
             brand,
-            price,
-            stock,
+            price: parsePrice,
+            stock: parseStock,
             sizes,
             image: imageArray,
             featured: true,
             new: true
         };
-    
+
         dataDestacados.push(newProduct); // Esto solo vive en memoria
         console.log("Producto agregado al array:", newProduct);
-    
-        navigate(`/producto/${id}`);
+
+        navigate(`/producto/${newId}`);
     };
-    
+
 
     const handleUpdateProduct = () => {
         const updatedProduct = {
@@ -99,7 +103,7 @@ export default function NewProduct() {
             sizes,
             image: [mainImage, ...extraImages.filter(img => img !== null)],
         };
-    
+
         const index = dataDestacados.findIndex(p => p.id === Number(id));
         if (index !== -1) {
             dataDestacados[index] = updatedProduct;
@@ -109,7 +113,7 @@ export default function NewProduct() {
             console.warn("Producto no encontrado para editar.");
         }
     };
-    
+
 
     return (
         <Box sx={{ maxWidth: '1300px', margin: '40px auto', px: 2 }}>
@@ -120,7 +124,7 @@ export default function NewProduct() {
             >
                 {isEditable ? `Editando: ${model}` : "Crear Nuevo Producto"}
             </Typography>
-    
+
             <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
                 <ImageUpload
                     mainImage={mainImage}
@@ -145,17 +149,25 @@ export default function NewProduct() {
                     buttonLabel={isEditable ? "Guardar Cambios" : "Agregar Producto"}
                 />
             </Box>
-    
+
             <ConfirmationDialog
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
                 onConfirm={() => {
-                    isEditable ? handleUpdateProduct() : handleAddProduct();
-                    setDialogOpen(false);
+                    setDialogOpen(false); // Cierra el diálogo primero
+                
+                    setTimeout(() => {
+                        if (isEditable) {
+                            handleUpdateProduct();
+                        } else {
+                            handleAddProduct();
+                        }
+                    }, 0); // Ejecuta la acción justo después
                 }}
-                model={model}
-                confirmText={isEditable ? "Sí, actualizar" : "Sí, crear"}
+                
+                title={isEditable ? "Confirmar actualización" : "Confirmar creación"}
+                message={`¿Estás seguro de que deseas ${isEditable ? 'actualizar' : 'crear'} el producto "${model}"?`}
             />
         </Box>
-    );    
+    );
 }
