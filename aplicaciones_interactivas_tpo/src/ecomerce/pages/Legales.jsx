@@ -233,7 +233,6 @@ export const Legales = () => {
                     Las entregas se realizan Lunes a Viernes de 9 a 21hs.
                 </Typography>
                 <Divider sx={{ my: 5 }} />
-                {/* Y así sucesivamente... */}
             </Container>
         </Grid>
     )

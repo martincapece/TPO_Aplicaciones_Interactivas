@@ -33,7 +33,7 @@ export const Productos = () => {
         });
 
     return (
-        <Grid sx={{ my: 10 }}>
+        <Grid sx={{ my: 10, }}>
             <Typography
                 variant="h2"
                 id="productos"

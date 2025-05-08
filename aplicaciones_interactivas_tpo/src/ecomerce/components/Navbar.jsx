@@ -107,7 +107,7 @@ export const Navbar = () => {
               open={Boolean(menuAnchorEl)}
               onClose={handleCloseMenus}
             >
-              <MenuItem onClick={() => handleNavigate('/catalogo')}>Productos</MenuItem>
+              <MenuItem onClick={() => handleNavigate('/catalogo#productos')}>Productos</MenuItem>
               <MenuItem onClick={() => handleNavigate('/inicio#destacados')}>Destacados</MenuItem>
               <MenuItem onClick={() => handleNavigate('/nosotros#sobre')}>Sobre Nosotros</MenuItem>
               <MenuItem onClick={() => handleNavigate('/nosotros#contacto')}>Contacto</MenuItem>
@@ -123,7 +123,7 @@ export const Navbar = () => {
           <Grid>
             <Typography
               variant="body1"
-              onClick={() => handleNavigate('/catalogo')}
+              onClick={() => handleNavigate('/catalogo#productos')}
               sx={{ cursor: 'pointer', fontWeight: 500 }}
             >
               Productos

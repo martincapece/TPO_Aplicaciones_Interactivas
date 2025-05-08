@@ -11,13 +11,17 @@ export const Nosotros = () => {
         const element = document.getElementById(id);
         if (element) {
             setTimeout(() => {
-            const yOffset = -100; // altura aproximada de tu navbar
+            const yOffset = -100;
             const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: "smooth" });
             }, 60);
         }
         }
     }, [location]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
 
     return (
         <Grid container
