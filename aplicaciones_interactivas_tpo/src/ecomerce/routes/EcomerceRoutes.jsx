@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom"
 import { EcomercePage } from "../pages"
 import Cart from "../../Cart/components/Cart"
 import { Footer, Navbar } from "../components"
-import SneakerPage from "../components/SneakerPage"
+import SneakerPage from "../pages/SneakerPage"
 import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";

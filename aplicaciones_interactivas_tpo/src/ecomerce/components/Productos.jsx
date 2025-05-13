@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider } from "@mui/material";
-import { dataDestacados } from "../data/dataDestacados";
 import { SneakerCard } from "./SneakerCard";
-import { DashboardSharp } from "@mui/icons-material";
 
 export const Productos = () => {
     // Estado para filtros
@@ -12,8 +10,17 @@ export const Productos = () => {
     const [maxPrice, setMaxPrice] = useState(500);
     const [order, setOrder] = useState("alphabetically"); // Nuevo estado para ordenar
 
+    const [productos, setProductos] = useState([]);
+    useEffect(() => {
+        fetch("http://localhost:3000/data")
+            .then(res => res.json())
+            .then(data => setProductos(data))
+            .catch(err => console.error("Error al cargar productos", err));
+    }, []); 
+
+
     // Aplica filtros sobre los productos
-    const productosFiltrados = dataDestacados
+    const productosFiltrados = productos
         .filter(p => p.featured) // solo destacados
         .filter(p => brand ? p.brand === brand : true)
         .filter(p => color ? p.colors.includes(color) : true)
@@ -102,7 +109,7 @@ export const Productos = () => {
                             <MenuItem value="">
                                 <em>Todos</em>
                             </MenuItem>
-                            {[...new Set(dataDestacados.flatMap(p => p.sizes))].map(talle => (
+                            {[...new Set(productos.flatMap(p => p.sizes))].map(talle => (
                                 <MenuItem key={talle} value={talle}>{talle}</MenuItem>
                             ))}
                         </Select>

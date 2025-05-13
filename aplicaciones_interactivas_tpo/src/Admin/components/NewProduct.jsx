@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import ImageUpload from './ImageUpload';
 import ProductForm from './ProductForm';
 import ConfirmationDialog from './ConfirmationDialog';
-import { dataDestacados } from '../../ecomerce/data/dataDestacados';
 
 export default function NewProduct() {
     const { id } = useParams(); // obtiene el id de la URL
@@ -20,10 +19,19 @@ export default function NewProduct() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const navigate = useNavigate();
 
+    const [productos, setProductos] = useState([]);
+    
     useEffect(() => {
-        if (isEditable) {
+        fetch("http://localhost:3000/data")
+            .then(res => res.json())
+            .then(data => setProductos(data))
+            .catch(err => console.error("Error al cargar productos", err));
+    }, []);
+
+    useEffect(() => {
+        if (isEditable && productos.length > 0) {
             console.log("editando producto", id)
-            const productToEdit = dataDestacados.find(p => p.id === Number(id));
+            const productToEdit = productos.find(p => p.id === Number(id));
             if (productToEdit) {
                 console.log("Producto encontrado:", productToEdit);
                 setModel(productToEdit.model);
@@ -35,7 +43,7 @@ export default function NewProduct() {
                 setExtraImages(productToEdit.image.slice(1, 4)); // máximo 3 extras
             }
         }
-    }, [id]);
+    }, [ id, productos ]);
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
@@ -75,7 +83,7 @@ export default function NewProduct() {
     // Creación del nuevo producto
     const handleAddProduct = () => {
         const imageArray = [mainImage, ...extraImages.filter(img => img !== null)];
-        const newId = dataDestacados.length > 0 ? Math.max(...dataDestacados.map(p => p.id)) + 1 : 1;
+        const newId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
         const parsePrice = parseInt(price);
         const parseStock = parseInt(stock);
 
@@ -91,7 +99,7 @@ export default function NewProduct() {
             new: true
         };
 
-        dataDestacados.push(newProduct); // Esto solo vive en memoria
+        productos.push(newProduct); // Esto solo vive en memoria
         console.log("Producto agregado al array:", newProduct);
 
         navigate(`/producto/${newId}`);
@@ -108,9 +116,9 @@ export default function NewProduct() {
             image: [mainImage, ...extraImages.filter(img => img !== null)],
         };
 
-        const index = dataDestacados.findIndex(p => p.id === Number(id));
+        const index = productos.findIndex(p => p.id === Number(id));
         if (index !== -1) {
-            dataDestacados[index] = updatedProduct;
+            productos[index] = updatedProduct;
             console.log("Producto actualizado:", updatedProduct);
             navigate(`/producto/${id}`);
         } else {

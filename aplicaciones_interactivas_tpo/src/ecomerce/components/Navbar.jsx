@@ -1,21 +1,19 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { IconButton, Badge, TextField, useTheme, useMediaQuery, Box, Stack, Menu, MenuItem, Typography, Grid } from '@mui/material';
 import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/icons-material';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
 import { AuthContext } from '../../auth/context/AuthContext';
 import { CartContext } from '../../Cart/context/CartContext';
-import { dataDestacados } from '../data/dataDestacados'; // Importa la lista de productos
 
 export const Navbar = () => {
-  const { productList, cartSize } = useContext(CartContext);
+  const { cartSize } = useContext(CartContext);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [userAnchorEl, setUserAnchorEl] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]); // Estado para los productos filtrados
   const navigate = useNavigate();
-  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -23,7 +21,15 @@ export const Navbar = () => {
   const { dispatch, authState } = useContext(AuthContext);
   const { user } = authState;
 
-  const isInicio = location.pathname === '/' || location.pathname === '/inicio';
+  const [productos, setProductos] = useState([]);
+
+  useEffect(() => {
+      fetch("http://localhost:3000/data")
+          .then(res => res.json())
+          .then(data => setProductos(data))
+          .catch(err => console.error("Error al cargar productos", err));
+      }, []); 
+
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -42,8 +48,8 @@ export const Navbar = () => {
 
     // Filtrar productos que coincidan con el texto ingresado
     if (value.trim()) {
-      const results = dataDestacados.filter((product) =>
-        product.model.toLowerCase().includes(value.toLowerCase())
+      const results = productos.filter((sneaker) =>
+        sneaker.model.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredProducts(results);
     } else {

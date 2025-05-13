@@ -1,5 +1,4 @@
-import { dataDestacados } from "../data/dataDestacados";
-import { useState,React, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "../../Cart/hooks/useCart";
 import { Link ,useParams,useLocation } from "react-router-dom";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Accordion, AccordionSummary, AccordionDetails,Box,Typography,Button,Grid,ToggleButton,ToggleButtonGroup, } from "@mui/material";
@@ -9,13 +8,29 @@ import Swal from 'sweetalert2'
 export default function SneakerPage()  {
     const { id } = useParams();
     const location = useLocation();
-    const sneaker = dataDestacados.find((item) => item.id === parseInt(id));
     const [ selectedSize, setSelectedSize ] = useState("");
+    const [ currentPhoto, setCurrentPhoto ] = useState(null);
     const { addProduct } = useCart();
     const [ dialogOpen, setDialogOpen ] = useState(false);
-    const [ currentPhoto, setCurrentPhoto ] = useState(sneaker.image[0]);
     const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12] 
     
+    const [productos, setProductos] = useState([]);
+    
+    useEffect(() => {
+        fetch("http://localhost:3000/data")
+            .then(res => res.json())
+            .then(data => setProductos(data))
+            .catch(err => console.error("Error al cargar productos", err));
+    }, []);
+
+    const sneaker = productos.find((item) => item.id === parseInt(id));
+    
+    useEffect(() => {
+        if (sneaker) {
+            setCurrentPhoto(sneaker.image[0]);
+        }
+    }, [sneaker]);
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id, location.pathname]);
@@ -33,7 +48,7 @@ return (
     container
     sx={{
         margin: '0 auto',
-        maxWidth: { xs: '300px', sm: '500px', md: '900px', lg: '1200px' },
+        maxWidth: { xs: '300px', sm: '500px', md: '900px', lg: '1200px' }
     }}
     >
         <Grid 
@@ -42,7 +57,7 @@ return (
         direction='row'
         justifyContent='space-between'
         sx={{
-            my: 10
+            my: 10,
         }}
         >
             <Grid size={{ xs: 12, md: 6 }}>
@@ -299,7 +314,7 @@ return (
             Te recomendamos
         </Typography>
         <Grid container spacing={2}>
-        {dataDestacados
+        {productos
             .filter(
                 (item) =>
                 item.id !== sneaker.id && item.brand.toLowerCase() === sneaker.brand.toLowerCase()

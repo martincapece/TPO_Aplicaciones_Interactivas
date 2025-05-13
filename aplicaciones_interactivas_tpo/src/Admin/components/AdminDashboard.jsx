@@ -5,16 +5,26 @@ import { IconButton, Select, MenuItem, Checkbox, Button, Box } from '@mui/materi
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
-import { dataDestacados } from '../../ecomerce/data/dataDestacados'; // Asegúrate de que este path sea correcto
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [productRows, setProductRows] = React.useState();
 
+  const [productos, setProductos] = React.useState([]);
+      
+      React.useEffect(() => {
+          fetch("http://localhost:3000/data")
+              .then(res => res.json())
+              .then(data => setProductos(data))
+              .catch(err => console.error("Error al cargar productos", err));
+      }, []);
+
   React.useEffect(() => {
     // TODO: aqui ira el llamado a la API
-    setProductRows(dataDestacados); //carga todos los productos.
-  }, []);
+    if ( productos.length > 0 ) {
+        setProductRows( productos ); //carga todos los productos.
+      }
+    }, [productos]);
 
   //  Funcion que maneja la edición de un producto
   const handleEdit = (id) => {
