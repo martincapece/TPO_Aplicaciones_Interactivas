@@ -25,7 +25,7 @@ export default function SneakerPage()  {
     }, []);
 
     useEffect(() => {
-        const found = productos.find((item) => item.id === parseInt(id));
+        const found = productos.find((item) => item.id === id);
         if (found) setSneaker(found);
     }, [ productos, id ]);
     
