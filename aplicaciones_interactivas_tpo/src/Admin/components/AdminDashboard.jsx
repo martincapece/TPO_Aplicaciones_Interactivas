@@ -1,38 +1,53 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { IconButton, Select, MenuItem, Checkbox, Button, Box } from '@mui/material'; // Asegúrate de importar Select y MenuItem
+import { IconButton, Select, MenuItem, Checkbox, Button, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [productRows, setProductRows] = React.useState();
-
+  const [productRows, setProductRows] = React.useState([]);
   const [productos, setProductos] = React.useState([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [productToDelete, setProductToDelete] = React.useState(null);
       
-      React.useEffect(() => {
-          fetch("http://localhost:3000/data")
-              .then(res => res.json())
-              .then(data => setProductos(data))
-              .catch(err => console.error("Error al cargar productos", err));
-      }, []);
+  React.useEffect(() => {
+    fetch("http://localhost:3000/data")
+      .then(res => res.json())
+      .then(data => setProductos(data))
+      .catch(err => console.error("Error al cargar productos", err));
+  }, []);
 
   React.useEffect(() => {
-    // TODO: aqui ira el llamado a la API
-    if ( productos.length > 0 ) {
-        setProductRows( productos ); //carga todos los productos.
-      }
-    }, [productos]);
+    if (productos.length > 0) {
+      setProductRows(productos); // carga todos los productos.
+    }
+  }, [productos]);
 
-  //  Funcion que maneja la edición de un producto
   const handleEdit = (id) => {
     navigate(`/admin/edit-product/${id}`);
   };
 
   const handleDelete = (id) => {
-    console.log(`Delete product with id: ${id}`);
+    setProductToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await fetch(`http://localhost:3000/data/${productToDelete}`, {
+        method: 'DELETE',
+      });
+
+      // Actualiza el estado local
+      setProductos(prev => prev.filter(p => p.id !== productToDelete));
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+    }
   };
 
   const columns = [
@@ -169,6 +184,27 @@ export default function AdminDashboard() {
           pagination
         />
       </Paper>
+
+      {/* Dialogo de confirmación para eliminar producto */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>¿Eliminar producto?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={confirmDelete} color="secondary">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
