@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider, Button } from "@mui/material";
 import { SneakerCard } from "./SneakerCard";
+import { useLocation } from "react-router-dom";
 
 export const Productos = () => {
     // Estado para filtros
@@ -9,8 +10,9 @@ export const Productos = () => {
     const [size, setSize] = useState("");
     const [maxPrice, setMaxPrice] = useState(500);
     const [order, setOrder] = useState("alphabetically"); // Nuevo estado para ordenar
-
     const [productos, setProductos] = useState([]);
+    const location = useLocation();
+    const searchQuery = new URLSearchParams(location.search).get("query") || "";
     useEffect(() => {
         fetch("http://localhost:3000/data")
             .then(res => res.json())
@@ -21,31 +23,31 @@ export const Productos = () => {
 
     // Aplica filtros sobre los productos
     const productosFiltrados = productos
+        .filter(p =>
+            p.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.brand.toLowerCase().includes(searchQuery.toLowerCase())
+        )
         .filter(p => brand ? p.brand === brand : true)
         .filter(p => color ? p.colors.includes(color) : true)
-        .filter(p => !size || p.sizes.some(s => s.size === String(size) && s.stock > 0))
+        .filter(p => !size || p.sizes.some(s => String(s.size) === String(size) && s.stock > 0))
         .filter(p => p.price <= maxPrice)
         .sort((a, b) => {
             switch (order) {
-                case "alphabetically":
-                    return a.model.localeCompare(b.model);
-                case "price-asc":
-                    return a.price - b.price;
-                case "price-desc":
-                    return b.price - a.price;
-                default:
-                    return a.model.localeCompare(b.model);
+            case "alphabetically":
+                return a.model.localeCompare(b.model);
+            case "price-asc":
+                return a.price - b.price;
+            case "price-desc":
+                return b.price - a.price;
+            default:
+                return a.model.localeCompare(b.model);
             }
         });
 
     return (
         <Grid sx={{ my: 10, }}>
-            <Typography
-                variant="h2"
-                id="productos"
-                sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800, mb: 5 }}
-            >
-                TODOS LOS PRODUCTOS
+            <Typography variant="h2" id="productos" sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800, mb: 5 }}>
+                {searchQuery ? `Resultados para: "${searchQuery}"` : "TODOS LOS PRODUCTOS"}
             </Typography>
 
             {/* Filtros */}
@@ -178,7 +180,9 @@ export const Productos = () => {
                     ))
                 ) : (
                     <Typography variant="h6" sx={{ m: 2 }}>
-                        No hay productos que coincidan con los filtros seleccionados.
+                        {searchQuery
+                        ? `No se encontraron resultados para: "${searchQuery}".`
+                        : "No hay productos que coincidan con los filtros seleccionados."}
                     </Typography>
                 )}
             </Grid>
