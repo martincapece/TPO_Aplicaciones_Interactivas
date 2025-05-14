@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider } from "@mui/material";
+import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider, Button } from "@mui/material";
 import { SneakerCard } from "./SneakerCard";
 
 export const Productos = () => {
@@ -21,10 +21,9 @@ export const Productos = () => {
 
     // Aplica filtros sobre los productos
     const productosFiltrados = productos
-        .filter(p => p.featured) // solo destacados
         .filter(p => brand ? p.brand === brand : true)
         .filter(p => color ? p.colors.includes(color) : true)
-        .filter(p => size ? p.sizes.includes(size) : true)
+        .filter(p => !size || p.sizes.some(s => s.size === String(size) && s.stock > 0))
         .filter(p => p.price <= maxPrice)
         .sort((a, b) => {
             switch (order) {
@@ -87,7 +86,7 @@ export const Productos = () => {
                             <MenuItem value="">
                                 <em>Todos</em>
                             </MenuItem>
-                            {['Red', 'Black', 'White', 'Blue', 'Silver'].map(col => (
+                            {[...new Set(productos.flatMap(p => p.colors))].map(col => (
                                 <MenuItem key={col} value={col}>{col}</MenuItem>
                             ))}
                         </Select>
@@ -107,11 +106,14 @@ export const Productos = () => {
                             sx={{ minWidth: 120 }}
                         >
                             <MenuItem value="">
-                                <em>Todos</em>
+                            <em>Todos</em>
                             </MenuItem>
-                            {[...new Set(productos.flatMap(p => p.sizes))].map(talle => (
+                            {[...new Set(productos.flatMap(p => p.sizes.map(s => s.size)))]
+                            .sort((a, b) => parseFloat(a) - parseFloat(b))
+                            .map((talle) => (
                                 <MenuItem key={talle} value={talle}>{talle}</MenuItem>
-                            ))}
+                            ))
+                            }
                         </Select>
                     </FormControl>
                 </Grid>
@@ -148,6 +150,22 @@ export const Productos = () => {
                             <MenuItem value="price-desc">Precio: Mayor a Menor</MenuItem>
                         </Select>
                     </FormControl>
+                </Grid>
+
+                <Grid item>
+                    <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => {
+                        setBrand("");
+                        setColor("");
+                        setSize("");
+                        setMaxPrice(500);
+                        setOrder("alphabetically");
+                    }}
+                    >
+                    LIMPIAR FILTROS
+                    </Button>
                 </Grid>
 
             </Grid>
