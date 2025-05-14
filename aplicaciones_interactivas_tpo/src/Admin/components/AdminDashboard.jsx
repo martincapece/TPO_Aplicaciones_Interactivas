@@ -66,14 +66,14 @@ export default function AdminDashboard() {
         const sizes = Array.isArray(params.row.sizes) ? params.row.sizes : [];
         return (
           <Select
-            value={sizes[0] || ''}
+            value={sizes[0]?.size || ''}
             size="small"
             fullWidth
             sx={{ backgroundColor: 'transparent' }}
           >
-            {sizes.map((size, index) => (
-              <MenuItem key={index} value={size}>
-                {size}
+            {sizes.map((item, index) => (
+              <MenuItem key={index} value={item.size}>
+                {item.size} (stock: {item.stock})
               </MenuItem>
             ))}
           </Select>
