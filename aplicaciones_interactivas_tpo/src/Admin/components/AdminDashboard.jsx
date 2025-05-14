@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { IconButton, Select, MenuItem, Checkbox, Button, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import {
+  IconButton, Select, MenuItem, Checkbox, Button,
+  Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +25,7 @@ export default function AdminDashboard() {
 
   React.useEffect(() => {
     if (productos.length > 0) {
-      setProductRows(productos); // carga todos los productos.
+      setProductRows(productos);
     }
   }, [productos]);
 
@@ -41,12 +44,25 @@ export default function AdminDashboard() {
         method: 'DELETE',
       });
 
-      // Actualiza el estado local
       setProductos(prev => prev.filter(p => p.id !== productToDelete));
       setDeleteDialogOpen(false);
       setProductToDelete(null);
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
+    }
+  };
+
+  const updateProduct = async (id, updatedFields) => {
+    try {
+      await fetch(`http://localhost:3000/data/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedFields)
+      });
+    } catch (error) {
+      console.error('Error al actualizar el producto:', error);
     }
   };
 
@@ -106,11 +122,13 @@ export default function AdminDashboard() {
       renderCell: (params) => (
         <Checkbox
           checked={params.row.featured}
-          onChange={() => {
+          onChange={async () => {
+            const updatedValue = !params.row.featured;
             const updatedRows = productRows.map((row) =>
-              row.id === params.row.id ? { ...row, featured: !row.featured } : row
+              row.id === params.row.id ? { ...row, featured: updatedValue } : row
             );
             setProductRows(updatedRows);
+            await updateProduct(params.row.id, { featured: updatedValue });
           }}
           color="primary"
         />
@@ -127,11 +145,13 @@ export default function AdminDashboard() {
       renderCell: (params) => (
         <Checkbox
           checked={params.row.new}
-          onChange={() => {
+          onChange={async () => {
+            const updatedValue = !params.row.new;
             const updatedRows = productRows.map((row) =>
-              row.id === params.row.id ? { ...row, new: !row.new } : row
+              row.id === params.row.id ? { ...row, new: updatedValue } : row
             );
             setProductRows(updatedRows);
+            await updateProduct(params.row.id, { new: updatedValue });
           }}
           color="primary"
         />
@@ -175,8 +195,8 @@ export default function AdminDashboard() {
           rows={productRows}
           columns={columns}
           getRowId={(row) => row.id}
-          pageSize={5} // Tamaño de página inicial
-          pageSizeOptions={[5, 10, productRows?.length || 5]} // Opciones de tamaño de página disponibles
+          pageSize={5}
+          pageSizeOptions={[5, 10, productRows?.length || 5]}
           checkboxSelection
           rowHeight={80}
           disableRowSelectionOnClick
@@ -208,4 +228,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-  
