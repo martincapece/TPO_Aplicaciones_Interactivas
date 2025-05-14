@@ -9,6 +9,7 @@ export default function SneakerPage()  {
     const { id } = useParams();
     const location = useLocation();
     const [ selectedSize, setSelectedSize ] = useState("");
+    const [ selectedStock, setSelectedStock ] = useState("");
     const [ currentPhoto, setCurrentPhoto ] = useState(null);
     const [ sneaker, setSneaker ] = useState(null);
     const [ dialogOpen, setDialogOpen ] = useState(false);
@@ -35,6 +36,16 @@ export default function SneakerPage()  {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [ id, location.pathname ]);
+
+    useEffect(() => {
+        if (sneaker && selectedSize !== "") {
+            const stockInfo = sneaker.sizes.find(s => s.size === String(selectedSize));
+            setSelectedStock(stockInfo ? stockInfo.stock : 0);
+        } else {
+            setSelectedStock(0);
+        }
+    }, [ selectedSize, sneaker ]);
+
     
     if (!sneaker) {
         return <Typography variant="h6" sx={{ textAlign: 'center', mt: 10 }}> Producto no encontrado </Typography>
@@ -202,9 +213,7 @@ return (
 
                 {selectedSize && (
                     <Typography variant="body2" color="text.secondary" textAlign="center">
-                        Stock disponible: {
-                        sneaker.sizes.find(s => s.size === String(selectedSize))?.stock ?? 0
-                        }
+                        Stock disponible: {selectedStock}
                     </Typography>
                 )}
                 
@@ -272,6 +281,7 @@ return (
                     addProduct({
                         ...sneaker,
                         size: selectedSize,
+                        stock: selectedStock
                     });
                     setDialogOpen(false);
                 }}

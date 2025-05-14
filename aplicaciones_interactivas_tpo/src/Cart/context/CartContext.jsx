@@ -20,7 +20,6 @@ export const CartProvider = ({ children }) => {
   }, [productList]);
 
   const addProduct = (product) => {
-    console.log(product)
     setProductList((prev) => {
       const existing = prev.find(p => p.id === product.id && p.size === product.size);
       if (existing) {
