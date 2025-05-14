@@ -76,6 +76,7 @@ export const Productos = () => {
                             <MenuItem value="">
                                 <em>Todas</em>
                             </MenuItem>
+                            <MenuItem value="Jordan">Jordan</MenuItem>
                             <MenuItem value="Nike">Nike</MenuItem>
                             <MenuItem value="Vans">Vans</MenuItem>
                         </Select>

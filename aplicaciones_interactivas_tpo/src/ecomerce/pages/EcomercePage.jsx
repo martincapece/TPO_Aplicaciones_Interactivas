@@ -37,7 +37,7 @@ export const EcomercePage = () => {
           >
             <Grid
               size={{ xs: 12, md: 5.75 }}
-              onClick={() => handleCategoryClick("Nike")}
+              onClick={() => handleCategoryClick("Jordan")}
             >
               <ImageBackgroundChild title={'JORDAN'} subtitle={'VER PRODUCTOS'} url={jordan} />
             </Grid>
