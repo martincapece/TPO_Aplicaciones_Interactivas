@@ -97,8 +97,8 @@ export const Navbar = () => {
       onClick={(e) => e.stopPropagation()}
     >
       {/* Logo */}
-      <Grid onClick={() => navigate('/')} size={{ md: 3, lg: 4.5 }} display={(isMobile) ? 'none' : ''} sx={{ cursor: 'pointer' }}>
-        <img src="/assets/logo_ecomerce.png" alt="Logo" style={{ width: 100 }} />
+      <Grid  size={{ md: 6, lg: 4.5 }} display={(isMobile) ? 'none' : ''} >
+        <img src="/assets/logo_ecomerce.png" alt="Logo"  onClick={() => navigate('/')} sx={{ cursor: 'pointer' }} style={{ width: 100  }} />
       </Grid>
 
       {/* Menu (responsive) */}
