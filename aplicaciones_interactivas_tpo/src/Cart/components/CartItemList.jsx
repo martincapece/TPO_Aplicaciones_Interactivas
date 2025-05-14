@@ -7,7 +7,7 @@ function CartItemList({ productList}) {
             <h1>Bolsa de compra</h1>
             {productList.map((product) => (
                 <CartItem
-                    key={product.id}
+                    key={product.id+product.size}
                     product={product}
                 />
             ))}
