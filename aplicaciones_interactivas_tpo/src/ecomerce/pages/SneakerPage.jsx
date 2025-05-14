@@ -152,7 +152,8 @@ return (
                     }}
                     >
                     {allSizes.map((size) => {
-                        const isAvailable = sneaker.sizes.includes(size.toString());
+                        const sizeInfo = sneaker.sizes.find(s => s.size === size.toString());
+                        const isAvailable = sizeInfo && sizeInfo.stock > 0;
                         return (
                             <ToggleButton
                                 key={size}
@@ -197,7 +198,18 @@ return (
                         );
                     })}
                 </ToggleButtonGroup>
+
+                {selectedSize && (
+                    <Typography variant="body2" color="text.secondary" textAlign="center">
+                        Stock disponible: {
+                        sneaker.sizes.find(s => s.size === String(selectedSize))?.stock ?? 0
+                        }
+                    </Typography>
+                )}
+                
                 </Box>
+
+                
 
                 {/* Botón agregar */}
                 <Button
