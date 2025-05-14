@@ -10,6 +10,15 @@ export const Productos = () => {
     const [size, setSize] = useState("");
     const [maxPrice, setMaxPrice] = useState(500);
     const [order, setOrder] = useState("alphabetically"); // Nuevo estado para ordenar
+
+    // Leer el filtro guardado en localStorage
+    useEffect(() => {
+        const savedBrand = localStorage.getItem("selectedBrand");
+        if (savedBrand) {
+        setBrand(savedBrand);
+        localStorage.removeItem("selectedBrand");
+        }
+    }, []);
     const [productos, setProductos] = useState([]);
     const location = useLocation();
     const searchQuery = new URLSearchParams(location.search).get("query") || "";
