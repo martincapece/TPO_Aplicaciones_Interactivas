@@ -20,7 +20,7 @@ export default function NewProduct() {
     const navigate = useNavigate();
 
     const [productos, setProductos] = useState([]);
-    
+
     useEffect(() => {
         fetch("http://localhost:3000/data")
             .then(res => res.json())
@@ -43,7 +43,7 @@ export default function NewProduct() {
                 setExtraImages(productToEdit.image.slice(1, 4)); // máximo 3 extras
             }
         }
-    }, [ id, productos ]);
+    }, [id, productos]);
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
@@ -83,12 +83,10 @@ export default function NewProduct() {
     // Creación del nuevo producto
     const handleAddProduct = () => {
         const imageArray = [mainImage, ...extraImages.filter(img => img !== null)];
-        const newId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
         const parsePrice = parseInt(price);
         const parseStock = parseInt(stock);
 
         const newProduct = {
-            id: newId,
             model,
             brand,
             price: parsePrice,
@@ -99,10 +97,24 @@ export default function NewProduct() {
             new: true
         };
 
-        productos.push(newProduct); // Esto solo vive en memoria
-        console.log("Producto agregado al array:", newProduct);
-
-        navigate(`/producto/${newId}`);
+        fetch("http://localhost:3000/data", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newProduct)
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Error al agregar el producto.");
+                }
+                return res.json();
+            })
+            .then(addedProduct => {
+                console.log("Producto agregado en el servidor JSON:", addedProduct);
+                navigate(`/producto/${addedProduct.id}`);
+            })
+            .catch(err => console.error("Error en la solicitud POST:", err));
     };
 
     const handleUpdateProduct = () => {
