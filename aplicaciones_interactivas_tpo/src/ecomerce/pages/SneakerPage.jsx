@@ -10,11 +10,11 @@ export default function SneakerPage()  {
     const location = useLocation();
     const [ selectedSize, setSelectedSize ] = useState("");
     const [ currentPhoto, setCurrentPhoto ] = useState(null);
-    const { addProduct } = useCart();
+    const [ sneaker, setSneaker ] = useState(null);
     const [ dialogOpen, setDialogOpen ] = useState(false);
+    const [ productos, setProductos ] = useState([]);
+    const { addProduct } = useCart();
     const allSizes = Array.from({ length: 11 }, (_, i) => 7 + i * 0.5); // Genera [7, 7.5, ..., 12] 
-    
-    const [productos, setProductos] = useState([]);
     
     useEffect(() => {
         fetch("http://localhost:3000/data")
@@ -23,22 +23,23 @@ export default function SneakerPage()  {
             .catch(err => console.error("Error al cargar productos", err));
     }, []);
 
-    const sneaker = productos.find((item) => item.id === parseInt(id));
+    useEffect(() => {
+        const found = productos.find((item) => item.id === parseInt(id));
+        if (found) setSneaker(found);
+    }, [ productos, id ]);
     
     useEffect(() => {
-        if (sneaker) {
-            setCurrentPhoto(sneaker.image[0]);
-        }
-    }, [sneaker]);
+        if (sneaker) setCurrentPhoto(sneaker.image[0]);
+    }, [ sneaker ]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, [id, location.pathname]);
+    }, [ id, location.pathname ]);
     
     if (!sneaker) {
-        return <Typography variant="h6">Producto no encontrado</Typography>;
+        return <Typography variant="h6" sx={{ textAlign: 'center', mt: 10 }}> Producto no encontrado </Typography>
     }
-
+    
     const handleImageClick = (image) => {
         setCurrentPhoto(image);
     }
