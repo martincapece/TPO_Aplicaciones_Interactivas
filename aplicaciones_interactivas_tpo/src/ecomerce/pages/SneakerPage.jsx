@@ -225,15 +225,15 @@ return (
                 <Button
                     variant="contained"
                     color="primary"
+                    disabled={ !sneaker.sizes || !sneaker.sizes.some(size => size.stock > 0) }
                     sx={{ my: { xs: 6 }, borderRadius: 999, px: 4 }}
                     onClick={() => {
                         (selectedSize === "") 
                             ? Swal.fire({title: "¡Un momento!", text: "Para poder agregar el sneaker al carrito debes seleccionar un talle", icon: "error"}) 
                             : setDialogOpen(true);
                     }}
-
                 >
-                    Agregar al Carrito
+                    { !sneaker.sizes.some(size => size.stock > 0) ? "Sin stock" : "Agregar al carrito" }
                 </Button>
 
                 {/* Descripción */}

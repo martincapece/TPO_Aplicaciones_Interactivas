@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "id": 1,
+      "id": "1",
       "model": "Jordan 1 High Travis Scott",
       "brand": "Nike",
       "price": 250,
@@ -9,12 +9,30 @@
         "Marron"
       ],
       "sizes": [
-        { "size": "7", "stock": 2 },
-        { "size": "8", "stock": 10 },
-        { "size": "8.5", "stock": 4 },
-        { "size": "9.5", "stock": 3 },
-        { "size": "10.5", "stock": 8 },
-        { "size": "11", "stock": 10 }
+        {
+          "size": "7",
+          "stock": 0
+        },
+        {
+          "size": "8",
+          "stock": 0
+        },
+        {
+          "size": "8.5",
+          "stock": 0
+        },
+        {
+          "size": "9.5",
+          "stock": 0
+        },
+        {
+          "size": "10.5",
+          "stock": 0
+        },
+        {
+          "size": "11",
+          "stock": 0
+        }
       ],
       "image": [
         "/assets/jordan1HighTravisMarron.png",
@@ -26,7 +44,7 @@
       "new": true
     },
     {
-      "id": 2,
+      "id": "2",
       "model": "Jordan 1 Low SE",
       "brand": "Nike",
       "price": 220,
@@ -34,12 +52,30 @@
         "Verde"
       ],
       "sizes": [
-        { "size": "7", "stock": 8 },
-        { "size": "9", "stock": 3 },
-        { "size": "10", "stock": 5 },
-        { "size": "10.5", "stock": 6 },
-        { "size": "11.5", "stock": 8 },
-        { "size": "12", "stock": 9 }
+        {
+          "size": "7",
+          "stock": 8
+        },
+        {
+          "size": "9",
+          "stock": 3
+        },
+        {
+          "size": "10",
+          "stock": 5
+        },
+        {
+          "size": "10.5",
+          "stock": 6
+        },
+        {
+          "size": "11.5",
+          "stock": 8
+        },
+        {
+          "size": "12",
+          "stock": 9
+        }
       ],
       "image": [
         "/assets/jordan1LowSE.webp",
@@ -52,7 +88,7 @@
       "new": true
     },
     {
-      "id": 3,
+      "id": "3",
       "model": "Jordan 1 Retro High OG",
       "brand": "Nike",
       "price": 180,
@@ -61,11 +97,26 @@
         "Blanco"
       ],
       "sizes": [
-        { "size": "7", "stock": 5 },
-        { "size": "7.5", "stock": 1 },
-        { "size": "8.5", "stock": 8 },
-        { "size": "10", "stock": 9 },
-        { "size": "11", "stock": 6 }
+        {
+          "size": "7",
+          "stock": 5
+        },
+        {
+          "size": "7.5",
+          "stock": 1
+        },
+        {
+          "size": "8.5",
+          "stock": 8
+        },
+        {
+          "size": "10",
+          "stock": 9
+        },
+        {
+          "size": "11",
+          "stock": 6
+        }
       ],
       "image": [
         "/assets/jordan1RetroHighOG.webp",
@@ -78,7 +129,7 @@
       "new": false
     },
     {
-      "id": 4,
+      "id": "4",
       "model": "Jordan 3 Retro",
       "brand": "Nike",
       "price": 270,
@@ -86,11 +137,26 @@
         "Blanco"
       ],
       "sizes": [
-        { "size": "7.5", "stock": 6 },
-        { "size": "8", "stock": 2 },
-        { "size": "9", "stock": 6 },
-        { "size": "10", "stock": 7 },
-        { "size": "11.5", "stock": 5 }
+        {
+          "size": "7.5",
+          "stock": 6
+        },
+        {
+          "size": "8",
+          "stock": 2
+        },
+        {
+          "size": "9",
+          "stock": 6
+        },
+        {
+          "size": "10",
+          "stock": 7
+        },
+        {
+          "size": "11.5",
+          "stock": 5
+        }
       ],
       "image": [
         "/assets/jordan3Retro.webp",
@@ -103,7 +169,7 @@
       "new": false
     },
     {
-      "id": 5,
+      "id": "5",
       "model": "Jordan 4 Retro",
       "brand": "Nike",
       "price": 350,
@@ -111,10 +177,22 @@
         "Gris"
       ],
       "sizes": [
-        { "size": "9", "stock": 2 },
-        { "size": "9.5", "stock": 2 },
-        { "size": "10.5", "stock": 4 },
-        { "size": "11.5", "stock": 4 }
+        {
+          "size": "9",
+          "stock": 2
+        },
+        {
+          "size": "9.5",
+          "stock": 2
+        },
+        {
+          "size": "10.5",
+          "stock": 4
+        },
+        {
+          "size": "11.5",
+          "stock": 4
+        }
       ],
       "image": [
         "/assets/jordan4Retro.webp",
@@ -127,7 +205,7 @@
       "new": false
     },
     {
-      "id": 6,
+      "id": "6",
       "model": "Jordan Spizike Low",
       "brand": "Nike",
       "price": 270,
@@ -135,11 +213,26 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "10", "stock": 8 },
-        { "size": "10.5", "stock": 10 },
-        { "size": "11", "stock": 8 },
-        { "size": "11.5", "stock": 3 },
-        { "size": "12", "stock": 4 }
+        {
+          "size": "10",
+          "stock": 8
+        },
+        {
+          "size": "10.5",
+          "stock": 10
+        },
+        {
+          "size": "11",
+          "stock": 8
+        },
+        {
+          "size": "11.5",
+          "stock": 3
+        },
+        {
+          "size": "12",
+          "stock": 4
+        }
       ],
       "image": [
         "/assets/jordanSpizikeLow.webp",
@@ -152,7 +245,7 @@
       "new": true
     },
     {
-      "id": 7,
+      "id": "7",
       "model": "Vans U KNU Skool",
       "brand": "Vans",
       "price": 170,
@@ -160,11 +253,26 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "8", "stock": 10 },
-        { "size": "9", "stock": 9 },
-        { "size": "9.5", "stock": 10 },
-        { "size": "10", "stock": 6 },
-        { "size": "10.5", "stock": 2 }
+        {
+          "size": "8",
+          "stock": 10
+        },
+        {
+          "size": "9",
+          "stock": 9
+        },
+        {
+          "size": "9.5",
+          "stock": 10
+        },
+        {
+          "size": "10",
+          "stock": 6
+        },
+        {
+          "size": "10.5",
+          "stock": 2
+        }
       ],
       "image": [
         "/assets/knu.jpg",
@@ -176,7 +284,7 @@
       "new": false
     },
     {
-      "id": 8,
+      "id": "8",
       "model": "Vans U Hylane",
       "brand": "Vans",
       "price": 160,
@@ -184,11 +292,26 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "11", "stock": 4 },
-        { "size": "12", "stock": 4 },
-        { "size": "8", "stock": 10 },
-        { "size": "9", "stock": 4 },
-        { "size": "9.5", "stock": 9 }
+        {
+          "size": "11",
+          "stock": 4
+        },
+        {
+          "size": "12",
+          "stock": 4
+        },
+        {
+          "size": "8",
+          "stock": 10
+        },
+        {
+          "size": "9",
+          "stock": 4
+        },
+        {
+          "size": "9.5",
+          "stock": 9
+        }
       ],
       "image": [
         "/assets/hylane.jpg",
@@ -200,7 +323,7 @@
       "new": true
     },
     {
-      "id": 9,
+      "id": "9",
       "model": "Vans U Old Skool",
       "brand": "Vans",
       "price": 90,
@@ -208,13 +331,34 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "10.5", "stock": 1 },
-        { "size": "11", "stock": 9 },
-        { "size": "11.5", "stock": 4 },
-        { "size": "12", "stock": 9 },
-        { "size": "7", "stock": 6 },
-        { "size": "8", "stock": 1 },
-        { "size": "9", "stock": 10 }
+        {
+          "size": "10.5",
+          "stock": 1
+        },
+        {
+          "size": "11",
+          "stock": 9
+        },
+        {
+          "size": "11.5",
+          "stock": 4
+        },
+        {
+          "size": "12",
+          "stock": 9
+        },
+        {
+          "size": "7",
+          "stock": 6
+        },
+        {
+          "size": "8",
+          "stock": 1
+        },
+        {
+          "size": "9",
+          "stock": 10
+        }
       ],
       "image": [
         "/assets/oldskool.jpg",
@@ -226,7 +370,7 @@
       "new": false
     },
     {
-      "id": 10,
+      "id": "10",
       "model": "Vans U Upland",
       "brand": "Vans",
       "price": 120,
@@ -234,13 +378,34 @@
         "Beige"
       ],
       "sizes": [
-        { "size": "11", "stock": 9 },
-        { "size": "11.5", "stock": 8 },
-        { "size": "7", "stock": 3 },
-        { "size": "8", "stock": 1 },
-        { "size": "8.5", "stock": 2 },
-        { "size": "9", "stock": 8 },
-        { "size": "9.5", "stock": 8 }
+        {
+          "size": "11",
+          "stock": 9
+        },
+        {
+          "size": "11.5",
+          "stock": 8
+        },
+        {
+          "size": "7",
+          "stock": 3
+        },
+        {
+          "size": "8",
+          "stock": 1
+        },
+        {
+          "size": "8.5",
+          "stock": 2
+        },
+        {
+          "size": "9",
+          "stock": 8
+        },
+        {
+          "size": "9.5",
+          "stock": 8
+        }
       ],
       "image": [
         "/assets/upland.jpg",
@@ -252,7 +417,7 @@
       "new": true
     },
     {
-      "id": 11,
+      "id": "11",
       "model": "Vans U SK8-HI",
       "brand": "Vans",
       "price": 110,
@@ -260,10 +425,22 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "10", "stock": 4 },
-        { "size": "10.5", "stock": 1 },
-        { "size": "12", "stock": 9 },
-        { "size": "8", "stock": 10 }
+        {
+          "size": "10",
+          "stock": 4
+        },
+        {
+          "size": "10.5",
+          "stock": 0
+        },
+        {
+          "size": "12",
+          "stock": 9
+        },
+        {
+          "size": "8",
+          "stock": 10
+        }
       ],
       "image": [
         "/assets/sk8.jpg",
@@ -275,7 +452,7 @@
       "new": false
     },
     {
-      "id": 12,
+      "id": "12",
       "model": "Jordan 1 Retro High",
       "brand": "Nike",
       "price": 190,
@@ -283,10 +460,22 @@
         "Dorado"
       ],
       "sizes": [
-        { "size": "10", "stock": 4 },
-        { "size": "10.5", "stock": 1 },
-        { "size": "12", "stock": 9 },
-        { "size": "8", "stock": 10 }
+        {
+          "size": "10",
+          "stock": 4
+        },
+        {
+          "size": "10.5",
+          "stock": 1
+        },
+        {
+          "size": "12",
+          "stock": 9
+        },
+        {
+          "size": "8",
+          "stock": 10
+        }
       ],
       "image": [
         "/assets/5.webp",
@@ -298,7 +487,7 @@
       "new": true
     },
     {
-      "id": 13,
+      "id": "13",
       "model": "Jordan Tatum 3 Zen ",
       "brand": "Jordan",
       "price": 220,
@@ -306,13 +495,34 @@
         "Blanco"
       ],
       "sizes": [
-        { "size": "10.5", "stock": 1 },
-        { "size": "11", "stock": 9 },
-        { "size": "11.5", "stock": 4 },
-        { "size": "12", "stock": 9 },
-        { "size": "7", "stock": 6 },
-        { "size": "8", "stock": 1 },
-        { "size": "9", "stock": 10 }
+        {
+          "size": "10.5",
+          "stock": 1
+        },
+        {
+          "size": "11",
+          "stock": 9
+        },
+        {
+          "size": "11.5",
+          "stock": 4
+        },
+        {
+          "size": "12",
+          "stock": 9
+        },
+        {
+          "size": "7",
+          "stock": 6
+        },
+        {
+          "size": "8",
+          "stock": 1
+        },
+        {
+          "size": "9",
+          "stock": 10
+        }
       ],
       "image": [
         "/assets/1.webp",
@@ -325,7 +535,7 @@
       "new": true
     },
     {
-      "id": 14,
+      "id": "14",
       "model": "Jordan 1 Mid SE",
       "brand": "Nike",
       "price": 299,
@@ -333,12 +543,30 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "10", "stock": 7 },
-        { "size": "11.5", "stock": 8 },
-        { "size": "7", "stock": 4 },
-        { "size": "7.5", "stock": 4 },
-        { "size": "8", "stock": 4 },
-        { "size": "9", "stock": 2 }
+        {
+          "size": "10",
+          "stock": 7
+        },
+        {
+          "size": "11.5",
+          "stock": 8
+        },
+        {
+          "size": "7",
+          "stock": 4
+        },
+        {
+          "size": "7.5",
+          "stock": 4
+        },
+        {
+          "size": "8",
+          "stock": 4
+        },
+        {
+          "size": "9",
+          "stock": 2
+        }
       ],
       "image": [
         "/assets/2.webp",
@@ -350,7 +578,7 @@
       "new": true
     },
     {
-      "id": 15,
+      "id": "15",
       "model": "Jordan 1 Mid SE Air",
       "brand": "Nike",
       "price": 219,
@@ -358,11 +586,26 @@
         "Beige"
       ],
       "sizes": [
-        { "size": "11", "stock": 4 },
-        { "size": "12", "stock": 4 },
-        { "size": "8", "stock": 10 },
-        { "size": "9", "stock": 4 },
-        { "size": "9.5", "stock": 9 }
+        {
+          "size": "11",
+          "stock": 4
+        },
+        {
+          "size": "12",
+          "stock": 4
+        },
+        {
+          "size": "8",
+          "stock": 10
+        },
+        {
+          "size": "9",
+          "stock": 4
+        },
+        {
+          "size": "9.5",
+          "stock": 9
+        }
       ],
       "image": [
         "/assets/3.webp",
@@ -374,7 +617,7 @@
       "new": false
     },
     {
-      "id": 16,
+      "id": "16",
       "model": "Jordan 6 Retro Yellow Ochre",
       "brand": "Nike",
       "price": 330,
@@ -382,11 +625,26 @@
         "Amarillo"
       ],
       "sizes": [
-        { "size": "10", "stock": 2 },
-        { "size": "11", "stock": 3 },
-        { "size": "11.5", "stock": 3 },
-        { "size": "7", "stock": 8 },
-        { "size": "8", "stock": 4 }
+        {
+          "size": "10",
+          "stock": 2
+        },
+        {
+          "size": "11",
+          "stock": 3
+        },
+        {
+          "size": "11.5",
+          "stock": 3
+        },
+        {
+          "size": "7",
+          "stock": 8
+        },
+        {
+          "size": "8",
+          "stock": 4
+        }
       ],
       "image": [
         "/assets/4.webp",
@@ -398,7 +656,7 @@
       "new": false
     },
     {
-      "id": 17,
+      "id": "17",
       "model": "Vans U KNU Stack",
       "brand": "Vans",
       "price": 170,
@@ -406,13 +664,34 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "10.5", "stock": 1 },
-        { "size": "11", "stock": 9 },
-        { "size": "11.5", "stock": 4 },
-        { "size": "12", "stock": 9 },
-        { "size": "7", "stock": 6 },
-        { "size": "8", "stock": 1 },
-        { "size": "9", "stock": 10 }
+        {
+          "size": "10.5",
+          "stock": 1
+        },
+        {
+          "size": "11",
+          "stock": 9
+        },
+        {
+          "size": "11.5",
+          "stock": 4
+        },
+        {
+          "size": "12",
+          "stock": 9
+        },
+        {
+          "size": "7",
+          "stock": 6
+        },
+        {
+          "size": "8",
+          "stock": 1
+        },
+        {
+          "size": "9",
+          "stock": 10
+        }
       ],
       "image": [
         "/assets/6.jpg",
@@ -424,7 +703,7 @@
       "new": true
     },
     {
-      "id": 18,
+      "id": "18",
       "model": "Vans U Old Skool Chess",
       "brand": "Vans",
       "price": 120,
@@ -432,13 +711,34 @@
         "Blanco"
       ],
       "sizes": [
-        { "size": "10", "stock": 3 },
-        { "size": "11", "stock": 1 },
-        { "size": "7", "stock": 10 },
-        { "size": "7.5", "stock": 1 },
-        { "size": "8.5", "stock": 2 },
-        { "size": "9", "stock": 6 },
-        { "size": "9.5", "stock": 5 }
+        {
+          "size": "10",
+          "stock": 3
+        },
+        {
+          "size": "11",
+          "stock": 1
+        },
+        {
+          "size": "7",
+          "stock": 10
+        },
+        {
+          "size": "7.5",
+          "stock": 1
+        },
+        {
+          "size": "8.5",
+          "stock": 2
+        },
+        {
+          "size": "9",
+          "stock": 6
+        },
+        {
+          "size": "9.5",
+          "stock": 5
+        }
       ],
       "image": [
         "/assets/7.jpg",
@@ -450,7 +750,7 @@
       "new": false
     },
     {
-      "id": 19,
+      "id": "19",
       "model": "Vans M Skate Rowley",
       "brand": "Vans",
       "price": 220,
@@ -458,13 +758,34 @@
         "Verde"
       ],
       "sizes": [
-        { "size": "11", "stock": 9 },
-        { "size": "11.5", "stock": 8 },
-        { "size": "7", "stock": 3 },
-        { "size": "8", "stock": 1 },
-        { "size": "8.5", "stock": 2 },
-        { "size": "9", "stock": 8 },
-        { "size": "9.5", "stock": 8 }
+        {
+          "size": "11",
+          "stock": 9
+        },
+        {
+          "size": "11.5",
+          "stock": 8
+        },
+        {
+          "size": "7",
+          "stock": 3
+        },
+        {
+          "size": "8",
+          "stock": 1
+        },
+        {
+          "size": "8.5",
+          "stock": 2
+        },
+        {
+          "size": "9",
+          "stock": 8
+        },
+        {
+          "size": "9.5",
+          "stock": 8
+        }
       ],
       "image": [
         "/assets/8.jpg",
@@ -476,7 +797,7 @@
       "new": true
     },
     {
-      "id": 20,
+      "id": "20",
       "model": "Vans U SK8-Low",
       "brand": "Vans",
       "price": 120,
@@ -484,13 +805,34 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "10", "stock": 5 },
-        { "size": "10.5", "stock": 2 },
-        { "size": "11", "stock": 4 },
-        { "size": "11.5", "stock": 3 },
-        { "size": "7", "stock": 9 },
-        { "size": "8", "stock": 4 },
-        { "size": "9.5", "stock": 5 }
+        {
+          "size": "10",
+          "stock": 5
+        },
+        {
+          "size": "10.5",
+          "stock": 2
+        },
+        {
+          "size": "11",
+          "stock": 4
+        },
+        {
+          "size": "11.5",
+          "stock": 3
+        },
+        {
+          "size": "7",
+          "stock": 9
+        },
+        {
+          "size": "8",
+          "stock": 4
+        },
+        {
+          "size": "9.5",
+          "stock": 5
+        }
       ],
       "image": [
         "/assets/9.jpg",
@@ -502,7 +844,7 @@
       "new": false
     },
     {
-      "id": 21,
+      "id": "21",
       "model": "Vans U SK8-HI White",
       "brand": "Vans",
       "price": 140,
@@ -510,11 +852,26 @@
         "Blanco"
       ],
       "sizes": [
-        { "size": "11", "stock": 4 },
-        { "size": "12", "stock": 4 },
-        { "size": "8", "stock": 10 },
-        { "size": "9", "stock": 4 },
-        { "size": "9.5", "stock": 9 }
+        {
+          "size": "11",
+          "stock": 4
+        },
+        {
+          "size": "12",
+          "stock": 4
+        },
+        {
+          "size": "8",
+          "stock": 10
+        },
+        {
+          "size": "9",
+          "stock": 4
+        },
+        {
+          "size": "9.5",
+          "stock": 9
+        }
       ],
       "image": [
         "/assets/14.jpg",
@@ -524,10 +881,9 @@
       ],
       "featured": false,
       "new": false
-    }
-    ,
+    },
     {
-      "id": 22,
+      "id": "22",
       "model": "Vans M Skate Old Skool",
       "brand": "Vans",
       "price": 150,
@@ -535,12 +891,30 @@
         "Negro"
       ],
       "sizes": [
-        { "size": "10.5", "stock": 7 },
-        { "size": "11.5", "stock": 8 },
-        { "size": "12", "stock": 4 },
-        { "size": "7", "stock": 7 },
-        { "size": "7.5", "stock": 3 },
-        { "size": "9.5", "stock": 7 }
+        {
+          "size": "10.5",
+          "stock": 7
+        },
+        {
+          "size": "11.5",
+          "stock": 8
+        },
+        {
+          "size": "12",
+          "stock": 4
+        },
+        {
+          "size": "7",
+          "stock": 7
+        },
+        {
+          "size": "7.5",
+          "stock": 3
+        },
+        {
+          "size": "9.5",
+          "stock": 7
+        }
       ],
       "image": [
         "/assets/10.3.jpg",
@@ -550,10 +924,9 @@
       ],
       "featured": false,
       "new": false
-    }
-    ,
+    },
     {
-      "id": 23,
+      "id": "23",
       "model": "Vans U Upland White",
       "brand": "Vans",
       "price": 190,
@@ -561,12 +934,30 @@
         "Blanco"
       ],
       "sizes": [
-        { "size": "10", "stock": 7 },
-        { "size": "11.5", "stock": 8 },
-        { "size": "7", "stock": 4 },
-        { "size": "7.5", "stock": 4 },
-        { "size": "8", "stock": 4 },
-        { "size": "9", "stock": 2 }
+        {
+          "size": "10",
+          "stock": 7
+        },
+        {
+          "size": "11.5",
+          "stock": 8
+        },
+        {
+          "size": "7",
+          "stock": 4
+        },
+        {
+          "size": "7.5",
+          "stock": 4
+        },
+        {
+          "size": "8",
+          "stock": 4
+        },
+        {
+          "size": "9",
+          "stock": 2
+        }
       ],
       "image": [
         "/assets/11.jpg",
@@ -576,10 +967,9 @@
       ],
       "featured": true,
       "new": false
-    }
-    ,
+    },
     {
-      "id": 24,
+      "id": "24",
       "model": "Vans W Authentic Platform",
       "brand": "Vans",
       "price": 70,
@@ -587,10 +977,22 @@
         "Blanco"
       ],
       "sizes": [
-        { "size": "10", "stock": 4 },
-        { "size": "10.5", "stock": 1 },
-        { "size": "12", "stock": 9 },
-        { "size": "8", "stock": 10 }
+        {
+          "size": "10",
+          "stock": 3
+        },
+        {
+          "size": "10.5",
+          "stock": 1
+        },
+        {
+          "size": "12",
+          "stock": 9
+        },
+        {
+          "size": "8",
+          "stock": 10
+        }
       ],
       "image": [
         "/assets/12.jpg",
@@ -600,10 +1002,9 @@
       ],
       "featured": true,
       "new": false
-    }
-    ,
+    },
     {
-      "id": 25,
+      "id": "25",
       "model": "Vans U KNU Skool Limited",
       "brand": "Vans",
       "price": 180,
@@ -611,12 +1012,30 @@
         "Beige"
       ],
       "sizes": [
-      { "size": "10.5", "stock": 9 },
-      { "size": "11", "stock": 2 },
-      { "size": "12", "stock": 6 },
-      { "size": "8", "stock": 9 },
-      { "size": "8.5", "stock": 3 },
-      { "size": "9", "stock": 1 }
+        {
+          "size": "10.5",
+          "stock": 9
+        },
+        {
+          "size": "11",
+          "stock": 2
+        },
+        {
+          "size": "12",
+          "stock": 6
+        },
+        {
+          "size": "8",
+          "stock": 9
+        },
+        {
+          "size": "8.5",
+          "stock": 3
+        },
+        {
+          "size": "9",
+          "stock": 1
+        }
       ],
       "image": [
         "/assets/13.jpg",

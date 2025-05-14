@@ -21,6 +21,7 @@ function CartItem({ product }) {
             <button 
               onClick={() => handleIncreaseQuantity(id, size)}
               disabled={quantity >= stock}
+              title={quantity >= stock ? 'No se pueden agregar más productos. Límite de stock alcanzado.' : ''}
               style={{
                 cursor: quantity >= stock ? 'not-allowed' : 'pointer',
                 opacity: quantity >= stock ? 0.5 : 1

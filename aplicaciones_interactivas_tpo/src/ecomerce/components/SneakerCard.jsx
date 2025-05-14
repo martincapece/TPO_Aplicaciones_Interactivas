@@ -1,7 +1,7 @@
 import { Box, Button, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom";
 
-export const SneakerCard = ({ id, price, model, brand, colors, image, new: isNew }) => {
+export const SneakerCard = ({ id, price, model, brand, colors, sizes, image, new: isNew }) => {
     const navigate = useNavigate();
 
     return (
@@ -10,34 +10,62 @@ export const SneakerCard = ({ id, price, model, brand, colors, image, new: isNew
                 <CardMedia component="img" alt={model} image={image[0]} />
                 <CardContent sx={{ height: '175px' }}>
 
-                    {isNew && (
-                        <Box sx={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: '#f65454',
-                            border: '1px solid #ff7e7e',
-                            padding: '2px 6px',
-                            mb: 2
-                        }}>
-                            <Typography sx={{
-                                color: '#ffffff',
-                                fontFamily: 'Inter',
-                                fontWeight: 700,
-                                fontStyle: 'italic',
-                                fontSize: 12,
+                    <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                    >
+                        {isNew && (
+                            <Box sx={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#f65454',
+                                border: '1px solid #ff7e7e',
+                                padding: '2px 6px'
                             }}>
-                                NEW IN
-                            </Typography>
-                        </Box>
-                    )}
+                                <Typography sx={{
+                                    color: '#ffffff',
+                                    fontFamily: 'Inter',
+                                    fontWeight: 700,
+                                    fontStyle: 'italic',
+                                    fontSize: 12,
+                                }}>
+                                    NEW IN
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {!sizes.some(size => size.stock > 0) && (
+                            <Box sx={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#000',
+                                border: '1px solidrgb(0, 0, 0)',
+                                padding: '2px 6px'
+                            }}>
+                                <Typography sx={{
+                                    color: '#ffffff',
+                                    fontFamily: 'Inter',
+                                    fontWeight: 700,
+                                    fontStyle: 'italic',
+                                    fontSize: 12,
+                                }}>
+                                    SIN STOCK
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
 
                     <Box sx={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             padding: '2px 6px',
-                            mb: 2
+                            mb: isNew || !sizes.some(size => size.stock > 0) ? 0.5 : 3
                         }}>
                             <Typography sx={{
                                 color: '#ffffff',
