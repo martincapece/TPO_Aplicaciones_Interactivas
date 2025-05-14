@@ -1,20 +1,51 @@
 import React from 'react';
-import { Box, TextField, Button, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import {
+    Box,
+    TextField,
+    Button,
+    MenuItem,
+    Select,
+    InputLabel,
+    FormControl,
+    Typography
+} from '@mui/material';
+
+const AVAILABLE_SIZES = [7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12];
 
 export default function ProductForm({
     model,
     brand,
     price,
-    stock,
     sizes,
     setModel,
     setBrand,
     setPrice,
-    setStock,
     setSizes,
     onSubmit,
     buttonLabel
 }) {
+    // Manejador para cambiar el stock de un talle específico
+    const handleSizeStockChange = (size, stock) => {
+        const updatedSizes = sizes.map((s) =>
+            s.size === size ? { ...s, stock: Number(stock) } : s
+        );
+
+        // Si el talle no existe, lo agrega
+        if (!sizes.some((s) => s.size === size)) {
+            updatedSizes.push({ size, stock: Number(stock) });
+        }
+
+        // Elimina talles con stock vacío o no numérico
+        const cleaned = updatedSizes.filter((s) => !isNaN(s.stock) && s.stock > 0);
+        setSizes(cleaned);
+    };
+
+    // Obtener el stock actual de un talle dado
+    const getStockForSize = (size) => {
+        const found = sizes.find((s) => s.size === String(size));
+        return found ? found.stock : '';
+    };
+
     return (
         <Box
             sx={{
@@ -31,7 +62,13 @@ export default function ProductForm({
                 overflow: 'hidden',
             }}
         >
-            <TextField label="Modelo" fullWidth value={model} onChange={(e) => setModel(e.target.value)} sx={{ mb: 1 }} />
+            <TextField
+                label="Modelo"
+                fullWidth
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                sx={{ mb: 1 }}
+            />
 
             <FormControl fullWidth sx={{ mb: 1 }}>
                 <InputLabel id="brand-label">Marca</InputLabel>
@@ -47,15 +84,31 @@ export default function ProductForm({
                 </Select>
             </FormControl>
 
-            <TextField label="Precio" type="number" fullWidth value={price} onChange={(e) => setPrice(e.target.value)} sx={{ mb: 1 }} />
-            <TextField label="Stock" type="number" fullWidth value={stock} onChange={(e) => setStock(e.target.value)} sx={{ mb: 1 }} />
             <TextField
-                label="Tallas (separadas por comas)"
+                label="Precio"
+                type="number"
                 fullWidth
-                value={sizes.join(', ')}
-                onChange={(e) => setSizes(e.target.value.split(',').map((size) => size.trim()))}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 sx={{ mb: 1 }}
             />
+
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>Stock por talle</Typography>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 0.5 }}>
+                {AVAILABLE_SIZES.map((size) => (
+                    <TextField
+                        key={size}
+                        label={`Talle ${size}`}
+                        type="number"
+                        value={getStockForSize(String(size))}
+                        onChange={(e) => handleSizeStockChange(String(size), e.target.value)}
+                        sx={{ width: '120px', height: '80px' }}
+                        inputProps={{ min: 0 }}
+                    />
+                ))}
+            </Box>
+
             <Button variant="contained" color="primary" onClick={onSubmit} sx={{ borderRadius: 999 }}>
                 {buttonLabel}
             </Button>
