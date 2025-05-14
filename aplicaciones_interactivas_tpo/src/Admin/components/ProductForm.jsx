@@ -12,7 +12,8 @@ export default function ProductForm({
     setPrice,
     setStock,
     setSizes,
-    onSubmit
+    onSubmit,
+    buttonLabel
 }) {
     return (
         <Box
@@ -42,7 +43,7 @@ export default function ProductForm({
                 sx={{ mb: 1 }}
             />
             <Button variant="contained" color="primary" onClick={onSubmit} sx={{ borderRadius: 999 }}>
-                Crear Producto
+                {buttonLabel} 
             </Button>
         </Box>
     );

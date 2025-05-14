@@ -12,7 +12,7 @@ export default function AdminDashboard() {
   const [productos, setProductos] = React.useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [productToDelete, setProductToDelete] = React.useState(null);
-      
+
   React.useEffect(() => {
     fetch("http://localhost:3000/data")
       .then(res => res.json())
@@ -208,3 +208,4 @@ export default function AdminDashboard() {
     </>
   );
 }
+  

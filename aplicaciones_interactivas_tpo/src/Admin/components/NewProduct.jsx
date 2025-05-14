@@ -31,7 +31,7 @@ export default function NewProduct() {
     useEffect(() => {
         if (isEditable && productos.length > 0) {
             console.log("editando producto", id)
-            const productToEdit = productos.find(p => p.id === Number(id));
+            const productToEdit = productos.find(p => p.id === id);
             if (productToEdit) {
                 console.log("Producto encontrado:", productToEdit);
                 setModel(productToEdit.model);
@@ -119,7 +119,7 @@ export default function NewProduct() {
 
     const handleUpdateProduct = () => {
         const updatedProduct = {
-            id: Number(id),
+            id: id,
             model,
             brand,
             price,
@@ -128,13 +128,34 @@ export default function NewProduct() {
             image: [mainImage, ...extraImages.filter(img => img !== null)],
         };
 
-        const index = productos.findIndex(p => p.id === Number(id));
+        const index = productos.findIndex(p => p.id === id);
         if (index !== -1) {
-            productos[index] = updatedProduct;
-            console.log("Producto actualizado:", updatedProduct);
-            navigate(`/producto/${id}`);
+            // Actualiza el estado local
+            const updatedProductos = [...productos];
+            updatedProductos[index] = updatedProduct;
+            setProductos(updatedProductos);  // Actualiza la lista de productos en el estado
+
+            // Enviar la actualización al servidor
+            fetch(`http://localhost:3000/data/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedProduct),
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Error al actualizar el producto.');
+                    }
+                    return res.json();
+                })
+                .then(() => {
+                    console.log('Producto actualizado en el servidor JSON');
+                    navigate(`/producto/${id}`);
+                })
+                .catch(err => console.error('Error al actualizar el producto:', err));
         } else {
-            console.warn("Producto no encontrado para editar.");
+            console.warn('Producto no encontrado para editar.');
         }
     };
 
@@ -169,7 +190,7 @@ export default function NewProduct() {
                     setStock={setStock}
                     setSizes={setSizes}
                     onSubmit={() => setDialogOpen(true)}
-                    buttonLabel={isEditable ? "Guardar Cambios" : "Agregar Producto"}
+                    buttonLabel={isEditable ? "Editar Producto" : "Crear Producto"} // Pasa el texto del botón dinámico
                 />
             </Box>
 
