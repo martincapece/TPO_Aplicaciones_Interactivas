@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, TextField, Button } from '@mui/material';
+import { Box, TextField, Button, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 
 export default function ProductForm({
     model,
@@ -32,7 +32,21 @@ export default function ProductForm({
             }}
         >
             <TextField label="Modelo" fullWidth value={model} onChange={(e) => setModel(e.target.value)} sx={{ mb: 1 }} />
-            <TextField label="Marca" fullWidth value={brand} onChange={(e) => setBrand(e.target.value)} sx={{ mb: 1 }} />
+
+            <FormControl fullWidth sx={{ mb: 1 }}>
+                <InputLabel id="brand-label">Marca</InputLabel>
+                <Select
+                    labelId="brand-label"
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                    label="Marca"
+                >
+                    <MenuItem value="Nike">Nike</MenuItem>
+                    <MenuItem value="Vans">Vans</MenuItem>
+                    <MenuItem value="Jordan">Jordan</MenuItem>
+                </Select>
+            </FormControl>
+
             <TextField label="Precio" type="number" fullWidth value={price} onChange={(e) => setPrice(e.target.value)} sx={{ mb: 1 }} />
             <TextField label="Stock" type="number" fullWidth value={stock} onChange={(e) => setStock(e.target.value)} sx={{ mb: 1 }} />
             <TextField
@@ -43,7 +57,7 @@ export default function ProductForm({
                 sx={{ mb: 1 }}
             />
             <Button variant="contained" color="primary" onClick={onSubmit} sx={{ borderRadius: 999 }}>
-                {buttonLabel} 
+                {buttonLabel}
             </Button>
         </Box>
     );
