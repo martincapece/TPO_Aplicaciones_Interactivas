@@ -21,8 +21,8 @@ export default function NewProduct() {
     } = useImageUpload();
 
     const {
-        model, brand, price, stock, sizes,
-        setModel, setBrand, setPrice, setStock, setSizes,
+        model, brand, price, stock, sizes, colors,
+        setModel, setBrand, setPrice, setStock, setSizes,setColors,
         isEditable,
         handleAddProduct,
         handleUpdateProduct
@@ -47,11 +47,13 @@ export default function NewProduct() {
                     model={model}
                     brand={brand}
                     price={price}
+                    colors={colors}
                     stock={stock}
                     sizes={sizes}
                     setModel={setModel}
                     setBrand={setBrand}
                     setPrice={setPrice}
+                    setColors={setColors}
                     setStock={setStock}
                     setSizes={setSizes}
                     onSubmit={() => setDialogOpen(true)}

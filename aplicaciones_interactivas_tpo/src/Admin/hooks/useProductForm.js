@@ -10,6 +10,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
     const [productos, setProductos] = useState([]);
     const [model, setModel] = useState('');
     const [brand, setBrand] = useState('');
+    const [colors, setColors] = useState([]);
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [sizes, setSizes] = useState([]);
@@ -27,6 +28,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
             if (productToEdit) {
                 setModel(productToEdit.model);
                 setBrand(productToEdit.brand);
+                setColors(productToEdit.colors || []);
                 setPrice(productToEdit.price);
                 setStock(productToEdit.stock || '');
                 setSizes(productToEdit.sizes);
@@ -42,6 +44,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
             model,
             brand,
             price: Number(price),
+            colors,
             sizes,
             image: imageArray,
             featured: true,
@@ -67,7 +70,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
             model,
             brand,
             price,
-            stock,
+            colors,
             sizes,
             image: [mainImage, ...extraImages.filter(img => img !== null)],
         };
@@ -86,8 +89,8 @@ export default function useProductForm(setMainImage, setExtraImages) {
     };
 
     return {
-        model, brand, price, stock, sizes,
-        setModel, setBrand, setPrice, setStock, setSizes,
+        model, brand, price, stock, sizes, colors,
+        setModel, setBrand, setPrice, setStock, setSizes, setColors,
         isEditable,
         handleAddProduct,
         handleUpdateProduct
