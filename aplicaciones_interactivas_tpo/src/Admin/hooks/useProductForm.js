@@ -41,8 +41,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
         const newProduct = {
             model,
             brand,
-            price: parseInt(price),
-            stock: parseInt(stock),
+            price: Number(price),
             sizes,
             image: imageArray,
             featured: true,
