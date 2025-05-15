@@ -20,6 +20,7 @@ export const Navbar = () => {
   const { dispatch, authState } = useContext(AuthContext);
   const { user } = authState;
   const [productos, setProductos] = useState([]);
+  const { resetCart } = useContext(CartContext);
 
   useEffect(() => {
     fetch("http://localhost:3000/data")
@@ -249,7 +250,7 @@ export const Navbar = () => {
           >
             <Typography variant='p' sx={{ fontFamily: 'Inter', fontWeight: '600', px: 1 }}>{ user?.email || 'user' }</Typography>
             <MenuItem onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</MenuItem>
-            <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
+            <MenuItem onClick={() => logoutFirebase(dispatch, resetCart)}>Cerrar sesión</MenuItem>
           </Menu>
         </Box>
 
