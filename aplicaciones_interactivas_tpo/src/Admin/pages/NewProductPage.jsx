@@ -29,7 +29,7 @@ export default function NewProduct() {
     } = useProductForm(setMainImage, setExtraImages);
 
     return (
-        <Box sx={{ maxWidth: '1300px', margin: '40px auto', px: 2 }}>
+        <Box sx={{ maxWidth: '1300px', margin: '26px auto', px: 1 }}>
             <Typography variant="h3" sx={{ fontFamily: 'Inter', fontWeight: 'bold', fontSize: '30px', mb: 4 }} textAlign="center">
                 {isEditable ? `Editando: ${model}` : "Crear Nuevo Producto"}
             </Typography>

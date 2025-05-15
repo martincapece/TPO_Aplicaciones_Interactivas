@@ -107,14 +107,14 @@ export default function ProductForm({
                 fullWidth
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                sx={{ mb: 1 }}
+                sx={{ mb: 0.5 }}
             />
 
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
                 Stock por talle
             </Typography>
 
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 0.5 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 0.7 }}>
                 {AVAILABLE_SIZES.map((size) => (
                     <TextField
                         key={size}
@@ -122,7 +122,7 @@ export default function ProductForm({
                         type="number"
                         value={getStockForSize(String(size))}
                         onChange={(e) => handleSizeStockChange(String(size), e.target.value)}
-                        sx={{ width: '120px', height: '80px' }}
+                        sx={{ width: '120px', height: '63px' }}
                         inputProps={{ min: 0 }}
                     />
                 ))}
