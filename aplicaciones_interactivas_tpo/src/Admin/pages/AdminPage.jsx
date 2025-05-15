@@ -1,39 +1,29 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { IconButton, Select, MenuItem, Checkbox, Button, Box } from '@mui/material'; // Asegúrate de importar Select y MenuItem
+import {
+  IconButton, Select, MenuItem, Checkbox, Button,
+  Box
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import { useNavigate } from 'react-router-dom';
+import { useAdmin } from '../hooks/useAdmin'; 
 
-export default function AdminDashboard() {
+export default function AdminPage() {
   const navigate = useNavigate();
-  const [productRows, setProductRows] = React.useState();
-
-  const [productos, setProductos] = React.useState([]);
-      
-      React.useEffect(() => {
-          fetch("http://localhost:3000/data")
-              .then(res => res.json())
-              .then(data => setProductos(data))
-              .catch(err => console.error("Error al cargar productos", err));
-      }, []);
-
-  React.useEffect(() => {
-    // TODO: aqui ira el llamado a la API
-    if ( productos.length > 0 ) {
-        setProductRows( productos ); //carga todos los productos.
-      }
-    }, [productos]);
-
-  //  Funcion que maneja la edición de un producto
-  const handleEdit = (id) => {
-    navigate(`/admin/edit-product/${id}`);
-  };
-
-  const handleDelete = (id) => {
-    console.log(`Delete product with id: ${id}`);
-  };
+  const {
+    productRows,
+    setProductRows,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
+    handleEdit,
+    handleDelete,
+    confirmDelete,
+    updateProduct,
+  } = useAdmin();
 
   const columns = [
     { field: 'id', headerName: 'ID', flex: 0.1, headerAlign: 'center', align: 'center' },
@@ -66,14 +56,14 @@ export default function AdminDashboard() {
         const sizes = Array.isArray(params.row.sizes) ? params.row.sizes : [];
         return (
           <Select
-            value={sizes[0] || ''}
+            value={sizes[0]?.size || ''}
             size="small"
             fullWidth
             sx={{ backgroundColor: 'transparent' }}
           >
-            {sizes.map((size, index) => (
-              <MenuItem key={index} value={size}>
-                {size}
+            {sizes.map((item, index) => (
+              <MenuItem key={index} value={item.size}>
+                {item.size} (stock: {item.stock})
               </MenuItem>
             ))}
           </Select>
@@ -91,11 +81,13 @@ export default function AdminDashboard() {
       renderCell: (params) => (
         <Checkbox
           checked={params.row.featured}
-          onChange={() => {
+          onChange={async () => {
+            const updatedValue = !params.row.featured;
             const updatedRows = productRows.map((row) =>
-              row.id === params.row.id ? { ...row, featured: !row.featured } : row
+              row.id === params.row.id ? { ...row, featured: updatedValue } : row
             );
             setProductRows(updatedRows);
+            await updateProduct(params.row.id, { featured: updatedValue });
           }}
           color="primary"
         />
@@ -112,11 +104,13 @@ export default function AdminDashboard() {
       renderCell: (params) => (
         <Checkbox
           checked={params.row.new}
-          onChange={() => {
+          onChange={async () => {
+            const updatedValue = !params.row.new;
             const updatedRows = productRows.map((row) =>
-              row.id === params.row.id ? { ...row, new: !row.new } : row
+              row.id === params.row.id ? { ...row, new: updatedValue } : row
             );
             setProductRows(updatedRows);
+            await updateProduct(params.row.id, { new: updatedValue });
           }}
           color="primary"
         />
@@ -160,8 +154,8 @@ export default function AdminDashboard() {
           rows={productRows}
           columns={columns}
           getRowId={(row) => row.id}
-          pageSize={5} // Tamaño de página inicial
-          pageSizeOptions={[5, 10, productRows?.length || 5]} // Opciones de tamaño de página disponibles
+          pageSize={5}
+          pageSizeOptions={[5, 10, productRows?.length || 5]}
           checkboxSelection
           rowHeight={80}
           disableRowSelectionOnClick
@@ -169,6 +163,19 @@ export default function AdminDashboard() {
           pagination
         />
       </Paper>
+
+      <ConfirmationDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={() => {
+          setDeleteDialogOpen(false);
+          setTimeout(() => {
+            confirmDelete();
+          }, 0);
+        }}
+        title="¿Eliminar producto?"
+        message="¿Estás seguro? Esta acción no se puede deshacer."
+      />
     </>
   );
 }

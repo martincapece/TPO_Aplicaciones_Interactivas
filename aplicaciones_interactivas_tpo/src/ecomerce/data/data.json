@@ -11,27 +11,27 @@
       "sizes": [
         {
           "size": "7",
-          "stock": 0
+          "stock": 2
         },
         {
           "size": "8",
-          "stock": 0
+          "stock": 10
         },
         {
           "size": "8.5",
-          "stock": 0
+          "stock": 4
         },
         {
           "size": "9.5",
-          "stock": 0
+          "stock": 3
         },
         {
           "size": "10.5",
-          "stock": 0
+          "stock": 8
         },
         {
           "size": "11",
-          "stock": 0
+          "stock": 10
         }
       ],
       "image": [
@@ -431,7 +431,7 @@
         },
         {
           "size": "10.5",
-          "stock": 0
+          "stock": 1
         },
         {
           "size": "12",
@@ -979,7 +979,7 @@
       "sizes": [
         {
           "size": "10",
-          "stock": 3
+          "stock": 4
         },
         {
           "size": "10.5",
