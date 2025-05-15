@@ -29,7 +29,7 @@ export const EcomerceRoutes = () => {
                         <Route path="admin/new-product" element={<NewProductPage />} />
                         <Route path="/admin/edit-product/:id" element={<NewProductPage />} />
                         <Route path="/producto/:id" element={<SneakerPage />} />
-
+                        <Route path="/productos" element={<Catalogo />} />
                         <Route path="/nosotros/" element={<Nosotros />} />
                         <Route path="/legales/" element={<Legales />} />
                         <Route path="/catalogo/" element={<Catalogo />} />

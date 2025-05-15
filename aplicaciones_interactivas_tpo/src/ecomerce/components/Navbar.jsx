@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
-import { IconButton, Badge, TextField, useTheme, useMediaQuery, Box, Stack, Menu, MenuItem, Typography, Grid } from '@mui/material';
-import { Menu as MenuIcon, ArrowBack, Search, Person, ShoppingCart } from '@mui/icons-material';
+import { IconButton, Badge, TextField, useTheme, useMediaQuery, Box, Menu, MenuItem, Typography, Grid } from '@mui/material';
+import { Menu as MenuIcon, Search, Person, ShoppingCart } from '@mui/icons-material';
 import { useNavigate, Link } from 'react-router-dom';
 import { logoutFirebase } from '../../firebase/providers';
 import { AuthContext } from '../../auth/context/AuthContext';
@@ -16,19 +16,17 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const cartItems = cartSize; // Cambia esto por el número real de artículos en el carrito
   const { dispatch, authState } = useContext(AuthContext);
   const { user } = authState;
-
   const [productos, setProductos] = useState([]);
 
   useEffect(() => {
-      fetch("http://localhost:3000/data")
-          .then(res => res.json())
-          .then(data => setProductos(data))
-          .catch(err => console.error("Error al cargar productos", err));
-      }, []); 
+    fetch("http://localhost:3000/data")
+      .then(res => res.json())
+      .then(data => setProductos(data))
+      .catch(err => console.error("Error al cargar productos", err));
+  }, []);
 
 
   const handleNavigate = (path) => {
@@ -36,9 +34,12 @@ export const Navbar = () => {
     handleCloseMenus();
   };
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault(); // PREVIENE recarga o pérdida de navegación
     if (searchText.trim()) {
-      navigate(`/search?query=${searchText}`);
+      navigate(`/productos?query=${encodeURIComponent(searchText.trim())}`);
+      setSearchOpen(false);
+      setFilteredProducts([]);
     }
   };
 
@@ -48,8 +49,11 @@ export const Navbar = () => {
 
     // Filtrar productos que coincidan con el texto ingresado
     if (value.trim()) {
-      const results = productos.filter((sneaker) =>
-        sneaker.model.toLowerCase().includes(value.toLowerCase())
+      const lowerValue = value.toLowerCase();
+      const results = productos.filter(
+        sneaker =>
+          sneaker.model.toLowerCase().includes(lowerValue) ||
+          sneaker.brand.toLowerCase().includes(lowerValue)
       );
       setFilteredProducts(results);
     } else {
@@ -163,7 +167,6 @@ export const Navbar = () => {
             </Typography>
           </Grid>
         </Grid>
-
       )}
 
       <Grid container alignItems="center" justifyContent="flex-end" size={ 3 } sx={{ flexGrow: 1 }}>
@@ -178,16 +181,17 @@ export const Navbar = () => {
             <Search />
           </IconButton>
           {searchOpen && (
-            <TextField
-              size="small"
-              variant="outlined"
-              placeholder="Buscar..."
-              value={searchText}
-              onChange={handleSearchChange}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
-              sx={{ ml: 1, width: 200 }}
-              onClick={(e) => e.stopPropagation()}
-            />
+            <form onSubmit={handleSearchSubmit}>
+              <TextField
+                size="small"
+                variant="outlined"
+                placeholder="Buscar..."
+                value={searchText}
+                onChange={handleSearchChange}
+                sx={{ ml: 1, width: 200 }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </form>
           )}
           {searchOpen && filteredProducts.length > 0 && (
             <Box
@@ -230,6 +234,7 @@ export const Navbar = () => {
               ))}
             </Box>
           )}
+          
         </Box>
 
         {/* User Menu */}

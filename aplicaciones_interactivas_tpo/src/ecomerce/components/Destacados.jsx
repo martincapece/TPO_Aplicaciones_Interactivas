@@ -24,10 +24,10 @@ export const Destacados = () => {
     }, [location]);
 
     useEffect(() => {
-    fetch("http://localhost:3000/data")
-        .then(res => res.json())
-        .then(data => setProductos(data))
-        .catch(err => console.error("Error al cargar productos", err));
+        fetch("http://localhost:3000/data")
+            .then(res => res.json())
+            .then(data => setProductos(data))
+            .catch(err => console.error("Error al cargar productos", err));
     }, []); 
 
     return (

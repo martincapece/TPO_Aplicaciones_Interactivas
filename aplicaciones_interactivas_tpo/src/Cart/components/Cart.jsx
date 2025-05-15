@@ -1,9 +1,9 @@
 import './cart.css'
 import CartItemList from './CartItemList';
-import PurchaseDetail from './PurchaseDetail';
 import { useCart } from '../hooks/useCart';
 import { useNavigate } from 'react-router-dom'; // Importamos useNavigate
 import { Grid } from '@mui/material';
+import { PurchaseDetail } from './PurchaseDetail';
 
 function Cart() {
     const { productList, subtotal } = useCart()
@@ -40,7 +40,7 @@ function Cart() {
                                 <CartItemList productList={productList} />
                             </Grid>
                             <Grid size={{ xs: 12, md: 3 }} > 
-                                <PurchaseDetail subtotal={subtotal} />
+                                <PurchaseDetail productList={productList} subtotal={subtotal} />
                             </Grid>
                         </Grid>
                     )
