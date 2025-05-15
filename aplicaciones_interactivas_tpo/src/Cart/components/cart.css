@@ -60,6 +60,23 @@
     background-color: #333;
 }
 
+.reset-button {
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.819);
+    border: 2px solid #555; 
+    color: black;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+}
+
+.reset-button:hover {
+    background-color: #F2F2F2;
+    border-color: #555; /* Cambio en el borde en el hover */
+}
+
 /* Estilos para el carrito vacío, centrado en la pantalla */
 .empty-cart {
     display: flex;
