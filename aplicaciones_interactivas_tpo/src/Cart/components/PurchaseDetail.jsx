@@ -3,7 +3,7 @@ import { useCart } from "../hooks/useCart";
 import Swal from 'sweetalert2'
 
 export const PurchaseDetail = ({ productList, subtotal }) => {
-    const { discountStock, resetCart } = useCart();
+    const { discountStock, resetCart, } = useCart();
     const navigate = useNavigate();
 
     const discount = 5;
@@ -78,6 +78,7 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
             <p>Descuento: -${subtotal === 0 ? 0 : discount}</p>
             <h3>Total: ${total < 0 ? 0 : total}</h3> {/*TODO: calcular el total, segun corresponda*/}
             <button type="submit" onClick={ onSubmit } className="checkout-button">Pagar</button>
+            <button type="submit" onClick={ resetCart } className="reset-button">Vaciar Carrito</button>
         </div>
     )
 }
