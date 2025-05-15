@@ -3,7 +3,7 @@
     {
       "id": "1",
       "model": "Jordan 1 High Travis Scott",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 250,
       "colors": [
         "Marron"
@@ -21,7 +21,7 @@
     {
       "id": "2",
       "model": "Jordan 1 Low SE",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 220,
       "colors": [
         "Verde"
@@ -56,20 +56,16 @@
         "/assets/jordan1LowSE.webp",
         "/assets/jordan1LowSE2.webp",
         "/assets/jordan1LowSE3.webp",
-        "/assets/jordan1LowSE4.webp",
-        "/assets/jordan1LowSE5.webp"
-      ],
-      "featured": false,
-      "new": true
+        "/assets/jordan1LowSE4.webp"
+      ]
     },
     {
       "id": "3",
       "model": "Jordan 1 Retro High OG",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 180,
       "colors": [
-        "Negro",
-        "Blanco"
+        "Negro"
       ],
       "sizes": [
         {
@@ -97,16 +93,13 @@
         "/assets/jordan1RetroHighOG.webp",
         "/assets/jordan1RetroHighOG2.webp",
         "/assets/jordan1RetroHighOG3.webp",
-        "/assets/jordan1RetroHighOG4.webp",
-        "/assets/jordan1RetroHighOG5.webp"
-      ],
-      "featured": false,
-      "new": false
+        "/assets/jordan1RetroHighOG4.webp"
+      ]
     },
     {
       "id": "4",
       "model": "Jordan 3 Retro",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 270,
       "colors": [
         "Blanco"
@@ -137,16 +130,13 @@
         "/assets/jordan3Retro.webp",
         "/assets/jordan3Retro2.webp",
         "/assets/jordan3Retro3.webp",
-        "/assets/jordan3Retro4.webp",
-        "/assets/jordan3Retro5.webp"
-      ],
-      "featured": true,
-      "new": false
+        "/assets/jordan3Retro4.webp"
+      ]
     },
     {
       "id": "5",
       "model": "Jordan 4 Retro",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 350,
       "colors": [
         "Gris"
@@ -173,16 +163,13 @@
         "/assets/jordan4Retro.webp",
         "/assets/jordan4Retro2.webp",
         "/assets/jordan4Retro3.webp",
-        "/assets/jordan4Retro4.webp",
-        "/assets/jordan4Retro5.webp"
-      ],
-      "featured": false,
-      "new": false
+        "/assets/jordan4Retro4.webp"
+      ]
     },
     {
       "id": "6",
       "model": "Jordan Spizike Low",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 270,
       "colors": [
         "Negro"
@@ -213,11 +200,8 @@
         "/assets/jordanSpizikeLow.webp",
         "/assets/jordanSpizikeLow2.webp",
         "/assets/jordanSpizikeLow3.webp",
-        "/assets/jordanSpizikeLow4.webp",
-        "/assets/jordanSpizikeLow5.webp"
-      ],
-      "featured": true,
-      "new": true
+        "/assets/jordanSpizikeLow4.webp"
+      ]
     },
     {
       "id": "7",
@@ -429,7 +413,7 @@
     {
       "id": "12",
       "model": "Jordan 1 Retro High",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 190,
       "colors": [
         "Dorado"
@@ -457,9 +441,7 @@
         "/assets/5.1.webp",
         "/assets/5.2.webp",
         "/assets/5.3.webp"
-      ],
-      "featured": false,
-      "new": true
+      ]
     },
     {
       "id": "13",
@@ -506,13 +488,13 @@
         "/assets/1.3.webp",
         "/assets/1.4.webp"
       ],
-      "featured": true,
+      "featured": false,
       "new": true
     },
     {
       "id": "14",
       "model": "Jordan 1 Mid SE",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 299,
       "colors": [
         "Negro"
@@ -548,14 +530,12 @@
         "/assets/2.1.webp",
         "/assets/2.2.webp",
         "/assets/2.3.webp"
-      ],
-      "featured": true,
-      "new": true
+      ]
     },
     {
       "id": "15",
       "model": "Jordan 1 Mid SE Air",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 219,
       "colors": [
         "Beige"
@@ -587,14 +567,12 @@
         "/assets/3.1.webp",
         "/assets/3.2.webp",
         "/assets/3.3.webp"
-      ],
-      "featured": false,
-      "new": false
+      ]
     },
     {
       "id": "16",
       "model": "Jordan 6 Retro Yellow Ochre",
-      "brand": "Nike",
+      "brand": "Jordan",
       "price": 330,
       "colors": [
         "Amarillo"
@@ -627,8 +605,7 @@
         "/assets/4.2.webp",
         "/assets/4.3.webp"
       ],
-      "featured": true,
-      "new": false
+      "featured": true
     },
     {
       "id": "17",
@@ -941,7 +918,7 @@
         "/assets/11.3.jpg"
       ],
       "featured": true,
-      "new": false
+      "new": true
     },
     {
       "id": "24",
@@ -976,7 +953,7 @@
         "/assets/12.3.jpg"
       ],
       "featured": true,
-      "new": false
+      "new": true
     },
     {
       "id": "25",
