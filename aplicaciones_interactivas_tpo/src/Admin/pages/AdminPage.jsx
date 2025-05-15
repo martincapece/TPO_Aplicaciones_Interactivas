@@ -3,68 +3,27 @@ import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import {
   IconButton, Select, MenuItem, Checkbox, Button,
-  Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+  Box
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import { useNavigate } from 'react-router-dom';
+import { useAdmin } from '../hooks/useAdmin'; 
 
-export default function AdminDashboard() {
+export default function AdminPage() {
   const navigate = useNavigate();
-  const [productRows, setProductRows] = React.useState([]);
-  const [productos, setProductos] = React.useState([]);
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [productToDelete, setProductToDelete] = React.useState(null);
-
-  React.useEffect(() => {
-    fetch("http://localhost:3000/data")
-      .then(res => res.json())
-      .then(data => setProductos(data))
-      .catch(err => console.error("Error al cargar productos", err));
-  }, []);
-
-  React.useEffect(() => {
-    if (productos.length > 0) {
-      setProductRows(productos);
-    }
-  }, [productos]);
-
-  const handleEdit = (id) => {
-    navigate(`/admin/edit-product/${id}`);
-  };
-
-  const handleDelete = (id) => {
-    setProductToDelete(id);
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    try {
-      await fetch(`http://localhost:3000/data/${productToDelete}`, {
-        method: 'DELETE',
-      });
-
-      setProductos(prev => prev.filter(p => p.id !== productToDelete));
-      setDeleteDialogOpen(false);
-      setProductToDelete(null);
-    } catch (error) {
-      console.error("Error al eliminar el producto:", error);
-    }
-  };
-
-  const updateProduct = async (id, updatedFields) => {
-    try {
-      await fetch(`http://localhost:3000/data/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedFields)
-      });
-    } catch (error) {
-      console.error('Error al actualizar el producto:', error);
-    }
-  };
+  const {
+    productRows,
+    setProductRows,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
+    handleEdit,
+    handleDelete,
+    confirmDelete,
+    updateProduct,
+  } = useAdmin();
 
   const columns = [
     { field: 'id', headerName: 'ID', flex: 0.1, headerAlign: 'center', align: 'center' },
@@ -205,26 +164,18 @@ export default function AdminDashboard() {
         />
       </Paper>
 
-      {/* Dialogo de confirmación para eliminar producto */}
-      <Dialog
+      <ConfirmationDialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-      >
-        <DialogTitle>¿Eliminar producto?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            ¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={confirmDelete} color="secondary">
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={() => {
+          setDeleteDialogOpen(false);
+          setTimeout(() => {
+            confirmDelete();
+          }, 0);
+        }}
+        title="¿Eliminar producto?"
+        message="¿Estás seguro? Esta acción no se puede deshacer."
+      />
     </>
   );
 }

@@ -9,8 +9,8 @@ import { Box } from "@mui/material";
 import { Nosotros } from "../pages/Nosotros"
 import { Legales } from "../pages/Legales"
 import { Catalogo } from "../pages/Catalogo"
-import AdminDashboard from "../../Admin/components/AdminDashboard"
-import NewProduct from "../../Admin/components/NewProduct"
+import NewProductPage from "../../Admin/pages/NewProductPage"
+import AdminPage from "../../Admin/pages/AdminPage"
 
 
 export const EcomerceRoutes = () => {
@@ -25,9 +25,9 @@ export const EcomerceRoutes = () => {
                     <Routes location={location} key={location.pathname}>
                         <Route path="inicio" element={<EcomercePage />} />
                         <Route path="inicio/cart" element={<Cart />} />
-                        <Route path="admin" element={<AdminDashboard />} />
-                        <Route path="admin/new-product" element={<NewProduct />} />
-                        <Route path="/admin/edit-product/:id" element={<NewProduct />} />
+                        <Route path="admin" element={<AdminPage />} />
+                        <Route path="admin/new-product" element={<NewProductPage />} />
+                        <Route path="/admin/edit-product/:id" element={<NewProductPage />} />
                         <Route path="/producto/:id" element={<SneakerPage />} />
 
                         <Route path="/nosotros/" element={<Nosotros />} />
