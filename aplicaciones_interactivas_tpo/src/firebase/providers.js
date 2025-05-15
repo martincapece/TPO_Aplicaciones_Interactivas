@@ -13,6 +13,11 @@ export const loginWithEmailPassword = async({ email, password }, dispatch) => {
 
         const user = { uid, photoURL, email, password, displayName };
 
+        (email === 'administrador@apis.com')
+            ? user.role = 'admin'
+            : user.role = 'user';
+        
+
         // Dispatch al reducer
         dispatch({ type: types.login, payload: user });
 

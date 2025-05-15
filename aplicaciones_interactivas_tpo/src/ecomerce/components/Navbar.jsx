@@ -282,6 +282,11 @@ export const Navbar = () => {
             onClose={handleCloseMenus}
           >
             <Typography variant='p' sx={{ fontFamily: 'Inter', fontWeight: '600', px: 1 }}>{ user?.email || 'user' }</Typography>
+            {
+              user?.role === 'admin' && (
+                <MenuItem variant="p" onClick={() => handleNavigate('/admin')} sx={{ cursor: 'pointer', fontWeight: 500 }}>Dashboard</MenuItem>
+              )
+            }
             <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
           </Menu>
         </Box>
