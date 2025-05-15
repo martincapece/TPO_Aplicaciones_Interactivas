@@ -133,6 +133,7 @@ export const logoutFirebase = async( dispatch ) => {
     dispatch({ type: types.logout });
 
     localStorage.removeItem('user');
+    localStorage.removeItem('cart');
     
     return out 
 }
