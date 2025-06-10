@@ -15,7 +15,7 @@ export const Navbar = () => {
   const [filteredProducts, setFilteredProducts] = useState([]); // Estado para los productos filtrados
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const cartItems = cartSize; // Cambia esto por el número real de artículos en el carrito
   const { dispatch, authState } = useContext(AuthContext);
   const { user } = authState;
@@ -102,14 +102,14 @@ export const Navbar = () => {
       onClick={(e) => e.stopPropagation()}
     >
       {/* Logo */}
-      <Grid  size={{ md: 6, lg: 4.5 }} display={(isMobile) ? 'none' : ''} >
+      <Grid  size={{ md: 2, lg: 3 }} display={(isMobile) ? 'none' : ''} >
         <img src="/assets/logo_ecomerce.png" alt="Logo"  onClick={() => navigate('/')} sx={{ cursor: 'pointer' }} style={{ width: 100  }} />
       </Grid>
 
       {/* Menu (responsive) */}
       {isMobile ? (
         <>
-          <Grid size={ 4.5 }>
+          <Grid size={{ sm: 2 }}>
             <IconButton onClick={handleOpenMenu}>
               <MenuIcon />
             </IconButton>
@@ -125,12 +125,26 @@ export const Navbar = () => {
             </Menu>
           </Grid>
 
-          <Grid onClick={() => navigate('/')} size={ 1 } sx={{ cursor: 'pointer' }}>
-            <img src="/assets/logo_ecomerce.png" alt="Logo" style={{ width: 50 }} />
+          <Grid 
+          onClick={() => navigate('/')} 
+          size={{ sm: 2 }}
+          sx={{ 
+            cursor: 'pointer', 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          >
+            <Grid
+            component="img"
+            src="/assets/logo_ecomerce.png"
+            alt="Logo"
+            sx={{ width: { xs: 60, sm: 80, } }} // ancho responsivo
+            />
           </Grid>
         </>
       ) : (
-        <Grid container spacing={3} size={{ md: 6, lg: 4.5 }}>
+        <Grid container spacing={ 3 } size={{ md: 6, lg: 5 }} justifyContent={'center'} >
           <Grid>
             <Typography
               variant="body1"
@@ -170,9 +184,17 @@ export const Navbar = () => {
         </Grid>
       )}
 
-      <Grid container alignItems="center" justifyContent="flex-end" size={ 3 } sx={{ flexGrow: 1 }}>
+      <Grid 
+      container
+      size={{ xs: searchOpen ? 6 : 4, sm: searchOpen ? 4 : 3 }} 
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'end'
+      }}
+      >
         {/* Search */}
-        <Box display="flex" alignItems="center" position="relative">
+        <Box display="flex" alignItems="center" position="relative" size='small'>
           <IconButton onClick={(e) => {
             e.stopPropagation();
             setSearchOpen(!searchOpen);
@@ -189,7 +211,7 @@ export const Navbar = () => {
                 placeholder="Buscar..."
                 value={searchText}
                 onChange={handleSearchChange}
-                sx={{ ml: 1, width: 200 }}
+                sx={{ ml: 1, width: { xs: 55, sm: 100, lg: 150} }}
                 onClick={(e) => e.stopPropagation()}
               />
             </form>
@@ -224,13 +246,25 @@ export const Navbar = () => {
                     setFilteredProducts([]);
                   }}
                 >
-                  <Box
-                    component="img"
-                    src={product.image[0]} // Usa la primera imagen del producto
-                    alt={product.model}
-                    sx={{ width: 40, height: 40, borderRadius: 1, mr: 2 }}
-                  />
-                  <Typography variant="body2">{product.model}</Typography>
+                  <Grid
+                  container
+                  direction={{ xs: 'column', sm: 'row' }} // Stack en mobile, horizontal en desktop
+                  alignItems="center"
+                  borderBottom={1}
+                  borderColor="divider"
+                  >
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <Box
+                        component="img"
+                        src={product.image[0]} // Usa la primera imagen del producto
+                        alt={product.model}
+                        sx={{ width: 40, height: 40, borderRadius: 1, mr: 2 }}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mb: 1}}>
+                      <Typography variant="body2">{product.model}</Typography>
+                    </Grid>
+                  </Grid>
                 </Box>
               ))}
             </Box>
@@ -240,7 +274,7 @@ export const Navbar = () => {
 
         {/* User Menu */}
         <Box>
-          <IconButton onClick={handleOpenUserMenu}>
+          <IconButton onClick={handleOpenUserMenu} size='small'>
             <Person />
           </IconButton>
           <Menu
@@ -249,13 +283,17 @@ export const Navbar = () => {
             onClose={handleCloseMenus}
           >
             <Typography variant='p' sx={{ fontFamily: 'Inter', fontWeight: '600', px: 1 }}>{ user?.email || 'user' }</Typography>
-            <MenuItem onClick={() => handleNavigate('/metodos-pago')}>Métodos de pago</MenuItem>
-            <MenuItem onClick={() => logoutFirebase(dispatch, resetCart)}>Cerrar sesión</MenuItem>
+            {
+              user?.role === 'admin' && (
+                <MenuItem variant="p" onClick={() => handleNavigate('/admin')} sx={{ cursor: 'pointer', fontWeight: 500 }}>Dashboard</MenuItem>
+              )
+            }
+            <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
           </Menu>
         </Box>
 
         {/* Cart */}
-        <IconButton component={Link} to="/inicio/cart" onClick={() => navigate('/cart')}>
+        <IconButton component={Link} to="/inicio/cart" size='small' onClick={() => navigate('/cart')}>
           <Badge badgeContent={cartItems} color="error">
             <ShoppingCart />
           </Badge>

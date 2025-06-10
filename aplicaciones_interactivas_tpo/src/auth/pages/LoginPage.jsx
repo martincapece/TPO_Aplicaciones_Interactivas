@@ -38,8 +38,6 @@ export const LoginPage = () => {
             console.warn(result.errorMessage);
             return;
         }
-
-        console.log("logeado")
     }
 
     const onSubmitButton = async( event ) => {
@@ -51,8 +49,6 @@ export const LoginPage = () => {
             console.warn(result.errorMessage);
             return;
         }
-
-        console.log("logeado")
     }
 
     return (
@@ -129,7 +125,6 @@ export const LoginPage = () => {
                             fullWidth
                             xs={ 4 }
                             onClick={ facebookSignIn }
-                            disabled
                             sx={{
                                 fontFamily: 'Inter',
                                 fontWeight: 500,

@@ -3,7 +3,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import {
   IconButton, Select, MenuItem, Checkbox, Button,
-  Box
+  Box,
+  Grid
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -142,14 +143,14 @@ export default function AdminPage() {
   ];
 
   return (
-    <>
+    <Grid sx={{ height: '100vh' }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mr={4} mt={2} ml={2}>
         <h1>Dashboard</h1>
         <Button variant="contained" color="primary" onClick={() => navigate('/admin/new-product')}>
           Agregar producto
         </Button>
       </Box>
-      <Paper sx={{ height: 500, width: '100%' }}>
+      <Paper sx={{ height: '80%', width: '100%' }}>
         <DataGrid
           rows={productRows}
           columns={columns}
@@ -176,6 +177,6 @@ export default function AdminPage() {
         title="¿Eliminar producto?"
         message="¿Estás seguro? Esta acción no se puede deshacer."
       />
-    </>
+    </Grid>
   );
 }

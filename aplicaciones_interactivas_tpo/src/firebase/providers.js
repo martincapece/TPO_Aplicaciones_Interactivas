@@ -13,11 +13,13 @@ export const loginWithEmailPassword = async({ email, password }, dispatch) => {
 
         const user = { uid, photoURL, email, password, displayName };
 
+        (email === 'administrador@apis.com')
+            ? user.role = 'admin'
+            : user.role = 'user';
+        
+
         // Dispatch al reducer
         dispatch({ type: types.login, payload: user });
-
-        // Guardar en LocalStorage
-        localStorage.setItem('user', JSON.stringify(user));
 
         return { ok: true }
         
@@ -60,7 +62,7 @@ export const registerUserWithEmailPassword = async({ name, displayName, email, p
 
 export const singInWithFacebook = async( dispatch ) => {
     try {
-        const result = await signInWithPopup(FirebaseAuth, googleProvider);
+        const result = await signInWithPopup(FirebaseAuth, facebookProvider);
         const { uid, photoURL, displayName, email } = result.user;
         
         const user = { uid, photoURL, displayName, email };
@@ -111,8 +113,6 @@ export const singInWithGoogle = async( dispatch ) => {
         
         dispatch({ type: types.login, payload: user });
 
-        localStorage.setItem('user', JSON.stringify(user));
-
         return {
             ok: true,
             uid, photoURL, displayName, email
@@ -127,14 +127,12 @@ export const singInWithGoogle = async( dispatch ) => {
     }
 }
 
-
-export const logoutFirebase = async( dispatch, resetCart ) => {
-    resetCart(); 
-    const out = await FirebaseAuth.signOut();
+export const logoutFirebase = async( dispatch ) => {
+    await FirebaseAuth.signOut();
 
     dispatch({ type: types.logout });
 
-    localStorage.removeItem('user');
+    // borra cosas no relacionadas al auth
+    localStorage.removeItem('cart');
     
-    return out 
 }

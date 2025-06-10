@@ -21,15 +21,15 @@ export default function NewProduct() {
     } = useImageUpload();
 
     const {
-        model, brand, price, stock, sizes,
-        setModel, setBrand, setPrice, setStock, setSizes,
+        model, brand, price, stock, sizes, colors,
+        setModel, setBrand, setPrice, setStock, setSizes,setColors,
         isEditable,
         handleAddProduct,
         handleUpdateProduct
     } = useProductForm(setMainImage, setExtraImages);
 
     return (
-        <Box sx={{ maxWidth: '1300px', margin: '40px auto', px: 2 }}>
+        <Box sx={{ maxWidth: '1300px', margin: '26px auto', px: 1 }}>
             <Typography variant="h3" sx={{ fontFamily: 'Inter', fontWeight: 'bold', fontSize: '30px', mb: 4 }} textAlign="center">
                 {isEditable ? `Editando: ${model}` : "Crear Nuevo Producto"}
             </Typography>
@@ -47,11 +47,13 @@ export default function NewProduct() {
                     model={model}
                     brand={brand}
                     price={price}
+                    colors={colors}
                     stock={stock}
                     sizes={sizes}
                     setModel={setModel}
                     setBrand={setBrand}
                     setPrice={setPrice}
+                    setColors={setColors}
                     setStock={setStock}
                     setSizes={setSizes}
                     onSubmit={() => setDialogOpen(true)}
