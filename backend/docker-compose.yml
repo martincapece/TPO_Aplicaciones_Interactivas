@@ -1,0 +1,17 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .                    # donde está tu Dockerfile
+      dockerfile: Dockerfile        # multi-stage Dockerfile
+    image: api-ecommerce:latest     # nombre de la imagen resultante
+    container_name: api-ecommerce
+    restart: on-failure
+    ports:
+      - "8080:8080"                 # expone tu Spring Boot en el 8080
+    environment:
+      DB_URL:   "jdbc:postgresql://ep-calm-mountain-a8n5g4lq-pooler.eastus2.azure.neon.tech/ecommerce?sslmode=require"
+      DB_USER_NAME:   "neondb_owner"
+      DB_PASSWORD:    "npg_LEJs5cqv4UCa"
