@@ -16,7 +16,7 @@ public class ImagenProductoController {
     private final ImagenProductoService service;
 
     @GetMapping("/productos/{sku}")
-    public List<ImagenProducto> listarPorProducto(@PathVariable String sku) {
+    public List<ImagenProducto> listarPorProducto(@PathVariable Long sku) {
         return service.obtenerPorProducto(sku);
     }
 

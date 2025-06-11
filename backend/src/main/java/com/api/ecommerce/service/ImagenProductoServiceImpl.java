@@ -16,7 +16,7 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ImagenProducto> obtenerPorProducto(String sku) {
+    public List<ImagenProducto> obtenerPorProducto(Long sku) {
         return repo.findByProductoSkuOrderByOrden(sku);
     }
 

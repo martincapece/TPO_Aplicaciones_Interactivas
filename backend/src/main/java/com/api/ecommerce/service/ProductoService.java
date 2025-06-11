@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface ProductoService {
     List<Producto> obtenerTodos();
-    Producto obtenerPorSku(String sku);
+    Producto obtenerPorSku(Long sku);
     Producto crearProducto(Producto p);
-    void eliminarProducto(String sku);
+    void eliminarProducto(Long sku);
 
     /** Filtrado dinámico combinado */
     List<Producto> filtrar(

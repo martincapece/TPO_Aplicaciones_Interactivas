@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ImagenProductoRepository extends JpaRepository<ImagenProducto, Long> {
-    List<ImagenProducto> findByProductoSkuOrderByOrden(String sku);
+    List<ImagenProducto> findByProductoSkuOrderByOrden(Long sku);
 }

@@ -22,7 +22,7 @@ public class ProductoController {
     }
 
     @GetMapping("/{sku}")
-    public Producto obtenerUno(@PathVariable String sku) {
+    public Producto obtenerUno(@PathVariable Long sku) {
         return service.obtenerPorSku(sku);
     }
 
@@ -33,7 +33,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{sku}")
-    public ResponseEntity<Void> borrar(@PathVariable String sku) {
+    public ResponseEntity<Void> borrar(@PathVariable Long sku) {
         service.eliminarProducto(sku);
         return ResponseEntity.noContent().build();
     }

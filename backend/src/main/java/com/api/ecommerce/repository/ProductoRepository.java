@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductoRepository
-        extends JpaRepository<Producto, String>,
+        extends JpaRepository<Producto, Long>,
         JpaSpecificationExecutor<Producto> {
     // Combinar filtros dinámicamente
 }

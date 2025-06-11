@@ -2,30 +2,42 @@ package com.api.ecommerce.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "producto")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-@Builder
+@Data
 public class Producto {
 
     @Id
-    @Column(name = "sku", length = 50, nullable = false)
-    private String sku;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long sku;
 
+    @Column(name = "modelo", nullable = false)
     private String modelo;
+
+    @Column(name = "marca", nullable = false)
     private String marca;
+
+    @Column(name = "color", nullable = false)
     private String color;
 
-    @Column(precision = 10, scale = 2, nullable = false)
+    @Column(name = "precio", nullable = false)
     private BigDecimal precio;
 
-    @Column(columnDefinition = "text")
+    @Column(name = "descripcion", nullable = false)
     private String descripcion;
 
+    @Column(name = "destacado")
     private Boolean destacado;
+
+    @Column(name = "nuevo")
     private Boolean nuevo;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    private List<ImagenProducto> imagenes;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductoTalle> stockTalles;
 }

@@ -27,7 +27,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Producto obtenerPorSku(String sku) {
+    public Producto obtenerPorSku(Long sku) {
         return repo.findById(sku)
                 .orElseThrow(() -> new IllegalArgumentException("Producto con SKU " + sku + " no encontrado"));
     }
@@ -41,9 +41,9 @@ public class ProductoServiceImpl implements ProductoService {
         return repo.save(p);
     }
 
-    @Override
     @Transactional
-    public void eliminarProducto(String sku) {
+    @Override
+    public void eliminarProducto(Long sku) {
         if (!repo.existsById(sku)) {
             throw new IllegalArgumentException("No existe producto con SKU " + sku);
         }

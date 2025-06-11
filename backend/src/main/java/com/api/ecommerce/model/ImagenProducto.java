@@ -3,14 +3,16 @@ package com.api.ecommerce.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "imagen_producto")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
 public class ImagenProducto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_imagen")
-    private Long idImagen;
+    private Long id_imagen;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sku", nullable = false)
