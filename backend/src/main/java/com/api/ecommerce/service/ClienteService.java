@@ -4,8 +4,8 @@ import com.api.ecommerce.model.Cliente;
 import java.util.List;
 
 public interface ClienteService {
-    /*List<Cliente> obtenerTodos();
-    Cliente obtenerPorId(Long id);
-    Cliente crearCliente(Cliente cliente);
-    void eliminarCliente(Long id);*/
+    List<Cliente> obtenerTodos();
+    Cliente obtenerClientePorId(Long id);
+    Cliente guardarCliente(Cliente cliente);
+    void borrarCliente(Long id);
 }

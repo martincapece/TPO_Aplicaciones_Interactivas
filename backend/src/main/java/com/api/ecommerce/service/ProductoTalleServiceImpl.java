@@ -3,33 +3,33 @@ package com.api.ecommerce.service;
 import com.api.ecommerce.model.ProductoTalle;
 import java.util.List;
 
+import com.api.ecommerce.repository.ProductoTalleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductoTalleServiceImpl implements ProductoTalleService {
-/* 
+
+    @Autowired
+    private ProductoTalleRepository productoTalleRepository;
+
     @Override
     public List<ProductoTalle> obtenerTodos() {
-        // Implementación para obtener todos los productos-talle
-        return null;
+        return productoTalleRepository.findAll();
     }
 
     @Override
-    public ProductoTalle obtenerPorId(Long id) {
-        // Implementación para obtener un producto-talle por ID
-        return null;
+    public ProductoTalle obtenerProductoTallePorId(Long id) {
+        return productoTalleRepository.findById(id).orElse(null);
     }
 
     @Override
-    public ProductoTalle crearProductoTalle(ProductoTalle productoTalle) {
-        // Implementación para crear un nuevo producto-talle
-        return null;
+    public ProductoTalle guardarProductoTalle(ProductoTalle productoTalle) {
+        return productoTalleRepository.save(productoTalle);
     }
 
     @Override
-    public void eliminarProductoTalle(Long id) {
-        // Implementación para eliminar un producto-talle por ID
+    public void borrarProductoTalle(Long id) {
+        productoTalleRepository.deleteById(id);
     }
-
-    */
 }

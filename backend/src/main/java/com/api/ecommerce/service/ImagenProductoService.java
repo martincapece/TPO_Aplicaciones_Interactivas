@@ -4,7 +4,8 @@ import com.api.ecommerce.model.ImagenProducto;
 import java.util.List;
 
 public interface ImagenProductoService {
-    List<ImagenProducto> obtenerPorProducto(Long sku);
-    ImagenProducto crearImagen(ImagenProducto img);
-    void eliminarImagen(Long id);
+    List<ImagenProducto> obtenerTodos();
+    List<ImagenProducto> obtenerImagenPorIdProducto(Long sku);
+    ImagenProducto guardarImagen(ImagenProducto img);
+    void borrarImagen(Long id);
 }

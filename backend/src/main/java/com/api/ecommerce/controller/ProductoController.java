@@ -14,27 +14,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductoController {
 
-    private final ProductoService service;
+    private final ProductoService productoService;
 
     @GetMapping
     public List<Producto> listarTodos() {
-        return service.obtenerTodos();
+        return productoService.obtenerTodos();
     }
 
     @GetMapping("/{sku}")
     public Producto obtenerUno(@PathVariable Long sku) {
-        return service.obtenerPorSku(sku);
+        return productoService.obtenerProductoPorSku(sku);
     }
 
     @PostMapping
     public ResponseEntity<Producto> crear(@RequestBody Producto p) {
-        Producto creado = service.crearProducto(p);
+        Producto creado = productoService.guardarProducto(p);
         return ResponseEntity.created(null).body(creado);
     }
 
     @DeleteMapping("/{sku}")
     public ResponseEntity<Void> borrar(@PathVariable Long sku) {
-        service.eliminarProducto(sku);
+        productoService.borrarProducto(sku);
         return ResponseEntity.noContent().build();
     }
 
@@ -49,14 +49,14 @@ public class ProductoController {
             @RequestParam(required = false) Boolean destacados,
             @RequestParam(required = false) Boolean nuevos
     ) {
-        return service.filtrar(marca, modelo, color, minPrecio, maxPrecio, destacados, nuevos);
+        return productoService.filtrarProducto(marca, modelo, color, minPrecio, maxPrecio, destacados, nuevos);
     }
 
     /** Creacion masiva de productos */
     @PostMapping("/bulk")
     public ResponseEntity<List<Producto>> crearProductos(@RequestBody List<Producto> productos) {
         List<Producto> creados = productos.stream()
-                .map(service::crearProducto)
+                .map(productoService::guardarProducto)
                 .toList();
         return ResponseEntity.ok(creados);
     }

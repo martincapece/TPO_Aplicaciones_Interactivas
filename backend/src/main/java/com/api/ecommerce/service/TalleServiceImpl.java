@@ -12,33 +12,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TalleServiceImpl implements TalleService {
 
-    private final TalleRepository repo;
+    private final TalleRepository talleRepository;
 
     @Override
     @Transactional(readOnly = true)
     public List<Talle> obtenerTodos() {
-        return repo.findAll();
+        return talleRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Talle obtenerPorId(Long id) {
-        return repo.findById(id)
+    public Talle obtenerTallePorId(Long id) {
+        return talleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Talle con ID " + id + " no encontrado"));
     }
 
     @Override
     @Transactional
-    public Talle crearTalle(Talle t) {
-        return repo.save(t);
+    public Talle guardarTalle(Talle t) {
+        return talleRepository.save(t);
     }
 
     @Override
     @Transactional
-    public void eliminarTalle(Long id) {
-        if (!repo.existsById(id)) {
+    public void borrarTalle(Long id) {
+        if (!talleRepository.existsById(id)) {
             throw new IllegalArgumentException("No existe talle con ID " + id);
         }
-        repo.deleteById(id);
+        talleRepository.deleteById(id);
     }
 }

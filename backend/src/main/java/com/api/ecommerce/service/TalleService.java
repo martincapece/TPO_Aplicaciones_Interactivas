@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface TalleService {
     List<Talle> obtenerTodos();
-    Talle obtenerPorId(Long id);
-    Talle crearTalle(Talle t);
-    void eliminarTalle(Long id);
+    Talle obtenerTallePorId(Long id);
+    Talle guardarTalle(Talle t);
+    void borrarTalle(Long id);
 }

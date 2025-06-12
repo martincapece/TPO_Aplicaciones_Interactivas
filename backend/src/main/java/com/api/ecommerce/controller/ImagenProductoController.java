@@ -13,22 +13,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ImagenProductoController {
 
-    private final ImagenProductoService service;
+    private final ImagenProductoService imagenProductoService;
 
-    @GetMapping("/productos/{sku}")
+    @GetMapping
+    public List<ImagenProducto> listarProductos() {
+        return imagenProductoService.obtenerTodos();
+    }
+
+    @GetMapping("/{sku}")
     public List<ImagenProducto> listarPorProducto(@PathVariable Long sku) {
-        return service.obtenerPorProducto(sku);
+        return imagenProductoService.obtenerImagenPorIdProducto(sku);
     }
 
     @PostMapping
     public ResponseEntity<ImagenProducto> crear(@RequestBody ImagenProducto img) {
-        ImagenProducto creado = service.crearImagen(img);
+        ImagenProducto creado = imagenProductoService.guardarImagen(img);
         return ResponseEntity.created(null).body(creado);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> borrar(@PathVariable Long id) {
-        service.eliminarImagen(id);
+    @DeleteMapping("/{sku}")
+    public ResponseEntity<Void> borrar(@PathVariable Long sku) {
+        imagenProductoService.borrarImagen(sku);
         return ResponseEntity.noContent().build();
     }
 }

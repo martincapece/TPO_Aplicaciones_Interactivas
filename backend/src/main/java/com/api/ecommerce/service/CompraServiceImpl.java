@@ -1,31 +1,36 @@
 package com.api.ecommerce.service;
 
+import com.api.ecommerce.model.Compra;
+import com.api.ecommerce.repository.ClienteRepository;
+import com.api.ecommerce.repository.CompraRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CompraServiceImpl implements CompraService {
-    /*
+
+    @Autowired
+    private CompraRepository compraRepository;
+
     @Override
     public List<Compra> obtenerTodos() {
-        // Implementación para obtener todas las compras
-        return null;
+        return compraRepository.findAll();
     }
 
     @Override
-    public Compra obtenerPorId(Long id) {
-        // Implementación para obtener una compra por ID
-        return null;
+    public Compra obtenerCompraPorId(Long id) {
+        return compraRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Compra crearCompra(Compra compra) {
-        // Implementación para crear una nueva compra
-        return null;
+    public Compra guardarCompra(Compra compra) {
+        return compraRepository.save(compra);
     }
 
     @Override
-    public void eliminarCompra(Long id) {
-        // Implementación para eliminar una compra por ID
+    public void borrarCompra(Long id) {
+        compraRepository.deleteById(id);
     }
-    */
 }

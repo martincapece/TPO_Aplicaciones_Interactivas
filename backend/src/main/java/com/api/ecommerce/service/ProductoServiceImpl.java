@@ -27,20 +27,20 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Producto obtenerPorSku(Long sku) {
+    public Producto obtenerProductoPorSku(Long sku) {
         return repo.findById(sku)
                 .orElseThrow(() -> new IllegalArgumentException("Producto con SKU " + sku + " no encontrado"));
     }
 
     @Override
     @Transactional
-    public Producto crearProducto(Producto p) {
+    public Producto guardarProducto(Producto p) {
         return repo.save(p);
     }
 
     @Transactional
     @Override
-    public void eliminarProducto(Long sku) {
+    public void borrarProducto(Long sku) {
         if (!repo.existsById(sku)) {
             throw new IllegalArgumentException("No existe producto con SKU " + sku);
         }
@@ -49,7 +49,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Producto> filtrar(
+    public List<Producto> filtrarProducto(
             String marca,
             String modelo,
             String color,

@@ -13,27 +13,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TalleController {
 
-    private final TalleService service;
+    private final TalleService talleService;
 
     @GetMapping
     public List<Talle> listarTodos() {
-        return service.obtenerTodos();
+        return talleService.obtenerTodos();
     }
 
     @GetMapping("/{id}")
     public Talle obtenerUno(@PathVariable Long id) {
-        return service.obtenerPorId(id);
+        return talleService.obtenerTallePorId(id);
     }
 
     @PostMapping
     public ResponseEntity<Talle> crear(@RequestBody Talle t) {
-        Talle creado = service.crearTalle(t);
+        Talle creado = talleService.guardarTalle(t);
         return ResponseEntity.created(null).body(creado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> borrar(@PathVariable Long id) {
-        service.eliminarTalle(id);
+        talleService.borrarTalle(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -41,7 +41,7 @@ public class TalleController {
     @PostMapping("/bulk")
     public ResponseEntity<List<Talle>> crearTalles(@RequestBody List<Talle> talles) {
         List<Talle> creados = talles.stream()
-                .map(service::crearTalle)
+                .map(talleService::guardarTalle)
                 .toList();
         return ResponseEntity.ok(creados);
     }

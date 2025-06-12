@@ -12,26 +12,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ImagenProductoServiceImpl implements ImagenProductoService {
 
-    private final ImagenProductoRepository repo;
+    private final ImagenProductoRepository imagenProductoRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public List<ImagenProducto> obtenerPorProducto(Long sku) {
-        return repo.findByProductoSkuOrderByOrden(sku);
+    public List<ImagenProducto> obtenerTodos() {
+        return imagenProductoRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ImagenProducto> obtenerImagenPorIdProducto(Long sku) {
+        return imagenProductoRepository.findByProductoSkuOrderByOrden(sku);
     }
 
     @Override
     @Transactional
-    public ImagenProducto crearImagen(ImagenProducto img) {
-        return repo.save(img);
+    public ImagenProducto guardarImagen(ImagenProducto img) {
+        return imagenProductoRepository.save(img);
     }
 
     @Override
     @Transactional
-    public void eliminarImagen(Long id) {
-        if (!repo.existsById(id)) {
+    public void borrarImagen(Long id) {
+        if (!imagenProductoRepository.existsById(id)) {
             throw new IllegalArgumentException("No existe imagen con ID " + id);
         }
-        repo.deleteById(id);
+        imagenProductoRepository.deleteById(id);
     }
 }
