@@ -14,7 +14,7 @@ public class ImagenProducto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_imagen;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sku", nullable = false)
     private Producto producto;
 
