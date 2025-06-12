@@ -51,4 +51,13 @@ public class ProductoController {
     ) {
         return service.filtrar(marca, modelo, color, minPrecio, maxPrecio, destacados, nuevos);
     }
+
+    /** Creacion masiva de productos */
+    @PostMapping("/bulk")
+    public ResponseEntity<List<Producto>> crearProductos(@RequestBody List<Producto> productos) {
+        List<Producto> creados = productos.stream()
+                .map(service::crearProducto)
+                .toList();
+        return ResponseEntity.ok(creados);
+    }
 }

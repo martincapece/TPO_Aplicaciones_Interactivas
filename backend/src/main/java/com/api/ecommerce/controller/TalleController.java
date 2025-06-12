@@ -36,4 +36,13 @@ public class TalleController {
         service.eliminarTalle(id);
         return ResponseEntity.noContent().build();
     }
+
+    /** Creacion masiva de Talles */
+    @PostMapping("/bulk")
+    public ResponseEntity<List<Talle>> crearTalles(@RequestBody List<Talle> talles) {
+        List<Talle> creados = talles.stream()
+                .map(service::crearTalle)
+                .toList();
+        return ResponseEntity.ok(creados);
+    }
 }

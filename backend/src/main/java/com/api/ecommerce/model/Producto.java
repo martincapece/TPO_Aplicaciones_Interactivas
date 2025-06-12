@@ -1,5 +1,6 @@
 package com.api.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -34,10 +35,4 @@ public class Producto {
 
     @Column(name = "nuevo")
     private Boolean nuevo;
-
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
-    private List<ImagenProducto> imagenes;
-
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductoTalle> stockTalles;
 }

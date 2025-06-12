@@ -35,9 +35,6 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     @Transactional
     public Producto crearProducto(Producto p) {
-        if (repo.existsById(p.getSku())) {
-            throw new IllegalArgumentException("El SKU ya existe: " + p.getSku());
-        }
         return repo.save(p);
     }
 
