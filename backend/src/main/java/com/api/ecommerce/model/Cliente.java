@@ -13,6 +13,9 @@ import java.util.List;
 @Entity
 @Table(name = "cliente")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Cliente implements UserDetails {
 
     @Id
