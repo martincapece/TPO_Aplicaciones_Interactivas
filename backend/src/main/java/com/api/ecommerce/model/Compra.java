@@ -29,6 +29,5 @@ public class Compra {
     private String medio_pago;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<ItemCompra> items;
 }
