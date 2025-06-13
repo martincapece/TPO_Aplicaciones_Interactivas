@@ -1,5 +1,6 @@
 package com.api.ecommerce.controller;
 
+import com.api.ecommerce.dto.ClienteLoginDTO;
 import com.api.ecommerce.dto.ClienteRegisterDTO;
 import com.api.ecommerce.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody ClienteRegisterDTO clienteRegisterDTO) {
-        return ResponseEntity.ok(authenticationService.login(clienteRegisterDTO));
+    public ResponseEntity<String> login(@RequestBody ClienteLoginDTO clienteLoginDTO) {
+        return ResponseEntity.ok(authenticationService.login(clienteLoginDTO));
     }
 
 }
