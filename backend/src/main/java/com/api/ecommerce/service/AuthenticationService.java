@@ -1,5 +1,6 @@
 package com.api.ecommerce.service;
 
+import com.api.ecommerce.dto.ClienteLoginDTO;
 import com.api.ecommerce.dto.ClienteRegisterDTO;
 import com.api.ecommerce.model.Cliente;
 import com.api.ecommerce.model.Role;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @Transactional
@@ -20,10 +22,31 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public String register(ClienteRegisterDTO clienteRegisterDTO) {
+        if (clienteRegisterDTO == null) {
+            throw new IllegalArgumentException("Request cannot be null");
+        }
+
+        if (!StringUtils.hasText(clienteRegisterDTO.getMail())) {
+            throw new IllegalArgumentException("Email cannot be empty");
+        }
+
+        if (!StringUtils.hasText(clienteRegisterDTO.getContraseña())) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+
+        if (!StringUtils.hasText(clienteRegisterDTO.getNombre_completo())) {
+            throw new IllegalArgumentException("Name cannot be empty");
+        }
+
+        if (!StringUtils.hasText(clienteRegisterDTO.getUsuario())) {
+            throw new IllegalArgumentException("username cannot be empty");
+        }
+        //  valida si el mail ya existe
         if (clienteRepository.existsByMail(clienteRegisterDTO.getMail())) {
             throw new RuntimeException("Email already exists");
         }
 
+        //  A partir del DTO construye un cliente
         Cliente cliente = Cliente.builder()
                 .nombre_completo(clienteRegisterDTO.getNombre_completo())
                 .usuario(clienteRegisterDTO.getUsuario())
@@ -36,11 +59,22 @@ public class AuthenticationService {
         return "User registered successfully";
     }
 
-    public String login(ClienteRegisterDTO clienteRegisterDTO) {
+    public String login(ClienteLoginDTO clienteLoginDTO) {
+        if (clienteLoginDTO == null) {
+            throw new IllegalArgumentException("Request cannot be null");
+        }
+
+        if (!StringUtils.hasText(clienteLoginDTO.getMail())) {
+            throw new IllegalArgumentException("Email cannot be empty");
+        }
+
+        if (!StringUtils.hasText(clienteLoginDTO.getContraseña())) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        clienteRegisterDTO.getMail(),
-                        clienteRegisterDTO.getContraseña()));
+                        clienteLoginDTO.getMail(),
+                        clienteLoginDTO.getContraseña()));
 
         return "Login successful";
     }
