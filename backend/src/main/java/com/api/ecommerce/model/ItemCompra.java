@@ -10,19 +10,19 @@ public class ItemCompra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_item_compra;
+    private Long idItemCompra;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "nro_compra", nullable = false)
     private Compra compra;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sku", nullable = false)
-    private Producto sku;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_producto_talle", nullable = false)
+    private ProductoTalle productoTalle;
 
     @Column(name = "cantidad", nullable = false)
     private Integer cantidad;
 
     @Column(name = "precio_unitario", nullable = false)
-    private Double precio_unitario;
+    private Double precioUnitario;
 }

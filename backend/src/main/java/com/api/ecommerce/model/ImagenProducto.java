@@ -12,7 +12,7 @@ public class ImagenProducto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_imagen;
+    private Long idImagen;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sku", nullable = false)

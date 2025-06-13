@@ -9,7 +9,7 @@ import lombok.*;
 public class Talle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_talle;
+    private Long idTalle;
 
     @Column(name = "numero", length = 10, nullable = false)
     private String numero;

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ImagenProductoRepository extends JpaRepository<ImagenProducto, Long> {
     List<ImagenProducto> findByProductoSkuOrderByOrden(Long sku);
+    void deleteByProductoSku(Long sku);
 }

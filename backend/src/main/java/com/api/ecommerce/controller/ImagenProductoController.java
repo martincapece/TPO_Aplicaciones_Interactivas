@@ -1,5 +1,6 @@
 package com.api.ecommerce.controller;
 
+import com.api.ecommerce.model.Compra;
 import com.api.ecommerce.model.ImagenProducto;
 import com.api.ecommerce.service.ImagenProductoService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,12 @@ public class ImagenProductoController {
     @GetMapping("/{sku}")
     public List<ImagenProducto> listarPorProducto(@PathVariable Long sku) {
         return imagenProductoService.obtenerImagenPorIdProducto(sku);
+    }
+
+    @DeleteMapping("/producto/{sku}")
+    public ResponseEntity<Void> eliminarPorProducto(@PathVariable Long sku) {
+        imagenProductoService.deleteByProductoSku(sku);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping

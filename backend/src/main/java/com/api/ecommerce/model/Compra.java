@@ -13,7 +13,7 @@ public class Compra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long nro_compra;
+    private Long nroCompra;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
@@ -23,10 +23,10 @@ public class Compra {
     private LocalDateTime fecha;
 
     @Column(name = "precio_final", nullable = false)
-    private double precio_final;
+    private double precioFinal;
 
     @Column(name = "medio_pago", nullable = false)
-    private String medio_pago;
+    private String medioPago;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL)
     @JsonIgnore
