@@ -5,10 +5,7 @@ import com.api.ecommerce.model.Role;
 import com.api.ecommerce.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -27,5 +24,12 @@ public class AdminController {
     public ResponseEntity<Cliente> actualizarRolCliente(@PathVariable Long id, @PathVariable Role rol) {
         Cliente clienteActualizado = clienteService.actualizarRolCliente(id, rol);
         return ResponseEntity.ok(clienteActualizado);
+    }
+
+
+    @DeleteMapping("/clientes/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        clienteService.borrarCliente(id);
+        return ResponseEntity.noContent().build();
     }
 }
