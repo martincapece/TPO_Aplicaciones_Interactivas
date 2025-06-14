@@ -12,13 +12,13 @@ public class ImagenProducto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_imagen;
+    private Long idImagen;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sku", nullable = false)
     private Producto producto;
 
-    @Column(name = "url", columnDefinition = "text", nullable = false)
+    @Column(name = "url", columnDefinition = "text", nullable = false, unique = true)
     private String url;
 
     @Column(name = "orden")

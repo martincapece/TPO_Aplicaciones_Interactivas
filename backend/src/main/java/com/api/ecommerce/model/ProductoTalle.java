@@ -10,13 +10,13 @@ public class ProductoTalle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_producto_talle;
+    private Long idProductoTalle;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sku", nullable = false)
     private Producto producto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "talle", nullable = false)
     private Talle talle;
 

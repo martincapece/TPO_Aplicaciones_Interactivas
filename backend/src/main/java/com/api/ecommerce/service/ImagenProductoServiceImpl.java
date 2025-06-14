@@ -26,6 +26,12 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
         return imagenProductoRepository.findByProductoSkuOrderByOrden(sku);
     }
 
+    @Transactional
+    @Override
+    public void deleteByProductoSku(Long sku) {
+        imagenProductoRepository.deleteByProductoSku(sku);
+    }
+
     @Override
     @Transactional
     public ImagenProducto guardarImagen(ImagenProducto img) {
