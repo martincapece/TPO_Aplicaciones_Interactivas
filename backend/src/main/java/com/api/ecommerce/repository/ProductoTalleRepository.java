@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ProductoTalleRepository extends JpaRepository<ProductoTalle, Long> {
     List<ProductoTalle> findByProducto_Sku(Long sku);
+    ProductoTalle findByProducto_SkuAndTalle_IdTalle(Long sku, Long idTalle);
 }

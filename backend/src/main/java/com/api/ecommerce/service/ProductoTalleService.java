@@ -8,5 +8,7 @@ public interface ProductoTalleService {
     ProductoTalle guardarProductoTalle(ProductoTalle productoTalle);
     void borrarProductoTalle(Long id);
     List<ProductoTalle> obtenerPorSku(Long sku);
-
+    boolean descontarStock(Long sku, Long idTalle, Integer cantidad);
+    boolean agregarStock(Long sku, Long idTalle, Integer cantidad);
+    ProductoTalle getProductoTalle(Long sku, Long idTalle);
 }

@@ -45,4 +45,48 @@ public class ProductoTalleController {
                 .toList();
         return ResponseEntity.ok(creados);
     }
+
+    /** Descontar stock. */
+    @PutMapping("/descontar-stock")
+    public ResponseEntity<?> descontarStock(
+            @RequestParam Long sku,
+            @RequestParam Long idTalle,
+            @RequestParam Integer cantidad) {
+        ProductoTalle pt = productoTalleService.getProductoTalle(sku, idTalle);
+        if (pt == null) {
+            return ResponseEntity.badRequest().body("Producto y talle no encontrados.");
+        }
+        if (cantidad == null || cantidad <= 0) {
+            return ResponseEntity.badRequest().body("La cantidad a restar debe ser mayor a cero.");
+        }
+        if (pt.getStock() < cantidad) {
+            return ResponseEntity.badRequest().body("Stock insuficiente. Disponible: " + pt.getStock());
+        }
+        productoTalleService.descontarStock(sku, idTalle, cantidad);
+
+        // Volvemos a buscar el stock actualizado (opcional, o sumá/restá vos en el objeto)
+        ProductoTalle actualizado = productoTalleService.getProductoTalle(sku, idTalle);
+        return ResponseEntity.ok("Stock actualizado. Nuevo stock: " + actualizado.getStock());
+    }
+
+    /** Descontar stock. */
+    @PutMapping("/agregar-stock")
+    public ResponseEntity<?> agregarStock(
+            @RequestParam Long sku,
+            @RequestParam Long idTalle,
+            @RequestParam Integer cantidad) {
+        ProductoTalle pt = productoTalleService.getProductoTalle(sku, idTalle);
+        if (pt == null) {
+            return ResponseEntity.badRequest().body("Producto y talle no encontrados.");
+        }
+        if (cantidad == null || cantidad <= 0) {
+            return ResponseEntity.badRequest().body("La cantidad a agregar debe ser mayor a cero.");
+        }
+        productoTalleService.agregarStock(sku, idTalle, cantidad);
+
+        // Volvemos a buscar el stock actualizado (opcional, o sumá/restá vos en el objeto)
+        ProductoTalle actualizado = productoTalleService.getProductoTalle(sku, idTalle);
+        return ResponseEntity.ok("Stock actualizado. Nuevo stock: " + actualizado.getStock());
+    }
+
 }
