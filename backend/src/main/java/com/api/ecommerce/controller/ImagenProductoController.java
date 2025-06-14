@@ -43,4 +43,13 @@ public class ImagenProductoController {
         imagenProductoService.borrarImagen(sku);
         return ResponseEntity.noContent().build();
     }
+
+    /** Carga masiva de Imagenes */
+    @PostMapping("/bulk")
+    public ResponseEntity<List<ImagenProducto>> crearImagenes(@RequestBody List<ImagenProducto> imagenes) {
+        List<ImagenProducto> creadas = imagenes.stream()
+                .map(imagenProductoService::guardarImagen)
+                .toList();
+        return ResponseEntity.ok(creadas);
+    }
 }

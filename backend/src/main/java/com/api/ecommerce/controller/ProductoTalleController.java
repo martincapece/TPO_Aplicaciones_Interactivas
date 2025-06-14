@@ -36,4 +36,13 @@ public class ProductoTalleController {
         productoTalleService.borrarProductoTalle(id);
         return ResponseEntity.noContent().build();
     }
+
+    /** Carga masiva de ProductoTalle */
+    @PostMapping("/bulk")
+    public ResponseEntity<List<ProductoTalle>> crearProductoTalles(@RequestBody List<ProductoTalle> productoTalles) {
+        List<ProductoTalle> creados = productoTalles.stream()
+                .map(productoTalleService::guardarProductoTalle)
+                .toList();
+        return ResponseEntity.ok(creados);
+    }
 }
