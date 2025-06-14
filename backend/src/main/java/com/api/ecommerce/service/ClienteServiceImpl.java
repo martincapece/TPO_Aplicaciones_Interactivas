@@ -17,8 +17,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder; // INYECTA EL ENCODER
+
 
     @Override
     public List<Cliente> obtenerTodos() {
@@ -28,15 +27,6 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Cliente obtenerClientePorId(Long id) {
         return clienteRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public Cliente guardarCliente(Cliente cliente) {
-        // Hashea la contraseña antes de guardar
-        if (cliente.getContraseña() != null && !cliente.getContraseña().isBlank()) {
-            cliente.setContraseña(passwordEncoder.encode(cliente.getContraseña()));
-        }
-        return clienteRepository.save(cliente);
     }
 
     @Override

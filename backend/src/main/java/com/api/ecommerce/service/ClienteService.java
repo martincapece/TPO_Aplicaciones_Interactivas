@@ -8,7 +8,6 @@ import java.util.List;
 public interface ClienteService {
     List<Cliente> obtenerTodos();
     Cliente obtenerClientePorId(Long id);
-    Cliente guardarCliente(Cliente cliente);
     void borrarCliente(Long id);
     Cliente actualizarRolCliente(Long id, Role nuevoRol);
 }

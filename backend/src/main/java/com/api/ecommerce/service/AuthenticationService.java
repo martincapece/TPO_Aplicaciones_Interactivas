@@ -50,7 +50,7 @@ public class AuthenticationService {
 
         //  A partir del DTO construye un cliente
         Cliente cliente = Cliente.builder()
-                .nombre_completo(clienteRegisterDTO.getNombre_completo())
+                .nombreCompleto(clienteRegisterDTO.getNombre_completo())
                 .usuario(clienteRegisterDTO.getUsuario())
                 .mail(clienteRegisterDTO.getMail())
                 .contraseña(passwordEncoder.encode(clienteRegisterDTO.getContraseña()))
