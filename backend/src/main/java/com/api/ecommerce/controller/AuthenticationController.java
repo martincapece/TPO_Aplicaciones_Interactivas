@@ -23,7 +23,8 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody ClienteLoginDTO clienteLoginDTO) {
-        return ResponseEntity.ok(authenticationService.login(clienteLoginDTO));
+        String jwt = authenticationService.login(clienteLoginDTO);
+        return ResponseEntity.ok(jwt);
     }
 
 }

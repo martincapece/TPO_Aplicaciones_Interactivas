@@ -5,6 +5,7 @@ import com.api.ecommerce.dto.ClienteRegisterDTO;
 import com.api.ecommerce.model.Cliente;
 import com.api.ecommerce.model.Role;
 import com.api.ecommerce.repository.ClienteRepository;
+import com.api.ecommerce.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ public class AuthenticationService {
     private final ClienteRepository clienteRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     public String register(ClienteRegisterDTO clienteRegisterDTO) {
         if (clienteRegisterDTO == null) {
@@ -76,6 +78,11 @@ public class AuthenticationService {
                         clienteLoginDTO.getMail(),
                         clienteLoginDTO.getContraseña()));
 
-        return "Login successful";
+        // Obtengo al Cliente para usar su rol
+        Cliente cliente = clienteRepository.findByMail(clienteLoginDTO.getMail())
+                .orElseThrow(() -> new RuntimeException("User not found after authentication"));
+
+        // Generar el token JWT
+        return jwtUtil.generateToken(cliente.getMail(), cliente.getRole());
     }
 }

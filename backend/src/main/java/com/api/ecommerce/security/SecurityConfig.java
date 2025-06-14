@@ -1,6 +1,7 @@
-package com.api.ecommerce.config;
+package com.api.ecommerce.security;
 
 import com.api.ecommerce.repository.ClienteRepository;
+import com.api.ecommerce.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,20 +12,24 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final ClienteRepository clienteRepository;
+    private final JwtFilter jwtFilter;
 
     @Autowired
-    public SecurityConfig(ClienteRepository clienteRepository) {
+    public SecurityConfig(ClienteRepository clienteRepository, JwtFilter jwtFilter) {
         this.clienteRepository = clienteRepository;
+        this.jwtFilter = jwtFilter;
     }
 
     // Cargar los datos del usuario desde tu sistema a través de UsuarioRepository
@@ -63,16 +68,9 @@ public class SecurityConfig {
     // Configura las reglas de seguridad para las diferentes rutas de la API
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // http
-        //         .csrf(csrf -> csrf.disable())
-        //         .authorizeHttpRequests(auth -> auth
-        //                 .requestMatchers("/api/auth/**").permitAll()
-        //                 .anyRequest().authenticated());
-
-        // return http.build();
-
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Rutas públicas que no requieren autenticación
                         .requestMatchers("/api/auth/**").permitAll()
@@ -90,8 +88,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/pedidos/**").authenticated()
 
                         // Cualquier otra ruta requiere autenticación
-                        .anyRequest().authenticated());
-
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
