@@ -19,11 +19,6 @@ public class ProductoTalleServiceImpl implements ProductoTalleService {
     }
 
     @Override
-    public ProductoTalle obtenerProductoTallePorId(Long id) {
-        return productoTalleRepository.findById(id).orElse(null);
-    }
-
-    @Override
     public ProductoTalle guardarProductoTalle(ProductoTalle productoTalle) {
         return productoTalleRepository.save(productoTalle);
     }
@@ -31,5 +26,36 @@ public class ProductoTalleServiceImpl implements ProductoTalleService {
     @Override
     public void borrarProductoTalle(Long id) {
         productoTalleRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ProductoTalle> obtenerPorSku(Long sku) {
+        return productoTalleRepository.findByProducto_Sku(sku);
+    }
+
+    @Override
+    public boolean descontarStock(Long sku, Long idTalle, Integer cantidad) {
+        ProductoTalle pt = productoTalleRepository.findByProducto_SkuAndTalle_IdTalle(sku, idTalle);
+        if (pt == null) return false;
+        if (cantidad == null || cantidad <= 0) return false;
+        if (pt.getStock() < cantidad) return false;
+        pt.setStock(pt.getStock() - cantidad);
+        productoTalleRepository.save(pt);
+        return true;
+    }
+
+    @Override
+    public boolean agregarStock(Long sku, Long idTalle, Integer cantidad) {
+        ProductoTalle pt = productoTalleRepository.findByProducto_SkuAndTalle_IdTalle(sku, idTalle);
+        if (pt == null) return false;
+        if (cantidad == null || cantidad <= 0) return false;
+        pt.setStock(pt.getStock() + cantidad);
+        productoTalleRepository.save(pt);
+        return true;
+    }
+
+    @Override
+    public ProductoTalle getProductoTalle(Long sku, Long idTalle) {
+        return productoTalleRepository.findByProducto_SkuAndTalle_IdTalle(sku, idTalle);
     }
 }
