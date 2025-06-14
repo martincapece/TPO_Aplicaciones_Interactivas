@@ -1,9 +1,10 @@
-package com.api.ecommerce.service;
+package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.model.Cliente;
 import java.util.List;
 import com.api.ecommerce.model.Role;
 import com.api.ecommerce.repository.ClienteRepository;
+import com.api.ecommerce.service.ClienteService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

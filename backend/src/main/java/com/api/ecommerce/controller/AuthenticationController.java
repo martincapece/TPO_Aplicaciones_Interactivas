@@ -3,7 +3,7 @@ package com.api.ecommerce.controller;
 import com.api.ecommerce.dto.ClienteLoginDTO;
 import com.api.ecommerce.dto.ClienteRegisterDTO;
 import com.api.ecommerce.exceptions.AuthenticationException;
-import com.api.ecommerce.service.AuthenticationService;
+import com.api.ecommerce.service.implementation.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

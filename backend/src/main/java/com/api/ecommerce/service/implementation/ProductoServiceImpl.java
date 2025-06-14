@@ -1,7 +1,8 @@
-package com.api.ecommerce.service;
+package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.model.Producto;
 import com.api.ecommerce.repository.ProductoRepository;
+import com.api.ecommerce.service.ProductoService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;

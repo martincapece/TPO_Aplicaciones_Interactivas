@@ -1,9 +1,10 @@
-package com.api.ecommerce.service;
+package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.model.ProductoTalle;
 import java.util.List;
 
 import com.api.ecommerce.repository.ProductoTalleRepository;
+import com.api.ecommerce.service.ProductoTalleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

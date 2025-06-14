@@ -1,4 +1,4 @@
-package com.api.ecommerce.service;
+package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.dto.ClienteLoginDTO;
 import com.api.ecommerce.dto.ClienteRegisterDTO;

@@ -1,7 +1,8 @@
-package com.api.ecommerce.service;
+package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.model.ImagenProducto;
 import com.api.ecommerce.repository.ImagenProductoRepository;
+import com.api.ecommerce.service.ImagenProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

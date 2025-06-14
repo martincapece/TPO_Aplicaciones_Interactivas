@@ -1,8 +1,9 @@
-package com.api.ecommerce.service;
+package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.model.Compra;
 import com.api.ecommerce.repository.ClienteRepository;
 import com.api.ecommerce.repository.CompraRepository;
+import com.api.ecommerce.service.CompraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
