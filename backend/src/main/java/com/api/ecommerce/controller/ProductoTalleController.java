@@ -21,8 +21,8 @@ public class ProductoTalleController {
     }
 
     @GetMapping("/{sku}")
-    public ProductoTalle listarPorProducto(@PathVariable Long sku) {
-        return productoTalleService.obtenerProductoTallePorId(sku);
+    public List<ProductoTalle> listarPorProducto(@PathVariable Long sku) {
+        return productoTalleService.obtenerPorSku(sku);
     }
 
     @PostMapping

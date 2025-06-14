@@ -19,11 +19,6 @@ public class ProductoTalleServiceImpl implements ProductoTalleService {
     }
 
     @Override
-    public ProductoTalle obtenerProductoTallePorId(Long id) {
-        return productoTalleRepository.findById(id).orElse(null);
-    }
-
-    @Override
     public ProductoTalle guardarProductoTalle(ProductoTalle productoTalle) {
         return productoTalleRepository.save(productoTalle);
     }
@@ -31,5 +26,10 @@ public class ProductoTalleServiceImpl implements ProductoTalleService {
     @Override
     public void borrarProductoTalle(Long id) {
         productoTalleRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ProductoTalle> obtenerPorSku(Long sku) {
+        return productoTalleRepository.findByProducto_Sku(sku);
     }
 }

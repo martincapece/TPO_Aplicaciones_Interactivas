@@ -5,7 +5,8 @@ import java.util.List;
 
 public interface ProductoTalleService {
     List<ProductoTalle> obtenerTodos();
-    ProductoTalle obtenerProductoTallePorId(Long id);
     ProductoTalle guardarProductoTalle(ProductoTalle productoTalle);
     void borrarProductoTalle(Long id);
+    List<ProductoTalle> obtenerPorSku(Long sku);
+
 }
