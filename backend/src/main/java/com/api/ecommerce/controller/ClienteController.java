@@ -25,16 +25,4 @@ public class ClienteController {
         Cliente cliente = clienteService.obtenerClientePorId(id);
         return cliente != null ? ResponseEntity.ok(cliente) : ResponseEntity.notFound().build();
     }
-
-    @PostMapping
-    public ResponseEntity<Cliente> crear(@RequestBody Cliente cliente) {
-        Cliente creado = clienteService.guardarCliente(cliente);
-        return ResponseEntity.created(null).body(creado);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        clienteService.borrarCliente(id);
-        return ResponseEntity.noContent().build();
-    }
 }
