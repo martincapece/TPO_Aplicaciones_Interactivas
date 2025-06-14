@@ -2,6 +2,7 @@ package com.api.ecommerce.service;
 
 import com.api.ecommerce.dto.ClienteLoginDTO;
 import com.api.ecommerce.dto.ClienteRegisterDTO;
+import com.api.ecommerce.exceptions.AuthenticationException;
 import com.api.ecommerce.model.Cliente;
 import com.api.ecommerce.model.Role;
 import com.api.ecommerce.repository.ClienteRepository;
@@ -9,6 +10,7 @@ import com.api.ecommerce.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -73,16 +75,21 @@ public class AuthenticationService {
         if (!StringUtils.hasText(clienteLoginDTO.getContraseña())) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        clienteLoginDTO.getMail(),
-                        clienteLoginDTO.getContraseña()));
 
-        // Obtengo al Cliente para usar su rol
+        // Primero verificamos si el usuario existe
         Cliente cliente = clienteRepository.findByMail(clienteLoginDTO.getMail())
-                .orElseThrow(() -> new RuntimeException("User not found after authentication"));
+                .orElseThrow(() -> new AuthenticationException("Usuario no encontrado"));
 
-        // Generar el token JWT
-        return jwtUtil.generateToken(cliente.getMail(), cliente.getRole());
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            clienteLoginDTO.getMail(),
+                            clienteLoginDTO.getContraseña()));
+
+            // Generar el token JWT
+            return jwtUtil.generateToken(cliente.getMail(), cliente.getRole());
+        } catch (BadCredentialsException e) {
+            throw new AuthenticationException("Credenciales inválidas. Por favor, verifique su email y contraseña.");
+        }
     }
 }
