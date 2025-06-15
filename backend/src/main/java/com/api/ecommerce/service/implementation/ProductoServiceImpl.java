@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Transactional(readOnly = true)
     public Producto obtenerProductoPorSku(Long sku) {
         return repo.findById(sku)
-                .orElseThrow(() -> new IllegalArgumentException("Producto con SKU " + sku + " no encontrado"));
+                .orElseThrow(() -> new ProductoNoEcontradoException("Producto con SKU " + sku + " no encontrado"));
     }
 
     @Override

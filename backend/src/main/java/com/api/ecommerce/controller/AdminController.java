@@ -20,7 +20,7 @@ public class AdminController {
     //  Actualiza el Rol de un cliente
     // Ej: PUT /api/admin/usuarios/{userId}/role?newRole=ADMIN
 
-    @PutMapping("/clientes/{id}/rol")
+    @PutMapping("/clientes/{id}/{rol}")
     public ResponseEntity<Cliente> actualizarRolCliente(@PathVariable Long id, @PathVariable Role rol) {
         Cliente clienteActualizado = clienteService.actualizarRolCliente(id, rol);
         return ResponseEntity.ok(clienteActualizado);

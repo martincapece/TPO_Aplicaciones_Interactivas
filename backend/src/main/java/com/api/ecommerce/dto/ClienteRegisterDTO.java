@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClienteRegisterDTO {
-    private String nombre_completo;
+    private String nombreCompleto;
     private String usuario;
     private String mail;
     private String contraseña;

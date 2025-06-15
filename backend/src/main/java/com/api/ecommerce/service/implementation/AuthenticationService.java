@@ -38,7 +38,7 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Password cannot be empty");
         }
 
-        if (!StringUtils.hasText(clienteRegisterDTO.getNombre_completo())) {
+        if (!StringUtils.hasText(clienteRegisterDTO.getNombreCompleto())) {
             throw new IllegalArgumentException("Name cannot be empty");
         }
 
@@ -52,7 +52,7 @@ public class AuthenticationService {
 
         //  A partir del DTO construye un cliente
         Cliente cliente = Cliente.builder()
-                .nombreCompleto(clienteRegisterDTO.getNombre_completo())
+                .nombreCompleto(clienteRegisterDTO.getNombreCompleto())
                 .usuario(clienteRegisterDTO.getUsuario())
                 .mail(clienteRegisterDTO.getMail())
                 .contraseña(passwordEncoder.encode(clienteRegisterDTO.getContraseña()))
