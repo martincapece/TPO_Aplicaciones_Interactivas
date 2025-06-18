@@ -60,4 +60,36 @@ public class GlobalExceptionHandler {
         
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-} 
+
+    @ExceptionHandler(ProductoNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleProductoNoEncontradoException(
+            ProductoNoEncontradoException ex,
+            HttpServletRequest request) {
+        
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.NOT_FOUND.value(),
+            "Not Found",
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+        
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductoNoEliminableException.class)
+    public ResponseEntity<ErrorResponse> handleProductoNoEliminableException(
+            ProductoNoEliminableException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.NOT_FOUND.value(),
+            "Not Found",
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+}

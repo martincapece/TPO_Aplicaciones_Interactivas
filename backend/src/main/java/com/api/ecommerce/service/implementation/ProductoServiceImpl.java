@@ -1,5 +1,6 @@
 package com.api.ecommerce.service.implementation;
 
+import com.api.ecommerce.exceptions.ProductoNoEliminableException;
 import com.api.ecommerce.model.Producto;
 import com.api.ecommerce.repository.ProductoRepository;
 import com.api.ecommerce.service.ProductoService;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.api.ecommerce.exceptions.ProductoNoEncontradoException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,8 +30,11 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     @Transactional(readOnly = true)
     public Producto obtenerProductoPorSku(Long sku) {
+        if (sku == null) {
+            throw new IllegalArgumentException("SKU no puede ser null");
+        }
         return repo.findById(sku)
-                .orElseThrow(() -> new ProductoNoEcontradoException("Producto con SKU " + sku + " no encontrado"));
+                .orElseThrow(() -> new ProductoNoEncontradoException(sku));
     }
 
     @Override
@@ -38,14 +43,20 @@ public class ProductoServiceImpl implements ProductoService {
         return repo.save(p);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void borrarProducto(Long sku) {
-        if (!repo.existsById(sku)) {
-            throw new IllegalArgumentException("No existe producto con SKU " + sku);
+        if (sku == null) {
+            throw new IllegalArgumentException("SKU no puede ser null");
         }
+
+        if (!repo.existsById(sku)) {
+            throw new ProductoNoEliminableException(sku);
+        }
+
         repo.deleteById(sku);
     }
+
 
     @Override
     @Transactional(readOnly = true)
