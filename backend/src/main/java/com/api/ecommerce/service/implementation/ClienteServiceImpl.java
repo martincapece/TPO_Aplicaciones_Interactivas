@@ -18,8 +18,6 @@ public class ClienteServiceImpl implements ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-
-
     @Override
     public List<Cliente> obtenerTodos() {
         return clienteRepository.findAll();

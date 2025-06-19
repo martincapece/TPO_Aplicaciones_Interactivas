@@ -1,6 +1,6 @@
 package com.api.ecommerce.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ public class Compra {
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
-    @Column(name = "fecha",nullable = false)
+    @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 
     @Column(name = "precio_final", nullable = false)
@@ -29,5 +29,6 @@ public class Compra {
     private String medioPago;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL)
+    @JsonManagedReference("compra-items")
     private List<ItemCompra> items;
 }
