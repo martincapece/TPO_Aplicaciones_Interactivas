@@ -1,6 +1,5 @@
 package com.api.ecommerce.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClienteRegisterDTO {
+public class RegisterRequestDTO {
     private String nombreCompleto;
     private String usuario;
     private String mail;
