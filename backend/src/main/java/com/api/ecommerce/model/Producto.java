@@ -35,4 +35,12 @@ public class Producto {
 
     @Column(name = "nuevo")
     private Boolean nuevo;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ProductoTalle> talles;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ImagenProducto> imagenes;
 }

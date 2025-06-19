@@ -1,5 +1,6 @@
 package com.api.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +15,7 @@ public class ItemCompra {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "nro_compra", nullable = false)
+    @JsonBackReference("compra-items")
     private Compra compra;
 
     @ManyToOne(fetch = FetchType.EAGER)
