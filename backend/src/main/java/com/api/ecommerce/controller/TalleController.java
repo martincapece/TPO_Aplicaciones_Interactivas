@@ -1,5 +1,6 @@
 package com.api.ecommerce.controller;
 
+import com.api.ecommerce.dto.CrearTalleRequestDTO;
 import com.api.ecommerce.model.Talle;
 import com.api.ecommerce.service.TalleService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,8 @@ public class TalleController {
     }
 
     @PostMapping
-    public ResponseEntity<Talle> crear(@RequestBody Talle t) {
-        Talle creado = talleService.guardarTalle(t);
+    public ResponseEntity<Talle> crear(@RequestBody CrearTalleRequestDTO crearTalleRequestDTO) {
+        Talle creado = talleService.guardarTalle(crearTalleRequestDTO);
         return ResponseEntity.created(null).body(creado);
     }
 
@@ -39,8 +40,8 @@ public class TalleController {
 
     /** Creacion masiva de Talles */
     @PostMapping("/bulk")
-    public ResponseEntity<List<Talle>> crearTalles(@RequestBody List<Talle> talles) {
-        List<Talle> creados = talles.stream()
+    public ResponseEntity<List<Talle>> crearTalles(@RequestBody List<CrearTalleRequestDTO> tallesDTOs) {
+        List<Talle> creados = tallesDTOs.stream()
                 .map(talleService::guardarTalle)
                 .toList();
         return ResponseEntity.ok(creados);

@@ -13,4 +13,11 @@ public class Talle {
 
     @Column(name = "numero", length = 10, nullable = false)
     private String numero;
+
+    public Talle(String numero) {
+        this.numero = numero;
+    }
+
+    public Talle() {
+    }
 }

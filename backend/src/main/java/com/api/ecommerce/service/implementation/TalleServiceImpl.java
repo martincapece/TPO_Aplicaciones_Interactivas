@@ -1,5 +1,6 @@
 package com.api.ecommerce.service.implementation;
 
+import com.api.ecommerce.dto.CrearTalleRequestDTO;
 import com.api.ecommerce.model.Talle;
 import com.api.ecommerce.repository.TalleRepository;
 import com.api.ecommerce.service.TalleService;
@@ -30,8 +31,9 @@ public class TalleServiceImpl implements TalleService {
 
     @Override
     @Transactional
-    public Talle guardarTalle(Talle t) {
-        return talleRepository.save(t);
+    public Talle guardarTalle(CrearTalleRequestDTO crearTalleRequestDTO) {
+        Talle talle = new Talle(crearTalleRequestDTO.numero());
+        return talleRepository.save(talle);
     }
 
     @Override
