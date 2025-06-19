@@ -31,4 +31,25 @@ public class Compra {
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL)
     @JsonManagedReference("compra-items")
     private List<ItemCompra> items;
+
+    /**
+     * Calcula el precio final sumando todos los subtotales de los items
+     * @return el precio final calculado
+     */
+    public double calcularPrecioFinal() {
+        if (items == null || items.isEmpty()) {
+            return 0.0;
+        }
+
+        return items.stream()
+                .mapToDouble(ItemCompra::calcularSubtotal)
+                .sum();
+    }
+
+    /**
+     * Actualiza el campo precioFinal con la suma de todos los subtotales
+     */
+    public void actualizarPrecioFinal() {
+        this.precioFinal = calcularPrecioFinal();
+    }
 }

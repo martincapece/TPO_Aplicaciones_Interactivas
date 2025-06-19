@@ -27,4 +27,12 @@ public class ItemCompra {
 
     @Column(name = "precio_unitario", nullable = false)
     private Double precioUnitario;
+
+    /**
+     * Calcula el subtotal de este ítem (cantidad * precioUnitario)
+     * @return el subtotal calculado
+     */
+    public Double calcularSubtotal() {
+        return cantidad * precioUnitario;
+    }
 }
