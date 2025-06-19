@@ -5,11 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class AuthenticationRequestDTO {
-    private String mail;
-    private String contraseña;
-}
+import java.io.Serializable;
+
+
+public record AuthenticationRequestDTO (
+        String mail,
+        String contraseña
+
+) implements Serializable {}

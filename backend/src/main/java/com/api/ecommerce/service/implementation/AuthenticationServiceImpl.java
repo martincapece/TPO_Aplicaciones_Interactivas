@@ -32,32 +32,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalArgumentException("Request cannot be null");
         }
 
-        if (!StringUtils.hasText(registerRequestDTO.getMail())) {
+        if (!StringUtils.hasText(registerRequestDTO.mail())) {
             throw new IllegalArgumentException("Email cannot be empty");
         }
 
-        if (!StringUtils.hasText(registerRequestDTO.getContraseña())) {
+        if (!StringUtils.hasText(registerRequestDTO.contraseña())) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
 
-        if (!StringUtils.hasText(registerRequestDTO.getNombreCompleto())) {
+        if (!StringUtils.hasText(registerRequestDTO.nombreCompleto())) {
             throw new IllegalArgumentException("Name cannot be empty");
         }
 
-        if (!StringUtils.hasText(registerRequestDTO.getUsuario())) {
+        if (!StringUtils.hasText(registerRequestDTO.usuario())) {
             throw new IllegalArgumentException("username cannot be empty");
         }
         //  valida si el mail ya existe
-        if (clienteRepository.existsByMail(registerRequestDTO.getMail())) {
+        if (clienteRepository.existsByMail(registerRequestDTO.mail())) {
             throw new RuntimeException("Email already exists");
         }
 
         //  A partir del DTO construye un cliente
         Cliente cliente = Cliente.builder()
-                .nombreCompleto(registerRequestDTO.getNombreCompleto())
-                .usuario(registerRequestDTO.getUsuario())
-                .mail(registerRequestDTO.getMail())
-                .contraseña(passwordEncoder.encode(registerRequestDTO.getContraseña()))
+                .nombreCompleto(registerRequestDTO.nombreCompleto())
+                .usuario(registerRequestDTO.usuario())
+                .mail(registerRequestDTO.mail())
+                .contraseña(passwordEncoder.encode(registerRequestDTO.contraseña()))
                 .role(Role.USER)
                 .build();
 
@@ -70,23 +70,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalArgumentException("Request cannot be null");
         }
 
-        if (!StringUtils.hasText(authenticationRequestDTO.getMail())) {
+        if (!StringUtils.hasText(authenticationRequestDTO.mail())) {
             throw new IllegalArgumentException("Email cannot be empty");
         }
 
-        if (!StringUtils.hasText(authenticationRequestDTO.getContraseña())) {
+        if (!StringUtils.hasText(authenticationRequestDTO.contraseña())) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
 
         // Primero verificamos si el usuario existe
-        Cliente cliente = clienteRepository.findByMail(authenticationRequestDTO.getMail())
+        Cliente cliente = clienteRepository.findByMail(authenticationRequestDTO.mail())
                 .orElseThrow(() -> new AuthenticationException("Usuario no encontrado"));
 
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            authenticationRequestDTO.getMail(),
-                            authenticationRequestDTO.getContraseña()));
+                            authenticationRequestDTO.mail(),
+                            authenticationRequestDTO.contraseña()));
 
             // Generar el token JWT
             return new AuthenticationResponseDTO(jwtUtil.generateToken(cliente.getMail(), cliente.getRole()));

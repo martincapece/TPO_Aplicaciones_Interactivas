@@ -5,13 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class RegisterRequestDTO {
-    private String nombreCompleto;
-    private String usuario;
-    private String mail;
-    private String contraseña;
-}
+import java.io.Serializable;
+
+public record RegisterRequestDTO(
+        String nombreCompleto,
+        String usuario,
+        String mail,
+        String contraseña
+
+) implements Serializable {}
