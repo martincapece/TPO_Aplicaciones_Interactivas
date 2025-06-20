@@ -1,5 +1,6 @@
 package com.api.ecommerce.service;
 
+import com.api.ecommerce.dto.CompraCompletaDTO;
 import com.api.ecommerce.model.Compra;
 import java.util.List;
 
@@ -8,4 +9,5 @@ public interface CompraService {
     Compra obtenerCompraPorId(Long id);
     Compra guardarCompra(Compra compra);
     void borrarCompra(Long id);
+    Compra crearCompraCompleta(CompraCompletaDTO request);
 }

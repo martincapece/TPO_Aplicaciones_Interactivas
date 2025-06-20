@@ -52,4 +52,28 @@ public class Compra {
     public void actualizarPrecioFinal() {
         this.precioFinal = calcularPrecioFinal();
     }
+
+    /**
+     * Se ejecuta antes de persistir la entidad
+     */
+    @PrePersist
+    public void prePersist() {
+        // NO calcular precio final aquí porque los items aún no están persistidos
+        if (fecha == null) {
+            fecha = LocalDateTime.now();
+        }
+        // Solo asegurar que precioFinal no sea null
+        if (this.precioFinal == 0.0 && (items == null || items.isEmpty())) {
+            this.precioFinal = 0.0;
+        }
+    }
+
+    /**
+     * Se ejecuta antes de actualizar la entidad
+     */
+    @PreUpdate
+    public void preUpdate() {
+        // Aquí sí podemos calcular porque los items ya existen
+        actualizarPrecioFinal();
+    }
 }
