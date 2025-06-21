@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "item_compra")
 @Data
@@ -25,14 +27,11 @@ public class ItemCompra {
     @Column(name = "cantidad", nullable = false)
     private Integer cantidad;
 
-    @Column(name = "precio_unitario", nullable = false)
-    private Double precioUnitario;
-
-    /**
-     * Calcula el subtotal de este ítem (cantidad * precioUnitario)
-     * @return el subtotal calculado
-     */
-    public Double calcularSubtotal() {
-        return cantidad * precioUnitario;
+    public double getSubtotal() {
+        if (productoTalle == null) {
+            return 0;
+        }
+        return productoTalle.getPrecioUnitario();
     }
+
 }

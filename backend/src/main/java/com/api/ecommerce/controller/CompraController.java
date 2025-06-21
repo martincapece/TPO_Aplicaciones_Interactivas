@@ -1,6 +1,7 @@
 package com.api.ecommerce.controller;
 
 import com.api.ecommerce.dto.CompraCompletaDTO;
+import com.api.ecommerce.dto.CompraRequestDTO;
 import com.api.ecommerce.model.Compra;
 import com.api.ecommerce.service.CompraService;
 import lombok.RequiredArgsConstructor;
@@ -30,20 +31,11 @@ public class CompraController {
     }
 
     @PostMapping
-    public ResponseEntity<Compra> crear(@RequestBody Compra compra) {
+    public ResponseEntity<Compra> crear(@RequestBody CompraRequestDTO compra) {
         Compra creado = compraService.guardarCompra(compra);
         return ResponseEntity.created(null).body(creado);
     }
 
-    @PostMapping("/completa")
-    public ResponseEntity<Compra> crearCompraCompleta(@RequestBody CompraCompletaDTO request) {
-        try {
-            Compra compra = compraService.crearCompraCompleta(request);
-            return ResponseEntity.ok(compra);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
 
     @DeleteMapping("/{id}")

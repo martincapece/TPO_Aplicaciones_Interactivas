@@ -25,7 +25,7 @@ public class Producto {
     private String color;
 
     @Column(name = "precio", nullable = false)
-    private BigDecimal precio;
+    private double precio;
 
     @Column(name = "descripcion", nullable = false)
     private String descripcion;
