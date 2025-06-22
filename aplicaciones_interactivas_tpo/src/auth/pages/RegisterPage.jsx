@@ -1,42 +1,72 @@
-import { Button, Grid, TextField } from "@mui/material"
-import { Facebook, Twitter, Google } from '@mui/icons-material';
+import { Alert, Button, Grid, TextField } from "@mui/material"
 import { AuthLayout } from "../layout"
 import { Link } from "react-router-dom";
 import { useForm } from "../hooks";
-import { registerUserWithEmailPassword } from "../../firebase/providers";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { types } from "../types/types";
 
 const formDate = {
-    name: '',
-    displayName: '',
-    email: '',
-    password: ''
+    nombreCompleto: '',
+    usuario: '',
+    mail: '',
+    contraseña: ''
 }
+
+const formValidations = {
+    nombreCompleto: [ 
+        (value) => value.trim().length >= 10, 
+        'El nombre completo debe tener al menos 10 caracteres.'
+    ],
+    usuario: [ 
+        (value) => value.trim().length >= 4 && !value.includes(' '),
+        'El nombre de usuario debe tener al menos 4 caracteres y no contener espacios.'
+    ],
+    mail: [ 
+        (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        'El correo electrónico no es válido.'
+    ],
+    contraseña: [
+        (value) => {
+            const hasLength = value.length >= 8;
+            const hasUpper = /[A-Z]/.test(value);
+            const hasLower = /[a-z]/.test(value);
+            const hasNumber = /[0-9]/.test(value);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+            return hasLength && hasUpper && hasLower && hasNumber && hasSpecial;
+        },
+        'Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.'
+    ]
+};
+
 
 export const RegisterPage = () => {
     
-    const { formState, onInputChange } = useForm( formDate );
-    const { name, displayName, email, password } = formState;
-    const { dispatch } = useContext(AuthContext);
+    const { dispatch, authState, register } = useContext(AuthContext);
+    const [formSubmitted, setFormSubmitted] = useState(false);
 
-    const facebookSignIn = () => { console.log("facebook") }
+    const { 
+        onInputChange, formState, isFormValid, 
+        nombreCompletoValid, usuarioValid, mailValid, contraseñaValid
+    } = useForm( formDate, formValidations );
 
-    const twitterSignIn = () => {}
-
-    const googleSignIn = () => {}
+    const { nombreCompleto, usuario, mail, contraseña } = formState;
+    const { errorMessageRegister } = authState;
 
     const onSubmitButton = async( event ) => {
         event.preventDefault();
+        setFormSubmitted(true);
+        
+        if (!isFormValid) return;
 
-        const result = await registerUserWithEmailPassword({ name, displayName, email, password }, dispatch);
+        const result = await register({ nombreCompleto, usuario, mail, contraseña });
 
         if (!result.ok){
-            console.warn(result.errorMessage);
-            return;
+            return dispatch({ 
+                type: types.error, 
+                payload: { errorMessageRegister: result.errorMessage } 
+            });
         }
-
-        console.log("logeado")
     }
 
     return (
@@ -49,10 +79,12 @@ export const RegisterPage = () => {
                             placeholder="Jeremias Fernandez"
                             variant="outlined"
                             fullWidth
-                            name="name"
+                            name="nombreCompleto"
                             type="text"
                             onChange={ onInputChange }
-                            value={ name }
+                            value={ nombreCompleto }
+                            error={ formSubmitted && !!nombreCompletoValid }
+                            helperText={ nombreCompletoValid }
                         />
                     </Grid>
                     <Grid>
@@ -61,10 +93,12 @@ export const RegisterPage = () => {
                             placeholder="Jerefer22"
                             variant="outlined"
                             fullWidth
-                            name="displayName"
+                            name="usuario"
                             type="text"
                             onChange={ onInputChange }
-                            value={ displayName }
+                            value={ usuario }
+                            error={ formSubmitted && !!usuarioValid }
+                            helperText={ usuarioValid }
                         />
                     </Grid>
                     <Grid>
@@ -74,21 +108,25 @@ export const RegisterPage = () => {
                             placeholder="nombre@correo.com"
                             fullWidth
                             autoComplete="undefined"
-                            name="email"
-                            type="email"
+                            name="mail"
+                            type="mail"
                             onChange={ onInputChange }
-                            value={ email }
+                            value={ mail }
+                            error={ formSubmitted && !!mailValid }
+                            helperText={ mailValid }
                         />
                     </Grid>
                     <Grid>
                         <TextField 
                             label="Contraseña" 
-                            type="password"
+                            type="contraseña"
                             variant="outlined"
                             fullWidth
-                            name="password"
+                            name="contraseña"
                             onChange={ onInputChange }
-                            value={ password }
+                            value={ contraseña }
+                            error={ formSubmitted && !!contraseñaValid }
+                            helperText={ contraseñaValid }
                         />
                     </Grid>
                     <Grid>
@@ -108,6 +146,16 @@ export const RegisterPage = () => {
                         </Button>
                     </Grid>
                     
+                    {
+                        errorMessageRegister && (
+                            <Grid container sx={{ mt: 1 }}>
+                                <Grid width={ '100%' }>
+                                    <Alert severity='error'>{ errorMessageRegister }</Alert>
+                                </Grid>
+                            </Grid>
+                        )
+                    }
+
                     <Grid>
                         <Button
                         LinkComponent={Link}
@@ -124,64 +172,6 @@ export const RegisterPage = () => {
                         >
                             YA TENGO CUENTA
                         </Button>
-                    </Grid>
-                    <Grid 
-                        container 
-                        spacing={ 0 } 
-                        direction="row"
-                        justifyContent="space-between"
-                        columnSpacing={{ xs: 1 }}
-                    >
-                        <Grid>
-                            <Button
-                            fullWidth
-                            xs={ 4 }
-                            onClick={ facebookSignIn }
-                            disabled
-                            sx={{
-                                fontFamily: 'Inter',
-                                fontWeight: 500,
-                                color: 'black',
-                                outline: 1,
-                                p: { xs: 1, md: 2},
-                            }}
-                            >
-                                <Facebook sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
-                            </Button>
-                        </Grid>
-                        <Grid>
-                            <Button
-                            fullWidth
-                            xs={ 4 }
-                            onClick={ twitterSignIn }
-                            disabled
-                            sx={{
-                                fontFamily: 'Inter',
-                                fontWeight: 500,
-                                color: 'black',
-                                outline: 1,
-                                p: { xs: 1, md: 2},
-                            }}
-                            >
-                                <Twitter sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
-                            </Button>
-                        </Grid>
-                        <Grid>
-                            <Button
-                            fullWidth
-                            xs={ 4 }
-                            onClick={ googleSignIn }
-                            sx={{
-                                fontFamily: 'Inter',
-                                fontWeight: 500,
-                                color: 'black',
-                                outline: 1,
-                                p: { xs: 1, md: 2},
-                            }}
-                            >
-                                <Google sx={{paddingX: { xs: 3, sm: 7, md: 10}, fontSize: { xs: 30, md: 35} }} />
-                            </Button>
-                        </Grid>
                     </Grid>
                 </Grid>
             </form>
