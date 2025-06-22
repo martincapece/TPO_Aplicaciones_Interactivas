@@ -20,7 +20,6 @@ export const Navbar = () => {
   const { dispatch, authState } = useContext(AuthContext);
   const { user } = authState;
   const [productos, setProductos] = useState([]);
-  const { resetCart } = useContext(CartContext);
 
   useEffect(() => {
     fetch("http://localhost:3000/data")
@@ -282,7 +281,7 @@ export const Navbar = () => {
             open={Boolean(userAnchorEl)}
             onClose={handleCloseMenus}
           >
-            <Typography variant='p' sx={{ fontFamily: 'Inter', fontWeight: '600', px: 1 }}>{ user?.email || 'user' }</Typography>
+            <Typography variant='p' sx={{ fontFamily: 'Inter', fontWeight: '600', px: 1 }}>{ user?.mail }</Typography>
             {
               user?.role === 'admin' && (
                 <MenuItem variant="p" onClick={() => handleNavigate('/admin')} sx={{ cursor: 'pointer', fontWeight: 500 }}>Dashboard</MenuItem>

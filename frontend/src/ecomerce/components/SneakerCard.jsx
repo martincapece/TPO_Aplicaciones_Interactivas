@@ -1,13 +1,44 @@
-import { Box, Button, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, CardMedia, Grid, Skeleton, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom";
+import { useGetImagenesPorSku } from "../hooks/useGetImagenesPorSku";
+import { useState } from "react";
 
-export const SneakerCard = ({ id, price, model, brand, colors, sizes, image, new: isNew }) => {
+export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, sizes, image, destacado }) => {
     const navigate = useNavigate();
+    const { imagenes, loading } = useGetImagenesPorSku({ sku });
+    const imagenPrincipal = imagenes.find((img) => img.esPrincipal);
+
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [hasError, setHasError] = useState(false);
 
     return (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-            <Card sx={{ cursor: 'pointer' }} onClick={() => navigate(`/producto/${id}`)}>
-                <CardMedia component="img" alt={model} image={image[0]} />
+            <Card sx={{ cursor: 'pointer' }} onClick={() => navigate(`/producto/${sku}`)}>
+                
+                { loading || !isLoaded || hasError ? (
+                    <Skeleton variant="rectangular" width="100%" height="175px" />
+                ) : (
+                    <CardMedia
+                        component="img"
+                        alt={modelo}
+                        image={imagenPrincipal?.cloudinarySecureUrl}
+                        onLoad={() => setIsLoaded(true)}
+                        onError={() => setHasError(true)}
+                        sx={{ height: '175px', objectFit: 'cover' }}
+                    />
+                )}
+
+                 {/* Para asegurarnos que onLoad se dispare incluso cuando el fetch fue rápido */}
+                { imagenPrincipal && !isLoaded && !hasError && (
+                    <img
+                        src={imagenPrincipal.cloudinaryUrl}
+                        alt=""
+                        style={{ display: "none" }}
+                        onLoad={() => setIsLoaded(true)}
+                        onError={() => setHasError(true)}
+                    />
+                )}
+
                 <CardContent sx={{ height: '175px' }}>
 
                     <Box
@@ -17,7 +48,7 @@ export const SneakerCard = ({ id, price, model, brand, colors, sizes, image, new
                         alignItems: 'center',
                     }}
                     >
-                        {isNew && (
+                        {destacado && (
                             <Box sx={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -38,7 +69,7 @@ export const SneakerCard = ({ id, price, model, brand, colors, sizes, image, new
                             </Box>
                         )}
 
-                        {!sizes.some(size => size.stock > 0) && (
+                        {/* {!sizes.some(size => size.stock > 0) && (
                             <Box sx={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -57,7 +88,7 @@ export const SneakerCard = ({ id, price, model, brand, colors, sizes, image, new
                                     SIN STOCK
                                 </Typography>
                             </Box>
-                        )}
+                        )} */}
                     </Box>
 
                     <Box sx={{
@@ -65,7 +96,7 @@ export const SneakerCard = ({ id, price, model, brand, colors, sizes, image, new
                             alignItems: 'center',
                             justifyContent: 'center',
                             padding: '2px 6px',
-                            mb: isNew || !sizes.some(size => size.stock > 0) ? 0.5 : 3
+                            mb: destacado || !sizes.some(size => size.stock > 0) ? 0.5 : 3
                         }}>
                             <Typography sx={{
                                 color: '#ffffff',
@@ -78,9 +109,9 @@ export const SneakerCard = ({ id, price, model, brand, colors, sizes, image, new
                             </Typography>
                     </Box>
 
-                    <Typography gutterBottom variant="h5">${price}</Typography>
-                    <Typography gutterBottom variant="h6">{model}</Typography>
-                    <Typography variant="h6" sx={{ color: '#C0C0C0' }}>{brand}</Typography>
+                    <Typography gutterBottom variant="h5">${precio}</Typography>
+                    <Typography gutterBottom variant="h6">{modelo}</Typography>
+                    <Typography variant="h6" sx={{ color: '#C0C0C0' }}>{marca}</Typography>
                 </CardContent>
             </Card>
         </Grid>

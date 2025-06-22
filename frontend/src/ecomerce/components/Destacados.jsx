@@ -1,34 +1,33 @@
 import { Grid, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SneakerCard } from "./SneakerCard";
+import { useGetProductosFiltrados } from "../hooks/useGetProductosFiltrados";
 
 
 export const Destacados = () => {
     const location = useLocation();
-
-    const [productos, setProductos] = useState([]);
+    const { productos, loading, error, refetch } = useGetProductosFiltrados({ destacados: true });
+    
+    useEffect(() => {
+        refetch();
+    }, [location.pathname]);
 
     useEffect(() => {
         if (location.hash) {
-            const id = location.hash.replace("#", "");
-            const element = document.getElementById(id);
-            if (element) {
-                setTimeout(() => {
-                    const yOffset = -80; 
-                    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                    window.scrollTo({ top: y, behavior: "smooth" });
-                }, 100);
-            }
-        }
+        const id = location.hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+            setTimeout(() => {
+            const yOffset = -80;
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+            }, 100);
+        }}
     }, [location]);
 
-    useEffect(() => {
-        fetch("http://localhost:3000/data")
-            .then(res => res.json())
-            .then(data => setProductos(data))
-            .catch(err => console.error("Error al cargar productos", err));
-    }, []); 
+    if (loading) return <Typography variant="h6">Cargando...</Typography>;
+    if (!!error) return <Typography variant="h6" color="error">Error: {error}</Typography>;
 
     return (
         <>
@@ -38,8 +37,7 @@ export const Destacados = () => {
             
             <Grid container spacing={2} direction="row">
                 {productos.map(sneaker => (
-                    ( sneaker.featured ) &&
-                    <SneakerCard key={sneaker.id} {...sneaker} />
+                    <SneakerCard key={sneaker.sku} {...sneaker} />
                 ))}
             </Grid>
         </>

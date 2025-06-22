@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
                 payload: {
                     mail: mail,
                     contraseña: contraseña,
-                    token: data.token,
+                    token: data.jwt,
                 } 
             });
             
