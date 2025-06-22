@@ -3,6 +3,7 @@ package com.api.ecommerce.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Entity
 @Table(name = "producto_talle")
 @Data
@@ -22,4 +23,8 @@ public class ProductoTalle {
 
     @Column(name = "stock", nullable = false)
     private Integer stock;
+
+    public double getPrecioUnitario() {
+        return producto.getPrecio();
+    }
 }

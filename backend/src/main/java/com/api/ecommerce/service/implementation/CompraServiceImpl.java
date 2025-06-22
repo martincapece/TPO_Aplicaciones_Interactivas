@@ -1,10 +1,9 @@
 package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.dto.CompraCompletaDTO;
-import com.api.ecommerce.model.Cliente;
-import com.api.ecommerce.model.Compra;
-import com.api.ecommerce.model.ItemCompra;
-import com.api.ecommerce.model.ProductoTalle;
+import com.api.ecommerce.dto.CompraRequestDTO;
+import com.api.ecommerce.dto.ItemCompraRequestDTO;
+import com.api.ecommerce.model.*;
 import com.api.ecommerce.repository.ClienteRepository;
 import com.api.ecommerce.repository.CompraRepository;
 import com.api.ecommerce.repository.ProductoTalleRepository;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CompraServiceImpl implements CompraService {
@@ -38,59 +38,47 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public Compra guardarCompra(Compra compra) {
+    @Transactional
+    public Compra guardarCompra(CompraRequestDTO compraRequest) {
+        Cliente cliente = clienteRepository.findById(compraRequest.idCliente()).
+                orElseThrow(() -> new NoSuchElementException("Cliente con ID " + compraRequest.idCliente() + " no encontrado"));
+
+        Compra compra = new Compra();
+        compra.setFecha(LocalDateTime.now());
+        compra.setMedioPago(compraRequest.medioPago());
+        compra.setCliente(cliente);
+
+        List<ItemCompra> items = new ArrayList<>();
+        double total = 0;
+
+        for (ItemCompraRequestDTO itemDTO : compraRequest.items()) {
+            ProductoTalle productoTalle = productoTalleRepository.findById(itemDTO.idProducto())
+                    .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con id: " + itemDTO.idProducto()));
+
+            if (productoTalle.getStock() < itemDTO.cantidad()) {
+                throw new NoSuchElementException("No hay stock suficiente para el producto con SKU: " + productoTalle.getProducto().getSku());
+            }
+
+            productoTalle.setStock(productoTalle.getStock() - itemDTO.cantidad());
+            productoTalleRepository.save(productoTalle);
+
+            ItemCompra itemCompra = new ItemCompra();
+            itemCompra.setProductoTalle(productoTalle);
+            itemCompra.setCantidad(itemDTO.cantidad());
+            itemCompra.setCompra(compra);
+
+            items.add(itemCompra);
+            total += itemCompra.getSubtotal();
+        }
+
+        compra.setItems(items);
+        compra.setPrecioFinal(total);
         return compraRepository.save(compra);
     }
 
     @Override
     public void borrarCompra(Long id) {
         compraRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional
-    public Compra crearCompraCompleta(CompraCompletaDTO request) {
-        // 1. Buscar el cliente
-        Cliente cliente = clienteRepository.findById(request.getIdCliente())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + request.getIdCliente()));
-
-        // 2. Calcular el monto total primero
-        double montoTotal = 0.0;
-        for (CompraCompletaDTO.ItemCompraDTO itemDTO : request.getItems()) {
-            // Verificar que el ProductoTalle existe
-            productoTalleRepository.findById(itemDTO.getIdProductoTalle())
-                    .orElseThrow(() -> new RuntimeException("ProductoTalle no encontrado con ID: " + itemDTO.getIdProductoTalle()));
-
-            montoTotal += itemDTO.getCantidad() * itemDTO.getPrecioUnitario();
-        }
-
-        // 3. Crear la compra con el monto total ya calculado
-        Compra compra = new Compra();
-        compra.setCliente(cliente);
-        compra.setMedioPago(request.getMedioPago());
-        compra.setFecha(LocalDateTime.now());
-        compra.setPrecioFinal(montoTotal); // Establecer el monto correcto desde el inicio
-
-        // 4. Crear los items
-        List<ItemCompra> items = new ArrayList<>();
-        for (CompraCompletaDTO.ItemCompraDTO itemDTO : request.getItems()) {
-            ProductoTalle productoTalle = productoTalleRepository.findById(itemDTO.getIdProductoTalle())
-                    .orElseThrow(() -> new RuntimeException("ProductoTalle no encontrado"));
-
-            ItemCompra item = new ItemCompra();
-            item.setCompra(compra);
-            item.setProductoTalle(productoTalle);
-            item.setCantidad(itemDTO.getCantidad());
-            item.setPrecioUnitario(itemDTO.getPrecioUnitario());
-
-            items.add(item);
-        }
-
-        // 5. Asignar los items a la compra
-        compra.setItems(items);
-
-        // 6. Guardar todo junto (cascade se encarga de los items)
-        return compraRepository.save(compra);
     }
 
 
