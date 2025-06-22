@@ -1,41 +1,104 @@
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import { authReducer } from "./authReducer";
 import { AuthContext } from "./AuthContext";
-import { onAuthStateChanged } from "firebase/auth";
 import { types } from "../types/types";
-import { FirebaseAuth } from "../../firebase/config";
 
 export const AuthProvider = ({ children }) => {
-    const [authState, dispatch] = useReducer(authReducer, { logged: false, user: null, checking: false });
+    const [authState, dispatch] = useReducer(authReducer, { logged: false, user: null, checking: false, errorMessage: null });
 
-    useEffect(() => {
-        dispatch({ type: types.checking });
-        
-        const unsubscribe = onAuthStateChanged(FirebaseAuth, async(user) => {
-            if (!user) {
-                dispatch({ type: types.logout });
-                return;
+    const login = async({ mail, contraseña }) => {
+        try {
+            if (mail.trim().length <= 0 || contraseña.trim().length <= 0) {
+                throw new Error("Los campos son obligatorios");
             }
 
-            const role = (user.email === 'administrador@apis.com') ? 'admin' : 'user';
-
-            dispatch({
-                type: types.login,
-                payload: {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    role
-                }
+            dispatch({ type: types.checking });
+    
+            const resp = await fetch("http://localhost:8080/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ mail, contraseña })
             });
-        });
+            
+            const data = await resp.json();
+    
+            if (!resp.ok) {
+                throw new Error(data.message || "Error al iniciar sesión");
+            }        
 
-        return () => unsubscribe();
-    }, []);
+            dispatch({ 
+                type: types.login, 
+                payload: {
+                    mail: mail,
+                    contraseña: contraseña,
+                    token: data.token,
+                } 
+            });
+            
+            return { ok: true };
+            
+        } catch (error) {
+    
+            return { 
+                ok: false, 
+                errorMessage: error.message 
+            };
+        }     
+
+    }
+
+    const register = async({ nombreCompleto, usuario, mail, contraseña }) => {
+        try {
+            if (nombreCompleto.trim().length <= 0 || usuario.trim().length <= 0 || mail.trim().length <= 0 || contraseña.trim().length <= 0) {
+                throw new Error("Los campos son obligatorios");
+            }
+
+            dispatch({ type: types.checking });
+
+            const resp = await fetch("http://localhost:8080/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ nombreCompleto, usuario, mail, contraseña })
+            });
+
+            if (!resp.ok) {
+                const errorData = await resp.json();
+                throw new Error(errorData.message || "Error al iniciar sesión");
+            }
+
+            login({ mail, contraseña });
+
+        } catch (error) {
+            
+            return {
+                ok: false,
+                errorMessage: error.message
+            }
+        }
+    }
+
+    const logout = () => {
+        dispatch({ type: 'logout' });
+    }
+
+    const setError = (errorMessage) => {
+        dispatch({ type: 'error', payload: { errorMessage } });
+    }
 
     return (
-        <AuthContext.Provider value={{ authState, dispatch }}>
+        <AuthContext.Provider 
+        value={{ 
+            authState, 
+            dispatch, 
+            login,
+            register,
+            logout,
+            setError
+        }}>
             {children}
         </AuthContext.Provider>
     );
