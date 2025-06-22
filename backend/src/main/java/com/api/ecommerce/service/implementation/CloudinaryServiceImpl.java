@@ -155,6 +155,6 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         return "producto_" + skuProducto + "_" + timestamp + "_" + nombreLimpio;
     }
 
-    private String getTransformacionesPrincipal()   { return "c_fill,w_800,h_800,q_auto:good,f_auto"; }
+    private String getTransformacionesPrincipal()   { return "c_fill,w_600,h_600,q_auto:good,f_auto"; }
     private String getTransformacionesSecundarias() { return "c_fill,w_600,h_600,q_auto:good,f_auto"; }
 }
