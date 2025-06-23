@@ -1,15 +1,18 @@
 import { Box, Card, CardContent, CardMedia, Grid, Skeleton, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom";
 import { useGetImagenesPorSku } from "../hooks/useGetImagenesPorSku";
-import { useState } from "react";
+import imgNotFound from "../../../assets/imgNotFound.jpg"; // importa la imagen fallback
+import { useGetProductoTallePorSku } from "../hooks/useGetProductoTallePorSku";
 
 export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, sizes, image, destacado }) => {
     const navigate = useNavigate();
-    const { imagenes, loading } = useGetImagenesPorSku({ sku });
-    const imagenPrincipal = imagenes.find((img) => img.esPrincipal);
+    
+    const { productoTalles, loadingTalles, errorTalle } = useGetProductoTallePorSku({ sku });
+    const sinStock = productoTalles.length > 0 && productoTalles.every(t => t.stock === 0);
 
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [hasError, setHasError] = useState(false);
+
+    const { imagenes, loadingImagenes, errorImagenes } = useGetImagenesPorSku({ sku });
+    const imagenPrincipal = imagenes.find((img) => img.esPrincipal);
 
     return (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
@@ -25,41 +28,47 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                 }}
                 onClick={() => navigate(`/producto/${sku}`)}
             >
-                <Box sx={{ overflow: 'hidden' }}>
-                    {loading || !isLoaded || hasError ? (
-                        <Skeleton variant="rectangular" width="100%" height="175px" />
-                    ) : (
-                        <CardMedia
-                            component="img"
-                            alt={modelo}
-                            image={imagenPrincipal?.cloudinarySecureUrl}
-                            onLoad={() => setIsLoaded(true)}
-                            onError={() => setHasError(true)}
-                            sx={{
-                                height: 'auto',
-                                width: '100%',
-                                aspectRatio: '1/1',
-                                objectFit: 'contain',
-                                backgroundColor: '#f5f5f5',
-                                transform: 'scale(1.0)',
-                                transition: 'transform 0.3s ease-in-out'
-                            }}
-                        />
-                    )}
-                </Box>
-
-                {/* Para asegurarnos que onLoad se dispare incluso cuando el fetch fue rápido */}
-                {imagenPrincipal && !isLoaded && !hasError && (
-                    <img
-                        src={imagenPrincipal.cloudinaryUrl}
-                        alt=""
-                        style={{ display: "none" }}
-                        onLoad={() => setIsLoaded(true)}
-                        onError={() => setHasError(true)}
+                {/* Solución más simple: usar un contenedor con altura fija basada en viewport */}
+                <Box
+                sx={{
+                    overflow: "hidden",
+                    position: "relative",
+                    width: "100%",
+                    paddingTop: "100%", // Esto crea un cuadrado perfecto (aspect-ratio 1:1)
+                }}
+                >
+                {loadingImagenes || loadingTalles ? (
+                    <Skeleton
+                    variant="rectangular"
+                    sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                    }}
+                    />
+                ) : (
+                    <CardMedia
+                    component="img"
+                    alt={modelo}
+                    image={imagenPrincipal ? imagenPrincipal?.cloudinarySecureUrl : imgNotFound}
+                    sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        backgroundColor: "#f5f5f5",
+                        transform: "scale(1.0)",
+                        transition: "transform 0.3s ease-in-out",
+                    }}
                     />
                 )}
+                </Box>
 
-                <CardContent sx={{ height: '175px' }}>
+                <CardContent sx={{ height: "175px" }}>
                     <Box
                         sx={{
                             display: 'flex',
@@ -87,6 +96,28 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                                 </Typography>
                             </Box>
                         )}
+
+                        {sinStock && (
+                            <Box sx={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#999999',
+                                border: '1px solid #cccccc',
+                                padding: '2px 6px',
+                            }}>
+                                <Typography sx={{
+                                    color: '#ffffff',
+                                    fontFamily: 'Inter',
+                                    fontWeight: 700,
+                                    fontStyle: 'italic',
+                                    fontSize: 12,
+                                }}>
+                                    SIN STOCK
+                                </Typography>
+                            </Box>
+                        )}
+
                     </Box>
 
                     <Box sx={{
@@ -94,7 +125,7 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: '2px 6px',
-                        mb: destacado || !sizes.some(size => size.stock > 0) ? 0.5 : 3
+                        mb: destacado || sinStock ? 0.5 : 3
                     }}>
                         <Typography sx={{
                             color: '#ffffff',

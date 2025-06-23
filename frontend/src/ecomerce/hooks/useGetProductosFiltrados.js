@@ -1,34 +1,51 @@
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
 
-export const useGetProductosFiltrados = ({ destacados = null, nuevos = null }) => {
-    const [productos, setProductos] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+export const useGetProductosFiltrados = ({
+  marca = null,
+  modelo = null,
+  color = null,
+  minPrecio = null,
+  maxPrecio = null,
+  destacados = null,
+  nuevos = null,
+} = {}) => {
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const fetchProductos = useCallback(async () => {
-        try {
-            setLoading(true);
-            const params = new URLSearchParams();
-            if (destacados !== null) params.append("destacados", destacados);
-            if (nuevos !== null) params.append("nuevos", nuevos);
+  useEffect(() => {
+    const fetchProductosFiltrados = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
 
-            const response = await fetch(`http://localhost:8080/sapah/productos/filter?${params.toString()}`);
-            if (!response.ok) throw new Error("Error al obtener productos");
+        if (marca) params.append("marca", marca);
+        if (modelo) params.append("modelo", modelo);
+        if (color) params.append("color", color);
+        if (minPrecio !== null) params.append("minPrecio", minPrecio);
+        if (maxPrecio !== null) params.append("maxPrecio", maxPrecio);
+        if (destacados !== null) params.append("destacados", destacados);
+        if (nuevos !== null) params.append("nuevos", nuevos);
 
-            const data = await response.json();
-            setProductos(data);
-            setError(null);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    }, [destacados, nuevos]);
+        const endpoint =
+          params.toString().length > 0
+            ? `http://localhost:8080/sapah/productos/filter?${params.toString()}`
+            : `http://localhost:8080/sapah/productos`;
 
-    // Llamada inicial
-    useEffect(() => {
-        fetchProductos();
-    }, [fetchProductos]);
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error("Error al obtener productos");
 
-    return { productos, loading, error, refetch: fetchProductos };
+        const data = await response.json();
+        setProductos(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductosFiltrados();
+  }, []);
+
+  return { productos, loading, error };
 };

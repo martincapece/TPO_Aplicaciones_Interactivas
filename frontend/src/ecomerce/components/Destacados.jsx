@@ -7,11 +7,7 @@ import { useGetProductosFiltrados } from "../hooks/useGetProductosFiltrados";
 
 export const Destacados = () => {
     const location = useLocation();
-    const { productos, loading, error, refetch } = useGetProductosFiltrados({ destacados: true });
-    
-    useEffect(() => {
-        refetch();
-    }, [location.pathname]);
+    const { productos, loading, error } = useGetProductosFiltrados({ destacados: true });
 
     useEffect(() => {
         if (location.hash) {
@@ -26,7 +22,7 @@ export const Destacados = () => {
         }}
     }, [location]);
 
-    if (loading) return <Typography variant="h6">Cargando...</Typography>;
+    if (loading) return <Typography variant="h6">Cargando imagenes...</Typography>;
     if (!!error) return <Typography variant="h6" color="error">Error: {error}</Typography>;
 
     return (

@@ -2,54 +2,63 @@ import { useState, useEffect } from "react";
 import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider, Button } from "@mui/material";
 import { SneakerCard } from "./SneakerCard";
 import { useLocation } from "react-router-dom";
+import { useGetProductosFiltrados } from "../hooks/useGetProductosFiltrados";
+import { useGetTallesPorSkus } from "../hooks/useGetTallesPorSkus";
 
 export const Productos = () => {
     // Estado para filtros
-    const [brand, setBrand] = useState("");
+    const [marca, setMarca] = useState("");
     const [color, setColor] = useState("");
-    const [size, setSize] = useState("");
-    const [maxPrice, setMaxPrice] = useState(500);
+    const [talle, setTalle] = useState("");
+    const [maxPrecio, setMaxPrecio] = useState(500);
     const [order, setOrder] = useState("alphabetically"); // Nuevo estado para ordenar
+    const location = useLocation();
+    const searchQuery = new URLSearchParams(location.search).get("query") || "";
+    const { productos, loading, error } = useGetProductosFiltrados({
+        marca: marca || null,
+        color: color || null,
+        modelo: searchQuery || null,
+        minPrecio: 0,
+        maxPrecio: maxPrecio || null,
+    });
+
+    const skus = productos.map(p => p.sku);
+    const { productoTalles } = useGetTallesPorSkus({ skus });
+
 
     // Leer el filtro guardado en localStorage
     useEffect(() => {
-        const savedBrand = localStorage.getItem("selectedBrand");
-        if (savedBrand) {
-        setBrand(savedBrand);
-        localStorage.removeItem("selectedBrand");
+        const savedMarca = localStorage.getItem("selectedMarca");
+        if (savedMarca) {
+            setMarca(savedMarca);
+            localStorage.removeItem("selectedMarca");
         }
     }, []);
-    const [productos, setProductos] = useState([]);
-    const location = useLocation();
-    const searchQuery = new URLSearchParams(location.search).get("query") || "";
-    useEffect(() => {
-        fetch("http://localhost:3000/data")
-            .then(res => res.json())
-            .then(data => setProductos(data))
-            .catch(err => console.error("Error al cargar productos", err));
-    }, []); 
-
 
     // Aplica filtros sobre los productos
     const productosFiltrados = productos
         .filter(p =>
-            p.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.brand.toLowerCase().includes(searchQuery.toLowerCase())
+            p.modelo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.marca.toLowerCase().includes(searchQuery.toLowerCase())
         )
-        .filter(p => brand ? p.brand === brand : true)
-        .filter(p => color ? p.colors.includes(color) : true)
-        .filter(p => !size || p.sizes.some(s => String(s.size) === String(size) && s.stock > 0))
-        .filter(p => p.price <= maxPrice)
+        .filter(p => marca ? p.marca === marca : true)
+        .filter(p => color ? p.color === color : true)
+        .filter(p => {
+            if (!talle) return true;
+            const tallesDeProducto = productoTalles.filter(pt => pt.producto.sku === p.sku);
+            return tallesDeProducto.some(pt => pt.talle.numero === talle && pt.stock > 0);
+        })
+        .filter(p => p.precio <= maxPrecio)
         .sort((a, b) => {
             switch (order) {
             case "alphabetically":
-                return a.model.localeCompare(b.model);
+                return a.modelo.localeCompare(b.modelo);
             case "price-asc":
-                return a.price - b.price;
+                return a.precio - b.precio;
             case "price-desc":
-                return b.price - a.price;
+                return b.precio - a.precio;
             default:
-                return a.model.localeCompare(b.model);
+                return a.modelo.localeCompare(b.modelo);
             }
         });
 
@@ -64,12 +73,12 @@ export const Productos = () => {
                 {/* Filtro Marca */}
                 <Grid item xs={12} sm={3}>
                     <FormControl fullWidth variant="outlined" size="small">
-                        <InputLabel id="brand-label">Marca</InputLabel>
+                        <InputLabel id="marca-label">Marca</InputLabel>
                         <Select
-                            labelId="brand-label"
-                            id="brand"
-                            value={brand}
-                            onChange={(e) => setBrand(e.target.value)}
+                            labelId="marca-label"
+                            id="marca"
+                            value={marca}
+                            onChange={(e) => setMarca(e.target.value)}
                             label="Marca"
                             sx={{ minWidth: 120 }}
                         >
@@ -78,6 +87,11 @@ export const Productos = () => {
                             </MenuItem>
                             <MenuItem value="Jordan">Jordan</MenuItem>
                             <MenuItem value="Nike">Nike</MenuItem>
+                            <MenuItem value="Asics">Asics</MenuItem>
+                            <MenuItem value="Hoka">Hoka</MenuItem>
+                            <MenuItem value="New Balance">New Balance</MenuItem>
+                            <MenuItem value="Rebook">Rebook</MenuItem>
+                            <MenuItem value="Adidas">Adidas</MenuItem>
                             <MenuItem value="Vans">Vans</MenuItem>
                         </Select>
                     </FormControl>
@@ -98,7 +112,7 @@ export const Productos = () => {
                             <MenuItem value="">
                                 <em>Todos</em>
                             </MenuItem>
-                            {[...new Set(productos.flatMap(p => p.colors))].map(col => (
+                            {[...new Set(productos.flatMap(p => p.color))].map(col => (
                                 <MenuItem key={col} value={col}>{col}</MenuItem>
                             ))}
                         </Select>
@@ -107,24 +121,24 @@ export const Productos = () => {
 
                 {/* Filtro Talle */}
                 <Grid item xs={12} sm={3}>
-                    <FormControl fullWidth variant="outlined" size="small">
+                    <FormControl fullWidth variant="outlined" size="small" >
                         <InputLabel id="size-label">Talle</InputLabel>
                         <Select
                             labelId="size-label"
                             id="size"
-                            value={size}
-                            onChange={(e) => setSize(e.target.value)}
+                            value={talle}
+                            onChange={(e) => setTalle(e.target.value)}
                             label="Talle"
                             sx={{ minWidth: 120 }}
                         >
-                            <MenuItem value="">
-                            <em>Todos</em>
+                            <MenuItem disabled>
+                                {productos.length === 0 ? "Cargando talles..." : "Seleccioná un talle"}
                             </MenuItem>
-                            {[...new Set(productos.flatMap(p => p.sizes.map(s => s.size)))]
-                            .sort((a, b) => parseFloat(a) - parseFloat(b))
-                            .map((talle) => (
-                                <MenuItem key={talle} value={talle}>{talle}</MenuItem>
-                            ))
+                            {[...new Set(productoTalles.map(p => p.talle.numero))]
+                                .sort((a, b) => parseFloat(a) - parseFloat(b))
+                                .map((talle) => (
+                                    <MenuItem key={talle} value={talle}>{talle}</MenuItem>
+                                ))
                             }
                         </Select>
                     </FormControl>
@@ -132,11 +146,11 @@ export const Productos = () => {
 
                 {/* Filtro Precio */}
                 <Grid item xs={12} sm={9}> {/* Ajustamos a 9 para que ocupe más espacio */}
-                    <Typography gutterBottom>Precio máximo: ${maxPrice}</Typography>
+                    <Typography gutterBottom>Precio máximo: ${maxPrecio}</Typography>
                     <Slider
-                        value={maxPrice}
-                        onChange={(e, value) => setMaxPrice(value)}
-                        min={50}
+                        value={maxPrecio}
+                        onChange={(e, value) => setMaxPrecio(value)}
+                        min={0}
                         max={500}
                         step={10}
                         valueLabelDisplay="auto"
@@ -169,10 +183,10 @@ export const Productos = () => {
                     variant="outlined"
                     color="primary"
                     onClick={() => {
-                        setBrand("");
+                        setMarca("");
                         setColor("");
-                        setSize("");
-                        setMaxPrice(500);
+                        setTalle("");
+                        setMaxPrecio(500);
                         setOrder("alphabetically");
                     }}
                     >
@@ -186,7 +200,7 @@ export const Productos = () => {
             <Grid container spacing={2}>
                 {productosFiltrados.length ? (
                     productosFiltrados.map(sneaker => (
-                        <SneakerCard key={sneaker.id} {...sneaker} />
+                        <SneakerCard key={sneaker.sku} {...sneaker} />
                     ))
                 ) : (
                     <Typography variant="h6" sx={{ m: 2 }}>
