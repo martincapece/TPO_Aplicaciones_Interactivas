@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface ProductoTalleRepository extends JpaRepository<ProductoTalle, Long> {
     List<ProductoTalle> findByProducto_Sku(Long sku);
     Optional<ProductoTalle> findByProducto_SkuAndTalle_Numero(Long sku, String numero);
+    ProductoTalle findByProducto_SkuAndTalle_IdTalle(Long sku, Long idTalle);
+
 }
