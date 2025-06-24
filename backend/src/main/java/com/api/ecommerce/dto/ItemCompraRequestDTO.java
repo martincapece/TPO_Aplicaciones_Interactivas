@@ -3,7 +3,8 @@ package com.api.ecommerce.dto;
 import java.io.Serializable;
 
 public record ItemCompraRequestDTO(
-        Long idProducto,
+        Long sku,
+        String talle,
         int cantidad
 
 ) implements Serializable {}
