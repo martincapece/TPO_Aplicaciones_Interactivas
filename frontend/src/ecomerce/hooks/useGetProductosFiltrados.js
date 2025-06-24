@@ -37,10 +37,9 @@ export const useGetProductosFiltrados = ({
 
         const data = await response.json();
         setProductos(data);
+        setLoading(false);
       } catch (err) {
         setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 

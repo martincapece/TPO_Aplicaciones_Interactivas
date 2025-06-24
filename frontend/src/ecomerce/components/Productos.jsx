@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
-import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider, Button } from "@mui/material";
+import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider, Button, CircularProgress } from "@mui/material";
 import { SneakerCard } from "./SneakerCard";
 import { useLocation } from "react-router-dom";
 import { useGetProductosFiltrados } from "../hooks/useGetProductosFiltrados";
-import { useGetTallesPorSkus } from "../hooks/useGetTallesPorSkus";
+import { useGetProductoTallePorSkus } from "../hooks/useGetProductoTallePorSkus";
 
 export const Productos = () => {
     // Estado para filtros
     const [marca, setMarca] = useState("");
     const [color, setColor] = useState("");
     const [talle, setTalle] = useState("");
+    const [tallesDisponibles, setTallesDisponibles] = useState([])
     const [maxPrecio, setMaxPrecio] = useState(500);
     const [order, setOrder] = useState("alphabetically"); // Nuevo estado para ordenar
     const location = useLocation();
     const searchQuery = new URLSearchParams(location.search).get("query") || "";
-    const { productos, loading, error } = useGetProductosFiltrados({
+    const { productos, loading: loadingProductos, error } = useGetProductosFiltrados({
         marca: marca || null,
         color: color || null,
         modelo: searchQuery || null,
@@ -23,17 +24,21 @@ export const Productos = () => {
     });
 
     const skus = productos.map(p => p.sku);
-    const { productoTalles } = useGetTallesPorSkus({ skus });
+    const { productoTalles, loadingProductoTalles, errorProductoTalles } = useGetProductoTallePorSkus({ skus });
 
-
-    // Leer el filtro guardado en localStorage
+    // useEffect para calcular talles disponibles cuando productoTalles cambie
     useEffect(() => {
-        const savedMarca = localStorage.getItem("selectedMarca");
-        if (savedMarca) {
-            setMarca(savedMarca);
-            localStorage.removeItem("selectedMarca");
+        if (productoTalles && productoTalles.length > 0) {
+        const talles = [...new Set(productoTalles.map((p) => p.talle.numero))].sort(
+            (a, b) => Number.parseFloat(a) - Number.parseFloat(b),
+        )
+        setTallesDisponibles(talles)
+        } else {
+        setTallesDisponibles([])
         }
-    }, []);
+    }, [productoTalles])
+
+    const coloresDisponibles = !loadingProductos ? [...new Set(productos.flatMap((p) => p.color))] : []
 
     // Aplica filtros sobre los productos
     const productosFiltrados = productos
@@ -100,48 +105,52 @@ export const Productos = () => {
                 {/* Filtro Color */}
                 <Grid item xs={12} sm={3}>
                     <FormControl fullWidth variant="outlined" size="small">
-                        <InputLabel id="color-label">Color</InputLabel>
+                        <InputLabel id="color-label">{ loadingProductos ? "Cargando..." : "Color" }</InputLabel>
                         <Select
                             labelId="color-label"
                             id="color"
                             value={color}
                             onChange={(e) => setColor(e.target.value)}
                             label="Color"
-                            sx={{ minWidth: 120 }}
+                            sx={{ minWidth: 125 }}
                         >
                             <MenuItem value="">
-                                <em>Todos</em>
+                                <em>Selecionar un color</em>
                             </MenuItem>
-                            {[...new Set(productos.flatMap(p => p.color))].map(col => (
-                                <MenuItem key={col} value={col}>{col}</MenuItem>
-                            ))}
+                            {!loadingProductos &&
+                                coloresDisponibles.map((col) => (
+                                <MenuItem key={col} value={col}>
+                                    {col}
+                                </MenuItem>
+                                ))}
                         </Select>
                     </FormControl>
                 </Grid>
 
                 {/* Filtro Talle */}
                 <Grid item xs={12} sm={3}>
-                    <FormControl fullWidth variant="outlined" size="small" >
-                        <InputLabel id="size-label">Talle</InputLabel>
-                        <Select
-                            labelId="size-label"
-                            id="size"
-                            value={talle}
-                            onChange={(e) => setTalle(e.target.value)}
-                            label="Talle"
-                            sx={{ minWidth: 120 }}
-                        >
-                            <MenuItem>
-                                {productos.length === 0 ? "Cargando talles..." : "Todos"}
-                            </MenuItem>
-                            {[...new Set(productoTalles.map(p => p.talle.numero))]
-                                .sort((a, b) => parseFloat(a) - parseFloat(b))
-                                .map((talle) => (
-                                    <MenuItem key={talle} value={talle}>{talle}</MenuItem>
-                                ))
-                            }
-                        </Select>
-                    </FormControl>
+                <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel id="size-label">{tallesDisponibles.length === 0 ? "Cargando..." : "Talle"}</InputLabel>
+                    <Select
+                    labelId="size-label"
+                    id="size"
+                    value={talle}
+                    onChange={(e) => setTalle(e.target.value)}
+                    label="Talle"
+                    disabled={tallesDisponibles.length === 0}
+                    sx={{ minWidth: 125 }}
+                    >
+                    <MenuItem value="">
+                        <em>{tallesDisponibles.length === 0 ? "Cargando talles..." : "Seleccionar un talle"}</em>
+                    </MenuItem>
+                    {tallesDisponibles.length > 0 &&
+                        tallesDisponibles.map((talleNum) => (
+                        <MenuItem key={talleNum} value={talleNum}>
+                            {talleNum}
+                        </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 </Grid>
 
                 {/* Filtro Precio */}

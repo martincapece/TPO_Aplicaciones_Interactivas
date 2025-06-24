@@ -1,20 +1,20 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../auth/context/AuthContext";
 
-export const useGetTallesPorSkus = ({ skus }) => {
+export const useGetProductoTallePorSkus = ({ skus }) => {
     const { authState } = useContext(AuthContext);
     const { token } = authState.user;
 
     const [ productoTalles, setProductoTalles ] = useState([]);
-    const [ loading, setLoading ] = useState(true);
-    const [ error, setError ] = useState(null);
+    const [ loadingProductoTalles, setLoadingProductoTalles ] = useState(true);
+    const [ errorProductoTalles, setErrorProductoTalles ] = useState(null);
 
     useEffect(() => {
         const fetchTalles = async () => {
             if (!skus || skus.length === 0) return;
 
             try {
-                setLoading(true);
+                setLoadingProductoTalles(true);
                 const responses = await Promise.all(
                     skus.map(sku =>
                         fetch(`http://localhost:8080/sapah/productos-talles/${sku}`, {
@@ -28,15 +28,14 @@ export const useGetTallesPorSkus = ({ skus }) => {
 
                 const allTalles = responses.flat();
                 setProductoTalles(allTalles);
+                setLoadingProductoTalles(false);
             } catch (err) {
-                setError("Error al obtener talles");
-            } finally {
-                setLoading(false);
+                setErrorProductoTalles("Error al obtener talles");
             }
         };
 
         fetchTalles();
     }, [skus]);
 
-    return { productoTalles, loading, error };
+    return { productoTalles, loadingProductoTalles, errorProductoTalles };
 };
