@@ -1,89 +1,104 @@
-import { useContext, useState, useEffect } from 'react';
-import { IconButton, Badge, TextField, useTheme, useMediaQuery, Box, Menu, MenuItem, Typography, Grid } from '@mui/material';
-import { Menu as MenuIcon, Search, Person, ShoppingCart } from '@mui/icons-material';
-import { useNavigate, Link } from 'react-router-dom';
-import { logoutFirebase } from '../../firebase/providers';
-import { AuthContext } from '../../auth/context/AuthContext';
-import { CartContext } from '../../Cart/context/CartContext';
+import { useContext, useState, useEffect } from "react"
+import {
+  IconButton,
+  Badge,
+  TextField,
+  useTheme,
+  useMediaQuery,
+  Box,
+  Menu,
+  MenuItem,
+  Typography,
+  Grid,
+  Paper,
+  Avatar,
+  Divider,
+} from "@mui/material"
+import { Menu as MenuIcon, Search, Person, ShoppingCart } from "@mui/icons-material"
+import { useNavigate, Link } from "react-router-dom"
+import { logoutFirebase } from "../../firebase/providers"
+import { AuthContext } from "../../auth/context/AuthContext"
+import { CartContext } from "../../Cart/context/CartContext"
+import { useGetProductosFiltrados } from "../hooks/useGetProductosFiltrados"
+import { useGetImagenesPrincipalesPorSkus } from "../hooks/useGetImagenesPrincipalesPorSkus"
+import imgNotFound from "../../../assets/imgNotFound.jpg"
 
 export const Navbar = () => {
-  const { cartSize } = useContext(CartContext);
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const [userAnchorEl, setUserAnchorEl] = useState(null);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState([]); // Estado para los productos filtrados
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const cartItems = cartSize; // Cambia esto por el número real de artículos en el carrito
-  const { dispatch, authState } = useContext(AuthContext);
-  const { user } = authState;
-  const [productos, setProductos] = useState([]);
+  const { cartSize } = useContext(CartContext)
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null)
+  const [userAnchorEl, setUserAnchorEl] = useState(null)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const navigate = useNavigate()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const cartItems = cartSize
+  const { dispatch, authState } = useContext(AuthContext)
+  const { user } = authState
+  const { productos, loading: loadingProductos } = useGetProductosFiltrados()
+  const skusFiltrados = !loadingProductos ? productos.map((p) => p.sku) : []
+  const { imagenesPorSku, loadingImagenes } = useGetImagenesPrincipalesPorSkus(skusFiltrados)
 
-  useEffect(() => {
-    fetch("http://localhost:3000/data")
-      .then(res => res.json())
-      .then(data => setProductos(data))
-      .catch(err => console.error("Error al cargar productos", err));
-  }, []);
+  const handleLogoClick = () => {
+    navigate("/", { replace: true });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
 
   const handleNavigate = (path) => {
-    navigate(path);
-    handleCloseMenus();
-  };
+    navigate(path)
+    handleCloseMenus()
+  }
 
   const handleSearchSubmit = (e) => {
-    if (e) e.preventDefault(); // PREVIENE recarga o pérdida de navegación
+    if (e) e.preventDefault()
     if (searchText.trim()) {
-      navigate(`/productos?query=${encodeURIComponent(searchText.trim())}`);
-      setSearchOpen(false);
-      setFilteredProducts([]);
+      navigate(`/productos?query=${encodeURIComponent(searchText.trim())}`)
+      setSearchOpen(false)
+      setFilteredProducts([])
     }
-  };
+  }
 
   const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchText(value);
+    const value = e.target.value
+    setSearchText(value)
 
-    // Filtrar productos que coincidan con el texto ingresado
     if (value.trim()) {
-      const lowerValue = value.toLowerCase();
+      const lowerValue = value.toLowerCase()
       const results = productos.filter(
-        sneaker =>
-          sneaker.model.toLowerCase().includes(lowerValue) ||
-          sneaker.brand.toLowerCase().includes(lowerValue)
-      );
-      setFilteredProducts(results);
+        (sneaker) =>
+          sneaker.modelo.toLowerCase().includes(lowerValue) || sneaker.marca.toLowerCase().includes(lowerValue),
+      )
+      setFilteredProducts(results)
     } else {
-      setFilteredProducts([]);
+      setFilteredProducts([])
     }
-  };
+  }
 
   const handleOpenMenu = (e) => {
-    setMenuAnchorEl(e.currentTarget);
-    setUserAnchorEl(null);
-    setSearchOpen(false);
-  };
+    setMenuAnchorEl(e.currentTarget)
+    setUserAnchorEl(null)
+    setSearchOpen(false)
+  }
 
   const handleOpenUserMenu = (e) => {
-    setUserAnchorEl(e.currentTarget);
-    setMenuAnchorEl(null);
-    setSearchOpen(false);
-  };
+    setUserAnchorEl(e.currentTarget)
+    setMenuAnchorEl(null)
+    setSearchOpen(false)
+  }
 
   const handleCloseMenus = () => {
-    setMenuAnchorEl(null);
-    setUserAnchorEl(null);
-    setSearchOpen(false);
-  };
+    setMenuAnchorEl(null)
+    setUserAnchorEl(null)
+    setSearchOpen(false)
+  }
 
   useEffect(() => {
-    const handleClickOutside = () => handleCloseMenus();
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+    const handleClickOutside = () => handleCloseMenus()
+    document.addEventListener("click", handleClickOutside)
+    return () => document.removeEventListener("click", handleClickOutside)
+  }, [])
 
   return (
     <Grid
@@ -101,8 +116,14 @@ export const Navbar = () => {
       onClick={(e) => e.stopPropagation()}
     >
       {/* Logo */}
-      <Grid  size={{ md: 2, lg: 3 }} display={(isMobile) ? 'none' : ''} >
-        <img src="/assets/logo_ecomerce.png" alt="Logo"  onClick={() => navigate('/')} sx={{ cursor: 'pointer' }} style={{ width: 100  }} />
+      <Grid size={{ md: 2, lg: 3 }} display={isMobile ? "none" : ""}>
+        <img
+          src="/assets/logo_ecomerce.png"
+          alt="Logo"
+          onClick={ handleLogoClick }
+          sx={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", width: 100 }}
+        />
       </Grid>
 
       {/* Menu (responsive) */}
@@ -112,43 +133,34 @@ export const Navbar = () => {
             <IconButton onClick={handleOpenMenu}>
               <MenuIcon />
             </IconButton>
-            <Menu
-              anchorEl={menuAnchorEl}
-              open={Boolean(menuAnchorEl)}
-              onClose={handleCloseMenus}
-            >
-              <MenuItem onClick={() => handleNavigate('/catalogo#productos')}>Productos</MenuItem>
-              <MenuItem onClick={() => handleNavigate('/inicio#destacados')}>Destacados</MenuItem>
-              <MenuItem onClick={() => handleNavigate('/nosotros#sobre')}>Sobre Nosotros</MenuItem>
-              <MenuItem onClick={() => handleNavigate('/nosotros#contacto')}>Contacto</MenuItem>
+            <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenus}>
+              <MenuItem onClick={() => handleNavigate("/catalogo#productos")}>Productos</MenuItem>
+              <MenuItem onClick={() => handleNavigate("/inicio#destacados")}>Destacados</MenuItem>
+              <MenuItem onClick={() => handleNavigate("/nosotros#sobre")}>Sobre Nosotros</MenuItem>
+              <MenuItem onClick={() => handleNavigate("/nosotros#contacto")}>Contacto</MenuItem>
             </Menu>
           </Grid>
 
-          <Grid 
-          onClick={() => navigate('/')} 
-          size={{ sm: 2 }}
-          sx={{ 
-            cursor: 'pointer', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+          <Grid
+            onClick={() => navigate("/")}
+            size={{ sm: 2 }}
+            sx={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <Grid
-            component="img"
-            src="/assets/logo_ecomerce.png"
-            alt="Logo"
-            sx={{ width: { xs: 60, sm: 80, } }} // ancho responsivo
-            />
+            <Grid component="img" src="/assets/logo_ecomerce.png" alt="Logo" sx={{ cursor: "pointer", width: { xs: 60, sm: 80 } }} />
           </Grid>
         </>
       ) : (
-        <Grid container spacing={ 3 } size={{ md: 6, lg: 5 }} justifyContent={'center'} >
+        <Grid container spacing={3} size={{ md: 6, lg: 5 }} justifyContent={"center"}>
           <Grid>
             <Typography
               variant="body1"
-              onClick={() => handleNavigate('/catalogo#productos')}
-              sx={{ cursor: 'pointer', fontWeight: 500 }}
+              onClick={() => handleNavigate("/catalogo#productos")}
+              sx={{ cursor: "pointer", fontWeight: 500 }}
             >
               Productos
             </Typography>
@@ -156,8 +168,8 @@ export const Navbar = () => {
           <Grid>
             <Typography
               variant="body1"
-              onClick={() => handleNavigate('/inicio#destacados')}
-              sx={{ cursor: 'pointer', fontWeight: 500 }}
+              onClick={() => handleNavigate("/inicio#destacados")}
+              sx={{ cursor: "pointer", fontWeight: 500 }}
             >
               Destacados
             </Typography>
@@ -165,8 +177,8 @@ export const Navbar = () => {
           <Grid>
             <Typography
               variant="body1"
-              onClick={() => handleNavigate('/nosotros#sobre')}
-              sx={{ cursor: 'pointer', fontWeight: 500 }}
+              onClick={() => handleNavigate("/nosotros#sobre")}
+              sx={{ cursor: "pointer", fontWeight: 500 }}
             >
               Sobre Nosotros
             </Typography>
@@ -174,8 +186,8 @@ export const Navbar = () => {
           <Grid>
             <Typography
               variant="body1"
-              onClick={() => handleNavigate('/nosotros#contacto')}
-              sx={{ cursor: 'pointer', fontWeight: 500 }}
+              onClick={() => handleNavigate("/nosotros#contacto")}
+              sx={{ cursor: "pointer", fontWeight: 500 }}
             >
               Contacto
             </Typography>
@@ -183,23 +195,25 @@ export const Navbar = () => {
         </Grid>
       )}
 
-      <Grid 
-      container
-      size={{ xs: searchOpen ? 6 : 4, sm: searchOpen ? 4 : 3 }} 
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'end'
-      }}
+      <Grid
+        container
+        size={{ xs: searchOpen ? 6 : 4, sm: searchOpen ? 4 : 3 }}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "end",
+        }}
       >
         {/* Search */}
-        <Box display="flex" alignItems="center" position="relative" size='small'>
-          <IconButton onClick={(e) => {
-            e.stopPropagation();
-            setSearchOpen(!searchOpen);
-            setMenuAnchorEl(null);
-            setUserAnchorEl(null);
-          }}>
+        <Box display="flex" alignItems="center" position="relative" size="small">
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation()
+              setSearchOpen(!searchOpen)
+              setMenuAnchorEl(null)
+              setUserAnchorEl(null)
+            }}
+          >
             <Search />
           </IconButton>
           {searchOpen && (
@@ -210,94 +224,136 @@ export const Navbar = () => {
                 placeholder="Buscar..."
                 value={searchText}
                 onChange={handleSearchChange}
-                sx={{ ml: 1, width: { xs: 55, sm: 100, lg: 150} }}
+                sx={{ ml: 1, width: { xs: 55, sm: 100, lg: 150 } }}
                 onClick={(e) => e.stopPropagation()}
               />
             </form>
           )}
           {searchOpen && filteredProducts.length > 0 && (
-            <Box
+            <Paper
+              elevation={8}
               sx={{
-                position: 'absolute',
-                top: '40px',
+                position: "absolute",
+                top: "40px",
                 left: 0,
-                width: '100%',
-                maxHeight: '200px',
-                overflowY: 'auto',
-                backgroundColor: 'white',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                width: "120%",
+                maxHeight: "200px",
+                overflowY: "auto",
+                backgroundColor: "white",
                 zIndex: 1000,
+                borderRadius: 2,
+                border: "1px solid",
+                borderColor: "divider",
               }}
             >
-              {filteredProducts.map((product) => (
-                <Box
-                  key={product.id}
-                  display="flex"
-                  alignItems="center"
-                  p={1}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': { backgroundColor: '#f5f5f5' },
-                  }}
-                  onClick={() => {
-                    navigate(`/producto/${product.id}`);
-                    setSearchOpen(false);
-                    setFilteredProducts([]);
-                  }}
-                >
-                  <Grid
-                  container
-                  direction={{ xs: 'column', sm: 'row' }} // Stack en mobile, horizontal en desktop
-                  alignItems="center"
-                  borderBottom={1}
-                  borderColor="divider"
+              {filteredProducts.map((product, index) => (
+                <Box key={product.sku}>
+                  <Box
+                    sx={{
+                      cursor: "pointer",
+                      transition: "background-color 0.2s",
+                      "&:hover": { backgroundColor: "#f5f5f5" },
+                    }}
+                    onClick={() => {
+                      navigate(`/producto/${product.sku}`)
+                      setSearchOpen(false)
+                      setFilteredProducts([])
+                    }}
                   >
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                      <Box
-                        component="img"
-                        src={product.image[0]} // Usa la primera imagen del producto
-                        alt={product.model}
-                        sx={{ width: 40, height: 40, borderRadius: 1, mr: 2 }}
-                      />
+                    <Grid container direction={{ xs: "column", sm: "row" }} alignItems="center" sx={{ p: 1 }}>
+                      <Grid size={{ xs: 12, sm: 6, lg: 5 }} sx={{ display: "flex", justifyContent: { xs: "center", sm: "left" } }}>
+                        <Avatar
+                          src={imagenesPorSku[product.sku] ?? imgNotFound}
+                          alt={product.modelo}
+                          variant="rounded"
+                          sx={{
+                            width: 70,
+                            height: 50,
+                            flexShrink: 0,
+                          }}
+                        />
+                      </Grid>
+                      <Grid
+                        size={{ xs: 12, sm: 6, lg: 6 }}
+                        sx={{ mb: { xs: 1, sm: 0 }, textAlign: { xs: "center", sm: "left" } }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {product.modelo}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            display: "block",
+                          }}
+                        >
+                          {product.marca}
+                        </Typography>
+                        {product.precio && (
+                          <Typography
+                            variant="body2"
+                            color="primary"
+                            fontWeight={600}
+                            sx={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            ${product.precio.toLocaleString()}
+                          </Typography>
+                        )}
+                      </Grid>
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mb: 1}}>
-                      <Typography variant="body2">{product.model}</Typography>
-                    </Grid>
-                  </Grid>
+                  </Box>
+
+                  {/* Divider entre elementos, excepto el último */}
+                  {index < filteredProducts.length - 1 && <Divider variant="middle" />}
                 </Box>
               ))}
-            </Box>
+            </Paper>
           )}
-          
         </Box>
 
         {/* User Menu */}
         <Box>
-          <IconButton onClick={handleOpenUserMenu} size='small'>
+          <IconButton onClick={handleOpenUserMenu} size="small">
             <Person />
           </IconButton>
-          <Menu
-            anchorEl={userAnchorEl}
-            open={Boolean(userAnchorEl)}
-            onClose={handleCloseMenus}
-          >
-            <Typography variant='p' sx={{ fontFamily: 'Inter', fontWeight: '600', px: 1 }}>{ user?.mail }</Typography>
-            {
-              user?.role === 'admin' && (
-                <MenuItem variant="p" onClick={() => handleNavigate('/admin')} sx={{ cursor: 'pointer', fontWeight: 500 }}>Dashboard</MenuItem>
-              )
-            }
+          <Menu anchorEl={userAnchorEl} open={Boolean(userAnchorEl)} onClose={handleCloseMenus}>
+            <Typography variant="p" sx={{ fontFamily: "Inter", fontWeight: "600", px: 1 }}>
+              {user?.mail}
+            </Typography>
+            {user?.role === "admin" && (
+              <MenuItem
+                variant="p"
+                onClick={() => handleNavigate("/admin")}
+                sx={{ cursor: "pointer", fontWeight: 500 }}
+              >
+                Dashboard
+              </MenuItem>
+            )}
             <MenuItem onClick={() => logoutFirebase(dispatch)}>Cerrar sesión</MenuItem>
           </Menu>
         </Box>
 
         {/* Cart */}
-        <IconButton component={Link} to="/inicio/cart" size='small' onClick={() => navigate('/cart')}>
+        <IconButton component={Link} to="/inicio/cart" size="small" onClick={() => navigate("/cart")}>
           <Badge badgeContent={cartItems} color="error">
             <ShoppingCart />
           </Badge>
         </IconButton>
       </Grid>
     </Grid>
-  );
-};
+  )
+}

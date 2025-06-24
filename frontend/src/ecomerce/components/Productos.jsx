@@ -131,8 +131,8 @@ export const Productos = () => {
                             label="Talle"
                             sx={{ minWidth: 120 }}
                         >
-                            <MenuItem disabled>
-                                {productos.length === 0 ? "Cargando talles..." : "Seleccioná un talle"}
+                            <MenuItem>
+                                {productos.length === 0 ? "Cargando talles..." : "Todos"}
                             </MenuItem>
                             {[...new Set(productoTalles.map(p => p.talle.numero))]
                                 .sort((a, b) => parseFloat(a) - parseFloat(b))
