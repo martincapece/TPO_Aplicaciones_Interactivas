@@ -1,136 +1,96 @@
-import { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
 import { useCart } from "../../Cart/hooks/useCart";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../auth/context/index.js";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
-    Box,
-    Typography,
-    Button,
-    Grid,
-    ToggleButton,
-    ToggleButtonGroup,
-    CircularProgress,
-    Skeleton
+import { ProductosContext } from "../context/ProductosContext.jsx";
+import { 
+    Dialog, 
+    DialogTitle, 
+    DialogContent, 
+    DialogActions, 
+    Accordion, 
+    AccordionSummary, 
+    AccordionDetails, 
+    Box, 
+    Typography, 
+    Button, 
+    Grid, 
+    ToggleButton, 
+    ToggleButtonGroup, 
+    CircularProgress, 
+    Skeleton 
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Swal from 'sweetalert2';
+import { LazyImage } from "../components/LazyImage";
 
 export function SneakerPage() {
-    const {id} = useParams();
+    const { id } = useParams();
     const location = useLocation();
-    const {authState} = useContext(AuthContext);
-    const {token} = authState.user;
+    const navigate = useNavigate();
+    const { authState } = useContext(AuthContext);
+    const { token } = authState.user;
+    
+    // CONSTANTE: imagen not found
+    const imgNotFound = "/assets/imgNotFound.jpg";
+    
+    // Usar el contexto de productos
+    const {
+        productos,
+        getTallesPorSku,
+        getImagenPrincipalPorSku,
+        getImagenesProductoPorSku,
+        getEstadoImagenesProducto,
+        solicitarImagenesProducto,
+        loading: contextLoading,
+        datosYaCargados
+    } = useContext(ProductosContext);
 
-    // Estados principales
+    // Estados locales
     const [selectedSize, setSelectedSize] = useState("");
     const [selectedStock, setSelectedStock] = useState(0);
     const [currentPhoto, setCurrentPhoto] = useState(null);
-    const [sneaker, setSneaker] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
-
-    // Estados para imágenes
-    const [imagenes, setImagenes] = useState([]);
-    const [loadingImagenes, setLoadingImagenes] = useState(true);
-
-    // Estados para talles
-    const [talles, setTalles] = useState([]);
-    const [loadingTalles, setLoadingTalles] = useState(true);
-
-    // Estados para productos recomendados
     const [productosRecomendados, setProductosRecomendados] = useState([]);
     const [imagenesRecomendados, setImagenesRecomendados] = useState({});
     const [loadingRecomendados, setLoadingRecomendados] = useState(true);
 
-    // Estados de carga
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { addProduct } = useCart();
 
-    const {addProduct} = useCart();
+    // Datos del producto
+    const sneaker = useMemo(() => {
+        return productos.find(p => p.sku.toString() === id);
+    }, [productos, id]);
 
-    // Función optimizada para obtener datos principales en paralelo
-    const fetchDatosIniciales = useCallback(async () => {
-        if (!id || !token) return;
+    const talles = useMemo(() => {
+        return getTallesPorSku(id);
+    }, [getTallesPorSku, id]);
 
-        try {
-            setLoading(true);
+    const imagenPrincipal = useMemo(() => {
+        return getImagenPrincipalPorSku(id);
+    }, [getImagenPrincipalPorSku, id]);
 
-            // Ejecutar todas las llamadas principales en paralelo
-            const [productoResponse, imagenesResponse, tallesResponse] = await Promise.allSettled([
-                fetch(`http://localhost:8080/sapah/productos/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                }),
-                fetch(`http://localhost:8080/api/imagenes/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                }),
-                fetch(`http://localhost:8080/sapah/productos-talles/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                })
-            ]);
+    const imagenesProducto = useMemo(() => {
+        return getImagenesProductoPorSku(id);
+    }, [getImagenesProductoPorSku, id]);
 
-            // Procesar respuesta del producto
-            if (productoResponse.status === 'fulfilled' && productoResponse.value.ok) {
-                const productoData = await productoResponse.value.json();
-                setSneaker(productoData);
+    const estadoImagenesProducto = useMemo(() => {
+        return getEstadoImagenesProducto(id);
+    }, [getEstadoImagenesProducto, id]);
 
-                // Inmediatamente obtener productos recomendados
-                fetchProductosRecomendados(productoData.marca);
-            } else {
-                throw new Error("Error al obtener el producto");
-            }
-
-            // Procesar respuesta de imágenes
-            if (imagenesResponse.status === 'fulfilled' && imagenesResponse.value.ok) {
-                const imagenesData = await imagenesResponse.value.json();
-                setImagenes(imagenesData);
-
-                // Establecer imagen principal
-                const imagenPrincipal = imagenesData.find(img => img.esPrincipal);
-                if (imagenPrincipal) {
-                    setCurrentPhoto(imagenPrincipal.cloudinarySecureUrl);
-                } else if (imagenesData.length > 0) {
-                    setCurrentPhoto(imagenesData[0].cloudinarySecureUrl);
-                }
-            }
-            setLoadingImagenes(false);
-
-            // Procesar respuesta de talles
-            if (tallesResponse.status === 'fulfilled' && tallesResponse.value.ok) {
-                const tallesData = await tallesResponse.value.json();
-                setTalles(tallesData);
-            }
-            setLoadingTalles(false);
-
-        } catch (err) {
-            setError(err.message);
-            console.error("Error al cargar datos:", err);
-        } finally {
-            setLoading(false);
+    // Función para manejar click en imagen
+    const handleImageClick = useCallback((imageUrl) => {
+        if (imageUrl && imageUrl !== currentPhoto) {
+            setCurrentPhoto(imageUrl);
         }
-    }, [id, token]);
+    }, [currentPhoto]);
 
-    // Función optimizada para productos recomendados con lazy loading
+    // Función para cargar productos recomendados
     const fetchProductosRecomendados = useCallback(async (marca) => {
         if (!marca || !token) return;
 
         try {
             setLoadingRecomendados(true);
-
             const response = await fetch(`http://localhost:8080/sapah/productos/filter?marca=${encodeURIComponent(marca)}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -145,85 +105,43 @@ export function SneakerPage() {
             setProductosRecomendados(recomendados);
             setLoadingRecomendados(false);
 
-            // Cargar imágenes después de mostrar los productos (lazy loading real)
             if (recomendados.length > 0) {
-                // Cargar imágenes de manera diferida y por lotes
-                const batchSize = 2; // Cargar de 2 en 2
-                const batches = [];
-
-                for (let i = 0; i < recomendados.length; i += batchSize) {
-                    batches.push(recomendados.slice(i, i + batchSize));
-                }
-
-                // Procesar lotes secuencialmente para no sobrecargar
-                for (const batch of batches) {
-                    const batchPromises = batch.map(async (producto) => {
-                        try {
-                            const imgResponse = await fetch(`http://localhost:8080/api/imagenes/${producto.sku}/principal`, {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                    "Content-Type": "application/json"
-                                }
-                            });
-
-                            if (imgResponse.ok) {
-                                const imgData = await imgResponse.json();
-                                return {sku: producto.sku, url: imgData.cloudinarySecureUrl};
-                            }
-                            return {sku: producto.sku, url: null};
-                        } catch (err) {
-                            console.error(`Error al cargar imagen para SKU ${producto.sku}:`, err);
-                            return {sku: producto.sku, url: null};
-                        }
-                    });
-
-                    const batchResults = await Promise.allSettled(batchPromises);
-
-                    // Actualizar estado por lotes
-                    setImagenesRecomendados(prev => {
-                        const newImages = {...prev};
-                        batchResults.forEach((result) => {
-                            if (result.status === 'fulfilled' && result.value) {
-                                newImages[result.value.sku] = result.value.url;
+                const imagenesPromises = recomendados.map(async (producto) => {
+                    try {
+                        const imgResponse = await fetch(`http://localhost:8080/api/imagenes/${producto.sku}/principal`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json"
                             }
                         });
-                        return newImages;
-                    });
 
-                    // Pequeña pausa entre lotes para mejor UX
-                    if (batches.indexOf(batch) < batches.length - 1) {
-                        await new Promise(resolve => setTimeout(resolve, 100));
+                        if (imgResponse.ok) {
+                            const imgData = await imgResponse.json();
+                            return { sku: producto.sku, url: imgData.cloudinarySecureUrl || imgNotFound };
+                        }
+                        return { sku: producto.sku, url: imgNotFound };
+                    } catch (err) {
+                        return { sku: producto.sku, url: imgNotFound };
                     }
-                }
+                });
+
+                const imagenesResultados = await Promise.allSettled(imagenesPromises);
+                const nuevasImagenes = {};
+                imagenesResultados.forEach((result) => {
+                    if (result.status === 'fulfilled' && result.value) {
+                        nuevasImagenes[result.value.sku] = result.value.url;
+                    }
+                });
+                setImagenesRecomendados(nuevasImagenes);
             }
         } catch (err) {
             console.error("Error al cargar productos recomendados:", err);
             setLoadingRecomendados(false);
         }
-    }, [token, id]);
+    }, [token, id, imgNotFound]);
 
-    // Effect principal optimizado
-    useEffect(() => {
-        fetchDatosIniciales();
-    }, [fetchDatosIniciales]);
-
-    // Effect para scroll al top
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [id, location.pathname]);
-
-    // Effect para actualizar stock (memoizado)
-    useEffect(() => {
-        if (selectedSize && talles.length > 0) {
-            const talleSeleccionado = talles.find(t => t.talle.numero.toString() === selectedSize.toString());
-            setSelectedStock(talleSeleccionado ? talleSeleccionado.stock : 0);
-        } else {
-            setSelectedStock(0);
-        }
-    }, [selectedSize, talles]);
-
-    // Funciones memoizadas
-    const getTallesDisponibles = useMemo(() => {
+    // Datos calculados
+    const getTallesDisponiblesLocal = useMemo(() => {
         return talles.map(t => ({
             numero: t.talle.numero,
             stock: t.stock,
@@ -235,12 +153,75 @@ export function SneakerPage() {
         return talles.some(t => t.stock > 0);
     }, [talles]);
 
-    // Función para manejar click en imagen
-    const handleImageClick = useCallback((imageUrl) => {
-        setCurrentPhoto(imageUrl);
-    }, []);
+    const imagenParaMostrar = useMemo(() => {
+        if (currentPhoto && currentPhoto.trim() !== '') {
+            return currentPhoto;
+        }
+        
+        if (estadoImagenesProducto === 'cargado' && imagenesProducto.length > 0) {
+            const imagenPrincipalCompleta = imagenesProducto.find(img => img.esPrincipal);
+            const imagenPorDefecto = imagenPrincipalCompleta || imagenesProducto[0];
+            return imagenPorDefecto?.cloudinarySecureUrl || null;
+        }
+        
+        if (imagenPrincipal?.cloudinarySecureUrl) {
+            return imagenPrincipal.cloudinarySecureUrl;
+        }
+        
+        return null;
+    }, [currentPhoto, estadoImagenesProducto, imagenesProducto, imagenPrincipal]);
 
-    // Función para manejar agregar al carrito
+    // Estados de carga
+    const isLoading = contextLoading || !datosYaCargados || !sneaker;
+    const isLoadingImagenes = estadoImagenesProducto === 'cargando' || estadoImagenesProducto === 'no-cargado';
+    const hayErrorImagenes = estadoImagenesProducto === 'error';
+
+    // Effects
+    useEffect(() => {
+        if (id && datosYaCargados) {
+            solicitarImagenesProducto(id);
+        }
+    }, [id, datosYaCargados, solicitarImagenesProducto]);
+
+    useEffect(() => {
+        setCurrentPhoto(null);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [id]);
+
+    useEffect(() => {
+        if (!currentPhoto) {
+            if (estadoImagenesProducto === 'cargado' && imagenesProducto.length > 0) {
+                const imagenPrincipalCompleta = imagenesProducto.find(img => img.esPrincipal);
+                const imagenPorDefecto = imagenPrincipalCompleta || imagenesProducto[0];
+                
+                if (imagenPorDefecto?.cloudinarySecureUrl) {
+                    setCurrentPhoto(imagenPorDefecto.cloudinarySecureUrl);
+                    return;
+                }
+            }
+            
+            if (imagenPrincipal?.cloudinarySecureUrl && estadoImagenesProducto !== 'cargado') {
+                setCurrentPhoto(imagenPrincipal.cloudinarySecureUrl);
+            }
+        }
+    }, [estadoImagenesProducto, imagenesProducto, imagenPrincipal, id, currentPhoto]);
+
+    useEffect(() => {
+        if (sneaker && datosYaCargados) {
+            fetchProductosRecomendados(sneaker.marca);
+        }
+    }, [sneaker, datosYaCargados, fetchProductosRecomendados]);
+
+    useEffect(() => {
+        if (selectedSize && talles.length > 0) {
+            const talleSeleccionado = talles.find(t => t.talle.numero.toString() === selectedSize.toString());
+            setSelectedStock(talleSeleccionado ? talleSeleccionado.stock : 0);
+        } else {
+            setSelectedStock(0);
+        }
+    }, [selectedSize, talles]);
+
+    // Handlers
     const handleAddToCart = useCallback(() => {
         if (!selectedSize) {
             Swal.fire({
@@ -253,20 +234,25 @@ export function SneakerPage() {
         setDialogOpen(true);
     }, [selectedSize]);
 
-    // Función para confirmar agregar al carrito
     const confirmarAgregarCarrito = useCallback(() => {
         const talleSeleccionado = talles.find(t => t.talle.numero.toString() === selectedSize.toString());
-
-        addProduct({
+        
+        const productToAdd = {
             sku: sneaker.sku,
             modelo: sneaker.modelo,
             marca: sneaker.marca,
             precio: sneaker.precio,
-            image: currentPhoto,
-            size: selectedSize,
+            color: sneaker.color,
+            numeroProducto: talleSeleccionado?.talle?.numero,
             stock: selectedStock,
-            talleId: talleSeleccionado?.talle?.id
-        });
+            image: imagenPrincipal?.cloudinarySecureUrl,
+        };
+
+        console.log(sneaker);
+
+        console.log('Producto a agregar:', productToAdd); // Para debuggear
+        
+        addProduct(productToAdd);
         setDialogOpen(false);
 
         Swal.fire({
@@ -278,97 +264,12 @@ export function SneakerPage() {
         });
     }, [talles, sneaker, currentPhoto, selectedSize, selectedStock, addProduct]);
 
-    // Componente para imagen con lazy loading mejorado
-    const LazyImage = ({src, alt, onClick, ...props}) => {
-        const [loaded, setLoaded] = useState(false);
-        const [error, setError] = useState(false);
-        const [imageSrc, setImageSrc] = useState(null);
-
-        useEffect(() => {
-            if (src) {
-                setImageSrc(src);
-                setLoaded(false);
-                setError(false);
-            }
-        }, [src]);
-
-        const handleImageLoad = () => {
-            setLoaded(true);
-        };
-
-        const handleImageError = () => {
-            setError(true);
-            setLoaded(true);
-        };
-
-        return (
-            <Box sx={{position: 'relative', ...props.sx}} onClick={onClick}>
-                {!loaded && (
-                    <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height="100%"
-                        sx={{
-                            position: loaded ? 'absolute' : 'static',
-                            top: 0,
-                            left: 0,
-                            borderRadius: props.sx?.borderRadius || 0
-                        }}
-                    />
-                )}
-                {imageSrc && !error && (
-                    <Box
-                        component="img"
-                        src={imageSrc}
-                        alt={alt}
-                        onLoad={handleImageLoad}
-                        onError={handleImageError}
-                        loading="lazy"
-                        sx={{
-                            ...props.sx,
-                            opacity: loaded && !error ? 1 : 0,
-                            transition: 'opacity 0.3s ease-in-out',
-                            position: loaded ? 'static' : 'absolute',
-                            top: 0,
-                            left: 0
-                        }}
-                    />
-                )}
-                {error && loaded && (
-                    <Box
-                        sx={{
-                            ...props.sx,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: '#f5f5f5',
-                            color: '#999'
-                        }}
-                    >
-                        <Typography variant="caption">Sin imagen</Typography>
-                    </Box>
-                )}
-            </Box>
-        );
-    };
-
-    // Componente para producto recomendado con manejo de click optimizado
-    const ProductoRecomendado = ({producto, imagen}) => {
+    // CORREGIDO: Componente ProductoRecomendado con sintaxis correcta
+    const ProductoRecomendado = useCallback(({ producto, imagen }) => {
         const handleClick = useCallback((e) => {
             e.preventDefault();
-            // Limpiar estados antes de navegar
-            setSneaker(null);
-            setImagenes([]);
-            setTalles([]);
-            setProductosRecomendados([]);
-            setImagenesRecomendados({});
-            setSelectedSize("");
-            setCurrentPhoto(null);
-
-            // Navegar después de limpiar
-            setTimeout(() => {
-                window.location.href = `/producto/${producto.sku}`;
-            }, 50);
+            e.stopPropagation();
+            navigate(`/producto/${producto.sku}`);
         }, [producto.sku]);
 
         return (
@@ -377,25 +278,27 @@ export function SneakerPage() {
                 sx={{
                     textAlign: "center",
                     cursor: 'pointer',
+                    transition: 'transform 0.2s ease-in-out',
                     '&:hover': {
                         transform: 'translateY(-2px)',
-                        transition: 'transform 0.2s ease-in-out'
                     }
                 }}
             >
                 <LazyImage
                     src={imagen}
                     alt={producto.modelo}
+                    showSkeleton={true}
                     sx={{
                         width: "100%",
-                        maxWidth: {xs: 250, sm: 180},
+                        maxWidth: { xs: 250, sm: 180 },
                         mb: 1,
                         aspectRatio: "1",
                         objectFit: "contain",
-                        borderRadius: 1
+                        borderRadius: 1,
+                        pointerEvents: "none"
                     }}
                 />
-                <Typography variant="body1" sx={{fontWeight: 500}}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
                     {producto.modelo}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -403,48 +306,37 @@ export function SneakerPage() {
                 </Typography>
             </Box>
         );
-    };
+    }, [navigate]); // CORREGIDO: Cerrar correctamente el useCallback
 
-    if (loading) {
+    // Renderizado condicional
+    if (isLoading) {
         return (
-            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh'}}>
-                <CircularProgress/>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+                <CircularProgress />
             </Box>
         );
     }
 
-    if (error || !sneaker) {
+    if (!sneaker) {
         return (
-            <Typography variant="h6" sx={{textAlign: 'center', mt: 10}}>
-                {error || "Producto no encontrado"}
+            <Typography variant="h6" sx={{ textAlign: 'center', mt: 10 }}>
+                Producto no encontrado
             </Typography>
         );
     }
 
     return (
-        <Grid
-            container
-            sx={{
-                margin: '0 auto',
-                maxWidth: {xs: '300px', sm: '500px', md: '900px', lg: '1200px'}
-            }}
-        >
-            <Grid
-                container
-                spacing={4}
-                direction='row'
-                justifyContent='space-between'
-                sx={{my: 10}}
-            >
+        <Grid container sx={{ margin: '0 auto', maxWidth: { xs: '300px', sm: '500px', md: '900px', lg: '1200px' } }}>
+            <Grid container spacing={4} direction='row' justifyContent='space-between' sx={{ my: 10 }}>
                 {/* Sección de imágenes */}
-                <Grid size={{xs: 12, md: 6}}>
-                    <Box sx={{maxWidth: 550, width: "100%"}}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <Box sx={{ maxWidth: 550, width: "100%" }}>
                         {/* Imagen principal */}
                         <Box
                             sx={{
                                 width: "100%",
                                 aspectRatio: "1",
-                                backgroundColor: "#ffff",
+                                backgroundColor: "#fff",
                                 borderRadius: 2,
                                 overflow: "hidden",
                                 display: "flex",
@@ -452,52 +344,120 @@ export function SneakerPage() {
                                 justifyContent: "center",
                             }}
                         >
-                            {loadingImagenes ? (
-                                <Skeleton variant="rectangular" width="100%" height="100%"/>
-                            ) : currentPhoto ? (
+                            {isLoadingImagenes ? (
+                                <Box sx={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    alignItems: 'center', 
+                                    gap: 2,
+                                    width: "100%",
+                                    height: "100%"
+                                }}>
+                                    <Skeleton
+                                        variant="rectangular" 
+                                        width="100%" 
+                                        height="80%"
+                                        sx={{ borderRadius: 1 }}
+                                    />
+                                    <Typography variant="body2" color="text.secondary">
+                                        Cargando imágenes...
+                                    </Typography>
+                                </Box>
+                            ) : hayErrorImagenes ? (
+                                <Box sx={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    alignItems: 'center', 
+                                    gap: 1,
+                                    width: "100%",
+                                    height: "100%",
+                                    position: 'relative'
+                                }}>
+                                    <LazyImage
+                                        src={imgNotFound}
+                                        alt={sneaker.modelo}
+                                        showSkeleton={false}
+                                        sx={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "contain",
+                                        }}
+                                    />
+                                    <Button 
+                                        variant="outlined" 
+                                        size="small"
+                                        onClick={() => solicitarImagenesProducto(id)}
+                                        sx={{
+                                            position: 'absolute',
+                                            bottom: 10,
+                                            zIndex: 10
+                                        }}
+                                    >
+                                        Reintentar
+                                    </Button>
+                                </Box>
+                            ) : (
                                 <LazyImage
-                                    src={currentPhoto}
+                                    src={imagenParaMostrar}
                                     alt={sneaker.modelo}
+                                    showSkeleton={true}
                                     sx={{
                                         width: "100%",
                                         height: "100%",
                                         objectFit: "contain",
                                     }}
                                 />
-                            ) : (
-                                <Typography>Sin imagen</Typography>
                             )}
                         </Box>
 
                         {/* Miniaturas */}
-                        {imagenes.length > 1 && (
-                            <Box sx={{display: "flex", gap: 1, mt: 2, flexWrap: "wrap"}}>
-                                {imagenes.map((img, index) => (
-                                    <LazyImage
-                                        key={img.id}
-                                        src={img.cloudinarySecureUrl}
-                                        onClick={() => handleImageClick(img.cloudinarySecureUrl)}
-                                        alt={`${sneaker.modelo} - ${index + 1}`}
-                                        sx={{
-                                            width: {xs: 50, sm: 60},
-                                            height: {xs: 50, sm: 60},
-                                            objectFit: "cover",
-                                            borderRadius: 1,
-                                            border: currentPhoto === img.cloudinarySecureUrl ? "2px solid black" : "1px solid #ccc",
-                                            cursor: "pointer",
-                                            transition: "border 0.2s ease-in-out",
-                                        }}
-                                    />
-                                ))}
+                        {estadoImagenesProducto === 'cargado' && imagenesProducto.length > 1 && (
+                            <Box sx={{ display: "flex", gap: 1, mt: 2, flexWrap: "wrap" }}>
+                                {imagenesProducto.map((img, index) => {
+                                    const imagenUrl = img.cloudinarySecureUrl;
+                                    const isSelected = currentPhoto === imagenUrl;
+                                    
+                                    return (
+                                        <Box
+                                            key={img.id}
+                                            onClick={() => handleImageClick(imagenUrl)}
+                                            sx={{
+                                                width: { xs: 50, sm: 60 },
+                                                height: { xs: 50, sm: 60 },
+                                                borderRadius: 1,
+                                                border: isSelected ? "3px solid #000" : "1px solid #ccc",
+                                                cursor: "pointer",
+                                                transition: "all 0.2s ease-in-out",
+                                                transform: isSelected ? "scale(1.05)" : "scale(1)",
+                                                overflow: "hidden",
+                                                '&:hover': {
+                                                    borderColor: isSelected ? '#000' : '#666',
+                                                    transform: isSelected ? "scale(1.05)" : "scale(1.02)"
+                                                }
+                                            }}
+                                        >
+                                            <LazyImage
+                                                src={imagenUrl}
+                                                alt={`${sneaker.modelo} - vista ${index + 1}`}
+                                                showSkeleton={true}
+                                                sx={{
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    objectFit: "cover",
+                                                    pointerEvents: "none"
+                                                }}
+                                            />
+                                        </Box>
+                                    );
+                                })}
                             </Box>
                         )}
                     </Box>
                 </Grid>
 
                 {/* Info del producto */}
-                <Grid size={{xs: 12, md: 6}}>
-                    <Typography variant="h3"
-                                sx={{fontFamily: "Inter", fontSize: {xs: '30px', md: '45px'}, fontWeight: "bold"}}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="h3" sx={{ fontFamily: "Inter", fontSize: { xs: '30px', md: '45px' }, fontWeight: "bold" }}>
                         {sneaker.modelo}
                     </Typography>
                     <Typography variant="h5" sx={{
@@ -518,83 +478,74 @@ export function SneakerPage() {
                             Seleccionar Talle
                         </Typography>
 
-                        {loadingTalles ? (
-                            <Box sx={{display: 'flex', gap: 1.5, flexWrap: 'wrap'}}>
-                                {[...Array(6)].map((_, i) => (
-                                    <Skeleton key={i} variant="rectangular" width={55} height={55}
-                                              sx={{borderRadius: '12px'}}/>
-                                ))}
-                            </Box>
-                        ) : (
-                            <ToggleButtonGroup
-                                value={selectedSize}
-                                exclusive
-                                onChange={(e, newSize) => {
-                                    if (newSize) setSelectedSize(newSize);
-                                }}
-                                aria-label="talles"
-                                sx={{
-                                    flexWrap: "wrap",
-                                    gap: 1.5,
-                                    justifyContent: "center",
-                                    marginY: 2,
-                                    '& .MuiToggleButtonGroup-grouped': {
-                                        border: '1.5px solid #ccc !important',
-                                        margin: 0,
-                                        borderRadius: '12px !important',
-                                    },
-                                    '& .MuiToggleButtonGroup-grouped.Mui-selected': {
-                                        borderColor: '#000 !important',
-                                    }
-                                }}
-                            >
-                                {getTallesDisponibles.map((talleInfo) => {
-                                    const isAvailable = talleInfo.stock > 0;
-                                    return (
-                                        <ToggleButton
-                                            key={talleInfo.numero}
-                                            value={talleInfo.numero}
-                                            disabled={!isAvailable}
-                                            selected={selectedSize === talleInfo.numero}
-                                            color="primary"
-                                            sx={{
-                                                width: 55,
-                                                height: 55,
-                                                borderRadius: "12px",
-                                                color: selectedSize === talleInfo.numero ? "#fff" : "#000",
-                                                fontWeight: 500,
-                                                fontSize: "16px",
-                                                fontFamily: "Inter",
-                                                transition: "all 0.2s ease-in-out",
-                                                '&:hover': {
-                                                    backgroundColor: isAvailable ? "#f0f0f0" : "#f5f5f5",
+                        <ToggleButtonGroup
+                            value={selectedSize}
+                            exclusive
+                            onChange={(e, newSize) => {
+                                if (newSize) setSelectedSize(newSize);
+                            }}
+                            aria-label="talles"
+                            sx={{
+                                flexWrap: "wrap",
+                                gap: 1.5,
+                                justifyContent: "center",
+                                marginY: 2,
+                                '& .MuiToggleButtonGroup-grouped': {
+                                    border: '1.5px solid #ccc !important',
+                                    margin: 0,
+                                    borderRadius: '12px !important',
+                                },
+                                '& .MuiToggleButtonGroup-grouped.Mui-selected': {
+                                    borderColor: '#000 !important',
+                                }
+                            }}
+                        >
+                            {getTallesDisponiblesLocal.map((talleInfo) => {
+                                const isAvailable = talleInfo.stock > 0;
+                                return (
+                                    <ToggleButton
+                                        key={talleInfo.numero}
+                                        value={talleInfo.numero}
+                                        disabled={!isAvailable}
+                                        selected={selectedSize === talleInfo.numero}
+                                        color="primary"
+                                        sx={{
+                                            width: 55,
+                                            height: 55,
+                                            borderRadius: "12px",
+                                            color: selectedSize === talleInfo.numero ? "#fff" : "#000",
+                                            fontWeight: 500,
+                                            fontSize: "16px",
+                                            fontFamily: "Inter",
+                                            transition: "all 0.2s ease-in-out",
+                                            '&:hover': {
+                                                backgroundColor: isAvailable ? "#f0f0f0" : "#f5f5f5",
+                                            },
+                                            '&.Mui-disabled': {
+                                                position: 'relative',
+                                                color: '#bbb',
+                                                backgroundColor: '#f9f9f9',
+                                                borderColor: '#eee',
+                                                cursor: 'not-allowed',
+                                                '&::after': {
+                                                    content: '""',
+                                                    position: 'absolute',
+                                                    top: '50%',
+                                                    left: '10%',
+                                                    width: '80%',
+                                                    height: '2px',
+                                                    backgroundColor: '#bbb',
+                                                    transform: 'rotate(-20deg)',
+                                                    transformOrigin: 'center',
                                                 },
-                                                '&.Mui-disabled': {
-                                                    position: 'relative',
-                                                    color: '#bbb',
-                                                    backgroundColor: '#f9f9f9',
-                                                    borderColor: '#eee',
-                                                    cursor: 'not-allowed',
-                                                    '&::after': {
-                                                        content: '""',
-                                                        position: 'absolute',
-                                                        top: '50%',
-                                                        left: '10%',
-                                                        width: '80%',
-                                                        height: '2px',
-                                                        backgroundColor: '#bbb',
-                                                        transform: 'rotate(-20deg)',
-                                                        transformOrigin: 'center',
-                                                    },
-                                                },
-                                            }}
-                                        >
-                                            {talleInfo.numero}
-                                        </ToggleButton>
-                                    );
-                                })}
-                            </ToggleButtonGroup>
-                        )}
+                                            },
+                                        }}
+                                    >
+                                        {talleInfo.numero}
+                                    </ToggleButton>
+                                );
+                            })}
+                        </ToggleButtonGroup>
 
                         {selectedSize && selectedStock >= 0 && (
                             <Typography variant="body2" color="text.secondary" textAlign="center">
@@ -608,7 +559,7 @@ export function SneakerPage() {
                         variant="contained"
                         color="primary"
                         disabled={!hayStockDisponible}
-                        sx={{my: {xs: 6}, borderRadius: 999, px: 4}}
+                        sx={{ my: { xs: 6 }, borderRadius: 999, px: 4 }}
                         onClick={handleAddToCart}
                     >
                         {!hayStockDisponible ? "Sin stock" : "Agregar al carrito"}
@@ -627,7 +578,7 @@ export function SneakerPage() {
                 </Grid>
             </Grid>
 
-            {/* Dialog Confirmar Agregar al Carrito */}
+            {/* Dialog */}
             <Dialog
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
@@ -654,12 +605,12 @@ export function SneakerPage() {
                         carrito?
                     </Typography>
                 </DialogContent>
-                <DialogActions sx={{justifyContent: "center"}}>
+                <DialogActions sx={{ justifyContent: "center" }}>
                     <Button
                         onClick={confirmarAgregarCarrito}
                         variant="contained"
                         color="primary"
-                        sx={{borderRadius: 999, px: 4}}
+                        sx={{ borderRadius: 999, px: 4 }}
                     >
                         Aceptar
                     </Button>
@@ -667,19 +618,19 @@ export function SneakerPage() {
             </Dialog>
 
             {/* Información adicional */}
-            <Box sx={{mt: 8, width: "100%"}}>
-                <Typography variant="h5" gutterBottom sx={{fontFamily: "Inter"}}>
+            <Box sx={{ mt: 8, width: "100%" }}>
+                <Typography variant="h5" gutterBottom sx={{ fontFamily: "Inter" }}>
                     Información adicional
                 </Typography>
 
                 <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                        <Typography variant='h6' sx={{fontFamily: "Inter", fontSize: {xs: '15px', md: '18px'}}}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography variant='h6' sx={{ fontFamily: "Inter", fontSize: { xs: '15px', md: '18px' } }}>
                             Cambios y devoluciones
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Typography variant="body1" sx={{fontFamily: "Inter", fontSize: {xs: '15px'}}}>
+                        <Typography variant="body1" sx={{ fontFamily: "Inter", fontSize: { xs: '15px' } }}>
                             Podés cambiar o devolver cualquier producto en un plazo de 30 días, siempre que esté en
                             condiciones originales.
                         </Typography>
@@ -687,26 +638,26 @@ export function SneakerPage() {
                 </Accordion>
 
                 <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                        <Typography variant='h6' sx={{fontFamily: "Inter", fontSize: {xs: '15px', md: '18px'}}}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography variant='h6' sx={{ fontFamily: "Inter", fontSize: { xs: '15px', md: '18px' } }}>
                             Métodos de pago
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Typography variant="body1" sx={{fontFamily: "Inter", fontSize: {xs: '15px'}}}>
+                        <Typography variant="body1" sx={{ fontFamily: "Inter", fontSize: { xs: '15px' } }}>
                             Aceptamos tarjetas de crédito, débito, MercadoPago y transferencia bancaria.
                         </Typography>
                     </AccordionDetails>
                 </Accordion>
 
                 <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                        <Typography variant='h6' sx={{fontFamily: "Inter", fontSize: {xs: '15px', md: '18px'}}}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography variant='h6' sx={{ fontFamily: "Inter", fontSize: { xs: '15px', md: '18px' } }}>
                             Envíos
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Typography variant="body1" sx={{fontFamily: "Inter", fontSize: {xs: '15px'}}}>
+                        <Typography variant="body1" sx={{ fontFamily: "Inter", fontSize: { xs: '15px' } }}>
                             Envío gratuito a todo el país en compras mayores a $50.000. Despacho en 24 horas.
                         </Typography>
                     </AccordionDetails>
@@ -714,33 +665,32 @@ export function SneakerPage() {
             </Box>
 
             {/* Productos recomendados */}
-            <Box sx={{width: "100%", my: 15}}>
+            <Box sx={{ width: "100%", my: 15 }}>
                 <Typography variant="h5" mb={2}>
                     Te recomendamos
                 </Typography>
                 <Grid container spacing={2}>
                     {loadingRecomendados ? (
-                        // Skeletons para productos recomendados
                         [...Array(6)].map((_, index) => (
-                            <Grid size={{sm: 4, md: 2}} width='100%' key={index}>
-                                <Box sx={{textAlign: "center"}}>
+                            <Grid size={{ sm: 4, md: 2 }} width='100%' key={index}>
+                                <Box sx={{ textAlign: "center" }}>
                                     <Skeleton
                                         variant="rectangular"
                                         width="100%"
                                         sx={{
-                                            maxWidth: {xs: 250, sm: 180},
+                                            maxWidth: { xs: 250, sm: 180 },
                                             aspectRatio: "1",
                                             mb: 1
                                         }}
                                     />
-                                    <Skeleton variant="text" width="80%"/>
-                                    <Skeleton variant="text" width="60%"/>
+                                    <Skeleton variant="text" width="80%" />
+                                    <Skeleton variant="text" width="60%" />
                                 </Box>
                             </Grid>
                         ))
                     ) : productosRecomendados.length > 0 ? (
                         productosRecomendados.map((prod) => (
-                            <Grid size={{sm: 4, md: 2}} width='100%' key={prod.sku}>
+                            <Grid size={{ sm: 4, md: 2 }} width='100%' key={prod.sku}>
                                 <ProductoRecomendado
                                     producto={prod}
                                     imagen={imagenesRecomendados[prod.sku]}
@@ -748,7 +698,7 @@ export function SneakerPage() {
                             </Grid>
                         ))
                     ) : (
-                        <Typography variant="body2" color="text.secondary" sx={{ml: 2}}>
+                        <Typography variant="body2" color="text.secondary" sx={{ ml: 2 }}>
                             No hay productos recomendados disponibles
                         </Typography>
                     )}

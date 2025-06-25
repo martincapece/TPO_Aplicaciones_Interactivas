@@ -13,12 +13,23 @@ export const Productos = () => {
     const [order, setOrder] = useState("alphabetically")
 
     const location = useLocation()
-    const searchQuery = new URLSearchParams(location.search).get("query") || ""    // Obtener datos del contexto
-    const { productos, loading, loadingProductos, loadingTalles, errorProductos, getTallesDisponibles, tieneStockEnTalle } = useContext(ProductosContext)
+    const searchQuery = new URLSearchParams(location.search).get("query") || ""
+
+    // Obtener datos del contexto
+    const { productos, loading, loadingProductos, errorProductos, getTallesDisponibles, tieneStockEnTalle } = useContext(ProductosContext)
+
+    // Efecto para cargar la marca seleccionada desde localStorage
+    useEffect(() => {
+        const selectedBrand = localStorage.getItem("selectedBrand");
+        if (selectedBrand) {
+            setMarca(selectedBrand);
+            localStorage.removeItem("selectedBrand"); // Limpiar después de usar
+        }
+    }, []);
 
     // Obtener datos derivados
     const coloresDisponibles = !loadingProductos ? [...new Set(productos.flatMap((p) => p.color))] : []
-    const tallesDisponibles = !loadingTalles ? getTallesDisponibles() : []
+    const tallesDisponibles = !loading ? getTallesDisponibles() : []
 
     // Aplica filtros sobre los productos
     const productosFiltrados = productos
@@ -43,18 +54,29 @@ export const Productos = () => {
                 return b.precio - a.precio;
             default:
                 return a.modelo.localeCompare(b.modelo);
-            }        });
+            }
+        });
     
+    // Mostrar loading mientras carga
+    if (loading) {
+        return (
+        <Grid sx={{ my: 10, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <CircularProgress size={60} sx={{ mb: 3 }} />
+            <Typography variant="h4" sx={{ fontFamily: "Inter", fontWeight: 600 }}>
+            Cargando productos...
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 1, color: "text.secondary" }}>
+            Obteniendo productos, talles e imágenes...
+            </Typography>
+        </Grid>
+        )
+    }
+
     return (
         <Grid sx={{ my: 10, }}>
-            <Grid container alignItems="center" sx={{ mb: 5 }}>
-                <Typography variant="h2" id="productos" sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800 }}>
-                    {searchQuery ? `Resultados para: "${searchQuery}"` : "TODOS LOS PRODUCTOS"}
-                </Typography>
-                {loading && (
-                    <CircularProgress size={24} sx={{ ml: 2 }} />
-                )}
-            </Grid>
+            <Typography variant="h2" id="productos" sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800, mb: 5 }}>
+                {searchQuery ? `Resultados para: "${searchQuery}"` : "TODOS LOS PRODUCTOS"}
+            </Typography>
 
             {/* Filtros */}
             <Grid container spacing={2} sx={{ mb: 6 }}>
@@ -83,7 +105,9 @@ export const Productos = () => {
                             <MenuItem value="Vans">Vans</MenuItem>
                         </Select>
                     </FormControl>
-                </Grid>                {/* Filtro Color */}
+                </Grid>
+
+                {/* Filtro Color */}
                 <Grid item xs={12} sm={3}>
                     <FormControl fullWidth variant="outlined" size="small">
                         <InputLabel id="color-label">Color</InputLabel>
@@ -94,10 +118,9 @@ export const Productos = () => {
                         onChange={(e) => setColor(e.target.value)}
                         label="Color"
                         sx={{ minWidth: 125 }}
-                        disabled={loadingProductos}
                         >
                             <MenuItem value="">
-                                <em>{loadingProductos ? "Cargando colores..." : "Seleccionar color"}</em>
+                                <em>Seleccionar un color</em>
                             </MenuItem>
                             {coloresDisponibles.map((col) => (
                                 <MenuItem key={col} value={col}>
@@ -106,7 +129,9 @@ export const Productos = () => {
                             ))}
                         </Select>
                     </FormControl>
-                </Grid>                {/* Filtro Talle */}
+                </Grid>
+
+                {/* Filtro Talle */}
                 <Grid item xs={12} sm={3}>
                     <FormControl fullWidth variant="outlined" size="small">
                         <InputLabel id="size-label">Talle</InputLabel>
@@ -117,10 +142,9 @@ export const Productos = () => {
                         onChange={(e) => setTalle(e.target.value)}
                         label="Talle"
                         sx={{ minWidth: 125 }}
-                        disabled={loadingTalles}
                         >
                         <MenuItem value="">
-                            <em>{loadingTalles ? "Cargando talles..." : "Seleccionar talle"}</em>
+                            <em>Seleccionar un talle</em>
                         </MenuItem>
                         {tallesDisponibles.map((talleNum) => (
                             <MenuItem key={talleNum} value={talleNum}>
@@ -181,34 +205,20 @@ export const Productos = () => {
                     </Button>
                 </Grid>
 
-            </Grid>            {/* Productos */}
+            </Grid>
+
+            {/* Productos */}
             <Grid container spacing={2}>
                 {productosFiltrados.length ? (
                     productosFiltrados.map(sneaker => (
                         <SneakerCard key={sneaker.sku} {...sneaker} />
                     ))
                 ) : (
-                    <Grid container justifyContent="center" sx={{ mt: 4, mb: 4 }}>
-                        <Grid item xs={12} textAlign="center">
-                            {loadingProductos ? (
-                                <>
-                                    <CircularProgress size={40} sx={{ mb: 2 }} />
-                                    <Typography variant="h6" sx={{ mb: 1 }}>
-                                        Cargando productos...
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Por favor espera mientras obtenemos los productos
-                                    </Typography>
-                                </>
-                            ) : (
-                                <Typography variant="h6" sx={{ m: 2 }}>
-                                    {searchQuery
-                                    ? `No se encontraron resultados para: "${searchQuery}".`
-                                    : "No hay productos que coincidan con los filtros seleccionados."}
-                                </Typography>
-                            )}
-                        </Grid>
-                    </Grid>
+                    <Typography variant="h6" sx={{ m: 2 }}>
+                        {searchQuery
+                        ? `No se encontraron resultados para: "${searchQuery}".`
+                        : "No hay productos que coincidan con los filtros seleccionados."}
+                    </Typography>
                 )}
             </Grid>
         </Grid>

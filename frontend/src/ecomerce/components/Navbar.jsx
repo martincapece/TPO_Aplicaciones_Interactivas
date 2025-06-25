@@ -19,12 +19,10 @@ import { useNavigate, Link } from "react-router-dom"
 import { logoutFirebase } from "../../firebase/providers"
 import { AuthContext } from "../../auth/context/AuthContext"
 import { CartContext } from "../../Cart/context/CartContext"
-import { ProductosContext } from "../context/ProductosContext"
-import imgNotFound from "../../../assets/imgNotFound.jpg"
+import { ProductosContext } from "../context/ProductosContext.jsx"
 
 export const Navbar = () => {
   const { cartSize } = useContext(CartContext)
-  const { productos, imagenesPrincipales, loading, getEstadoImagenPorSku } = useContext(ProductosContext)
   const [menuAnchorEl, setMenuAnchorEl] = useState(null)
   const [userAnchorEl, setUserAnchorEl] = useState(null)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -37,11 +35,22 @@ export const Navbar = () => {
   const { dispatch, authState } = useContext(AuthContext)
   const { user } = authState
 
+  // CONSTANTE: imagen not found
+  const imgNotFound = "/assets/imgNotFound.jpg";
+
+  // Usar ProductosContext
+  const {
+    productos,
+    loading: loadingProductos,
+    getImagenPrincipalPorSku,
+    getEstadoImagenPorSku,
+    datosYaCargados
+  } = useContext(ProductosContext)
+
   const handleLogoClick = () => {
     navigate("/", { replace: true });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
 
   const handleNavigate = (path) => {
     navigate(path)
@@ -61,12 +70,13 @@ export const Navbar = () => {
     const value = e.target.value
     setSearchText(value)
 
-    if (value.trim()) {
+    if (value.trim() && datosYaCargados) {
       const lowerValue = value.toLowerCase()
       const results = productos.filter(
         (sneaker) =>
-          sneaker.modelo.toLowerCase().includes(lowerValue) || sneaker.marca.toLowerCase().includes(lowerValue),
-      )
+          sneaker.modelo.toLowerCase().includes(lowerValue) || 
+          sneaker.marca.toLowerCase().includes(lowerValue),
+      ).slice(0, 8)
       setFilteredProducts(results)
     } else {
       setFilteredProducts([])
@@ -89,6 +99,18 @@ export const Navbar = () => {
     setMenuAnchorEl(null)
     setUserAnchorEl(null)
     setSearchOpen(false)
+  }
+
+  // Función para obtener imagen del producto
+  const getImagenProducto = (sku) => {
+    const imagenPrincipal = getImagenPrincipalPorSku(sku)
+    const estadoImagen = getEstadoImagenPorSku(sku)
+    
+    if (estadoImagen === 'cargada' && imagenPrincipal?.cloudinarySecureUrl) {
+      return imagenPrincipal.cloudinarySecureUrl
+    }
+    
+    return imgNotFound
   }
 
   useEffect(() => {
@@ -117,8 +139,7 @@ export const Navbar = () => {
         <img
           src="/assets/logo_ecomerce.png"
           alt="Logo"
-          onClick={ handleLogoClick }
-          sx={{ cursor: "pointer" }}
+          onClick={handleLogoClick}
           style={{ cursor: "pointer", width: 100 }}
         />
       </Grid>
@@ -148,7 +169,12 @@ export const Navbar = () => {
               justifyContent: "center",
             }}
           >
-            <Grid component="img" src="/assets/logo_ecomerce.png" alt="Logo" sx={{ cursor: "pointer", width: { xs: 60, sm: 80 } }} />
+            <Grid 
+              component="img" 
+              src="/assets/logo_ecomerce.png" 
+              alt="Logo" 
+              sx={{ cursor: "pointer", width: { xs: 60, sm: 80 } }} 
+            />
           </Grid>
         </>
       ) : (
@@ -223,10 +249,11 @@ export const Navbar = () => {
                 onChange={handleSearchChange}
                 sx={{ ml: 1, width: { xs: 55, sm: 100, lg: 150 } }}
                 onClick={(e) => e.stopPropagation()}
+                disabled={!datosYaCargados}
               />
             </form>
           )}
-          {searchOpen && filteredProducts.length > 0 && (
+          {searchOpen && filteredProducts.length > 0 && datosYaCargados && (
             <Paper
               elevation={8}
               sx={{
@@ -255,15 +282,13 @@ export const Navbar = () => {
                       navigate(`/producto/${product.sku}`)
                       setSearchOpen(false)
                       setFilteredProducts([])
+                      setSearchText("")
                     }}
                   >
                     <Grid container direction={{ xs: "column", sm: "row" }} alignItems="center" sx={{ p: 1 }}>
-                      <Grid size={{ xs: 12, sm: 6, lg: 5 }} sx={{ display: "flex", justifyContent: { xs: "center", sm: "left" } }}>                        <Avatar
-                          src={
-                            getEstadoImagenPorSku(product.sku) === 'cargada' && imagenesPrincipales[product.sku]?.cloudinarySecureUrl
-                              ? imagenesPrincipales[product.sku].cloudinarySecureUrl
-                              : imgNotFound
-                          }
+                      <Grid size={{ xs: 12, sm: 6, lg: 5 }} sx={{ display: "flex", justifyContent: { xs: "center", sm: "left" } }}>
+                        <Avatar
+                          src={getImagenProducto(product.sku)}
                           alt={product.modelo}
                           variant="rounded"
                           sx={{
@@ -317,10 +342,53 @@ export const Navbar = () => {
                     </Grid>
                   </Box>
 
-                  {/* Divider entre elementos, excepto el último */}
                   {index < filteredProducts.length - 1 && <Divider variant="middle" />}
                 </Box>
               ))}
+            </Paper>
+          )}
+          
+          {searchOpen && searchText.trim() && !datosYaCargados && (
+            <Paper
+              elevation={8}
+              sx={{
+                position: "absolute",
+                top: "40px",
+                left: 0,
+                width: "120%",
+                backgroundColor: "white",
+                zIndex: 1000,
+                borderRadius: 2,
+                border: "1px solid",
+                borderColor: "divider",
+                p: 2
+              }}
+            >
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                Cargando productos...
+              </Typography>
+            </Paper>
+          )}
+          
+          {searchOpen && searchText.trim() && datosYaCargados && filteredProducts.length === 0 && (
+            <Paper
+              elevation={8}
+              sx={{
+                position: "absolute",
+                top: "40px",
+                left: 0,
+                width: "120%",
+                backgroundColor: "white",
+                zIndex: 1000,
+                borderRadius: 2,
+                border: "1px solid",
+                borderColor: "divider",
+                p: 2
+              }}
+            >
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                No se encontraron productos
+              </Typography>
             </Paper>
           )}
         </Box>

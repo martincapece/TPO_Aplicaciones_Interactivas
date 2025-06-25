@@ -1,62 +1,119 @@
 "use client"
 
-import { createContext, useState, useEffect, useContext } from "react"
+import { createContext, useState, useEffect, useContext, useCallback } from "react"
 import { AuthContext } from "../../auth/context/AuthContext"
 
 export const ProductosContext = createContext()
 
 export const ProductosProvider = ({ children }) => {
-  // Estados para productos
+  // Estados existentes...
   const [productos, setProductos] = useState([])
   const [loadingProductos, setLoadingProductos] = useState(false)
   const [errorProductos, setErrorProductos] = useState(null)
 
-  // Estados para talles (organizados por SKU)
   const [productoTalles, setProductoTalles] = useState({})
   const [loadingTalles, setLoadingTalles] = useState(false)
   const [errorTalles, setErrorTalles] = useState(null)
-  // Estados para imágenes principales (organizadas por SKU)
+
   const [imagenesPrincipales, setImagenesPrincipales] = useState({})
   const [loadingImagenes, setLoadingImagenes] = useState(false)
   const [errorImagenes, setErrorImagenes] = useState(null)
-  const [imagenesConError, setImagenesConError] = useState(new Set()) // SKUs con error definitivo
+  const [imagenesConError, setImagenesConError] = useState(new Set())
 
-  // Estado general de carga
+  // NUEVO: Sistema de caché de imágenes por producto (bajo demanda)
+  const [imagenesProductoCache, setImagenesProductoCache] = useState({}) // {sku: {imagenes: [], estado: 'cargando'|'cargado'|'error'}}
+  const [imagenesProductoCargando, setImagenesProductoCargando] = useState(new Set()) // SKUs que están cargando
+
+  // Estados generales...
   const [loading, setLoading] = useState(false)
-  const [datosYaCargados, setDatosYaCargados] = useState(false)  // Obtener datos del contexto de autenticación
-  const authContext = useContext(AuthContext)
+  const [datosYaCargados, setDatosYaCargados] = useState(false)
 
+  // Contexto de auth...
+  const authContext = useContext(AuthContext)
   const authState = authContext?.authState
   const isAuthenticated = authState?.logged || false
   const token = authState?.user?.token
 
-  // Función para validar que el token sea válido
   const validarToken = () => {
-    if (!token) {
-      return false
+    if (!token) return false
+    if (token.trim().length === 0) return false
+    return true
+  }
+
+  // NUEVA: Función para cargar imágenes de un producto específico (bajo demanda)
+  const cargarImagenesProducto = useCallback(async (sku) => {
+    const skuStr = sku.toString()
+    
+    // Si ya están cargadas o cargando, no hacer nada
+    if (imagenesProductoCache[skuStr] || imagenesProductoCargando.has(skuStr)) {
+      return
     }
 
-    if (token.trim().length === 0) {
-      return false
-    }    return true
-  }
-  
-  useEffect(() => {
-    // Solo ejecutar si:
-    // 1. El contexto de auth está disponible
-    // 2. El usuario está autenticado (logged = true)
-    // 3. Tenemos un token válido
-    // 4. Los datos no han sido cargados aún
-    // 5. No estamos ya cargando datos
-    if (authContext && isAuthenticated && validarToken() && !datosYaCargados && !loading) {
-      fetchTodosLosDatos()
+    // Si no hay token, no cargar
+    if (!validarToken()) {
+      return
     }
-  }, [authContext, isAuthenticated, token, datosYaCargados, loading]) // Se ejecuta cuando cambia el estado de auth
+
+    try {
+      // Marcar como cargando
+      setImagenesProductoCargando(prev => new Set([...prev, skuStr]))
+      
+      // Establecer estado inicial
+      setImagenesProductoCache(prev => ({
+        ...prev,
+        [skuStr]: {
+          imagenes: [],
+          estado: 'cargando'
+        }
+      }))
+
+      const response = await fetch(`http://localhost:8080/api/imagenes/${sku}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (response.ok) {
+        const imagenesData = await response.json()
+        
+        // Actualizar caché con imágenes cargadas
+        setImagenesProductoCache(prev => ({
+          ...prev,
+          [skuStr]: {
+            imagenes: imagenesData,
+            estado: 'cargado'
+          }
+        }))
+
+      } else {
+        throw new Error(`Error ${response.status}: ${response.statusText}`)
+      }
+    } catch (error) {
+      
+      // Marcar como error
+      setImagenesProductoCache(prev => ({
+        ...prev,
+        [skuStr]: {
+          imagenes: [],
+          estado: 'error'
+        }
+      }))
+    } finally {
+      // Quitar de la lista de cargando
+      setImagenesProductoCargando(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(skuStr)
+        return newSet
+      })
+    }
+  }, [token, imagenesProductoCache, imagenesProductoCargando])
 
   // Función para cargar imágenes progresivamente
   const cargarImagenesProgresivamente = (productosData) => {
     setLoadingImagenes(true)
-      // Inicializar el objeto de imágenes vacío (null = cargando, 'ERROR' = error definitivo, objeto = cargada)
+    
+    // Inicializar el objeto de imágenes vacío (null = cargando, 'ERROR' = error definitivo, objeto = cargada)
     const imagenesOrganizadas = {}
     productosData.forEach(producto => {
       imagenesOrganizadas[producto.sku] = null // null = estado de carga inicial
@@ -79,7 +136,8 @@ export const ProductosProvider = ({ children }) => {
           setImagenesPrincipales(prev => ({
             ...prev,
             [producto.sku]: imagen
-          }))        } else {
+          }))
+        } else {
           // Marcar como error definitivo
           setImagenesConError(prev => new Set([...prev, producto.sku]))
           setImagenesPrincipales(prev => ({
@@ -145,22 +203,23 @@ export const ProductosProvider = ({ children }) => {
           [producto.sku]: []
         }))
       }
-    })    // Marcar que ya no estamos cargando talles después de un breve momento
+    })
+    
+    // Marcar que ya no estamos cargando talles después de un breve momento
     setTimeout(() => {
       setLoadingTalles(false)
     }, 500)
   }
 
+  // Función principal (sin cargar todas las imágenes)
   const fetchTodosLosDatos = async () => {
-    try {
-      // Validar que tenemos un token válido antes de empezar
-      if (!validarToken()) {
-        return
-      }
+    if (loading || datosYaCargados) return
 
+    try {
       setLoading(true)
 
-      // PASO 1: Obtener todos los productos (CON TOKEN)
+      // 1. Cargar productos
+      setLoadingProductos(true)
       const productosResponse = await fetch("http://localhost:8080/sapah/productos", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -169,35 +228,29 @@ export const ProductosProvider = ({ children }) => {
       })
 
       if (!productosResponse.ok) {
-        throw new Error(`Error obteniendo productos: ${productosResponse.status}`)
+        throw new Error("Error al cargar productos")
       }
 
       const productosData = await productosResponse.json()
-
-      if (!Array.isArray(productosData)) {
-        throw new Error("La respuesta de productos no es un array.")
-      }
-
       setProductos(productosData)
       setLoadingProductos(false)
 
-      // Cargar imágenes y talles de forma progresiva
-      cargarImagenesProgresivamente(productosData)
-      cargarTallesProgresivamente(productosData)      // Marcar que los datos ya fueron cargados (productos están listos)
-      // Las imágenes y talles se cargarán progresivamente
-      setDatosYaCargados(true)
-      setLoading(false) // El proceso principal está completo
+      if (productosData.length > 0) {
+        // 2. Cargar imágenes principales (para catálogo)
+        cargarImagenesProgresivamente(productosData)
+        
+        // 3. Cargar talles (para filtros y stock)
+        cargarTallesProgresivamente(productosData)
+        
+        // 4. NO cargar todas las imágenes automáticamente
+      }
 
-    } catch (err) {
-      manejarErrorAuth(err, "carga de datos")
-      setErrorProductos(err)
-      setErrorTalles(err)
-      setErrorImagenes(err)
+      setDatosYaCargados(true)
+
+    } catch (error) {
+      setErrorProductos(error.message)
     } finally {
-      // Solo limpiar el loading general y de productos
-      // Las imágenes y talles tienen su propio ciclo de vida
       setLoading(false)
-      setLoadingProductos(false)
     }
   }
 
@@ -208,11 +261,14 @@ export const ProductosProvider = ({ children }) => {
       // El useEffect se encargará de recargar automáticamente
     }
   }
+
   // Función para limpiar datos al hacer logout
   const limpiarDatos = () => {
     setProductos([])
     setProductoTalles({})
     setImagenesPrincipales({})
+    setImagenesProductoCache({}) // NUEVO: Limpiar caché de imágenes
+    setImagenesProductoCargando(new Set()) // NUEVO: Limpiar estado de carga
     setImagenesConError(new Set())
     setDatosYaCargados(false)
     setErrorProductos(null)
@@ -226,7 +282,8 @@ export const ProductosProvider = ({ children }) => {
       limpiarDatos()
     }
   }, [isAuthenticated])
-  // Funciones helper para obtener datos específicos
+
+  // Funciones helper existentes...
   const getTallesPorSku = (sku) => {
     return productoTalles[sku] || []
   }
@@ -235,29 +292,28 @@ export const ProductosProvider = ({ children }) => {
     return imagenesPrincipales[sku] || null
   }
 
-  // Función para determinar el estado de la imagen
   const getEstadoImagenPorSku = (sku) => {
     const imagen = imagenesPrincipales[sku]
-    if (imagen === null) return 'cargando'  // null = cargando
-    if (imagen === 'ERROR') return 'error'  // 'ERROR' = error definitivo
-    return 'cargada'  // objeto = imagen cargada
+    if (imagen === null) return 'cargando'
+    if (imagen === 'ERROR') return 'error'
+    return 'cargada'
   }
 
-  // Función para obtener todos los talles únicos disponibles
+  // AGREGAR: Función para obtener todos los talles únicos disponibles
   const getTallesDisponibles = () => {
     const todosLosTalles = Object.values(productoTalles).flat()
     const tallesUnicos = [...new Set(todosLosTalles.map((pt) => pt.talle.numero))]
     return tallesUnicos.sort((a, b) => Number.parseFloat(a) - Number.parseFloat(b))
   }
-  // Función para verificar si un producto tiene stock en un talle específico
+
+  // AGREGAR: Función para verificar si un producto tiene stock en un talle específico
   const tieneStockEnTalle = (sku, numeroTalle) => {
     const talles = getTallesPorSku(sku)
     return talles.some((pt) => pt.talle.numero === numeroTalle && pt.stock > 0)
   }
 
-  // Función para manejar errores de autenticación
+  // AGREGAR: Función para manejar errores de autenticación
   const manejarErrorAuth = (error, operacion) => {
-    
     // Si el error es 401 o 403, significa que el token expiró o es inválido
     if (error.message.includes('401') || error.message.includes('403')) {
       limpiarDatos()
@@ -265,34 +321,97 @@ export const ProductosProvider = ({ children }) => {
     }
   }
 
-  const value = {
-    // Datos principales
+  // NUEVAS: Funciones para el caché de imágenes por producto
+  const getImagenesProductoPorSku = useCallback((sku) => {
+    if (!sku) return []
+    
+    const skuStr = sku.toString()
+    const cacheData = imagenesProductoCache[skuStr]
+    
+    if (!cacheData || cacheData.estado !== 'cargado') {
+      return []
+    }
+    
+    return cacheData.imagenes
+  }, [imagenesProductoCache])
+
+  const getEstadoImagenesProducto = useCallback((sku) => {
+    if (!sku) return 'sin-datos'
+    
+    const skuStr = sku.toString()
+    const cacheData = imagenesProductoCache[skuStr]
+    
+    if (!cacheData) return 'no-cargado'
+    
+    return cacheData.estado // 'cargando', 'cargado', 'error'
+  }, [imagenesProductoCache])
+
+  const hayImagenesSecundariasProducto = useCallback((sku) => {
+    const imagenes = getImagenesProductoPorSku(sku)
+    return imagenes.length > 1
+  }, [getImagenesProductoPorSku])
+
+  // Hook para solicitar carga de imágenes (para usar en componentes)
+  const solicitarImagenesProducto = useCallback((sku) => {
+    if (sku) {
+      cargarImagenesProducto(sku)
+    }
+  }, [cargarImagenesProducto])
+
+  // useEffect existente...
+  useEffect(() => {
+    if (authContext && isAuthenticated && validarToken() && !datosYaCargados && !loading) {
+      fetchTodosLosDatos()
+    }
+  }, [authContext, isAuthenticated, token, datosYaCargados, loading])
+
+  // Valor del contexto
+  const contextValue = {
+    // Estados existentes
     productos,
-    productoTalles,
-    imagenesPrincipales,
-
-    // Estados de carga
-    loading,
     loadingProductos,
-    loadingTalles,
-    loadingImagenes,
-
-    // Estados de error
     errorProductos,
+    
+    productoTalles,
+    loadingTalles,
     errorTalles,
+    
+    imagenesPrincipales,
+    loadingImagenes,
     errorImagenes,
-
-    // Estados adicionales
+    imagenesConError,
+    
+    // Estados generales
+    loading,
     datosYaCargados,
-    isAuthenticated,    // Funciones helper
+    isAuthenticated,
+    
+    // Funciones existentes
     getTallesPorSku,
     getImagenPrincipalPorSku,
     getEstadoImagenPorSku,
     getTallesDisponibles,
     tieneStockEnTalle,
+    
+    // NUEVAS: Funciones para caché de imágenes por producto
+    getImagenesProductoPorSku,
+    getEstadoImagenesProducto,
+    hayImagenesSecundariasProducto,
+    solicitarImagenesProducto,
+    
+    // Estados del caché
+    imagenesProductoCache,
+    imagenesProductoCargando,
+    
+    // Funciones de utilidad
     recargarDatos,
     limpiarDatos,
+    manejarErrorAuth
   }
 
-  return <ProductosContext.Provider value={value}>{children}</ProductosContext.Provider>
+  return (
+    <ProductosContext.Provider value={contextValue}>
+      {children}
+    </ProductosContext.Provider>
+  )
 }

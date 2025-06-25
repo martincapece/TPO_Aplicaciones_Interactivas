@@ -3,23 +3,23 @@ import AddIcon from '@mui/icons-material/Add';
 import { useCart } from '../hooks/useCart';
 
 function CartItem({ product }) {
-  const { id, model, brand, colors, size, stock, price, image, quantity } = product;
+  const { sku, modelo, marca, precio, color, numeroProducto, stock, image, quantity } = product;
   const {handleIncreaseQuantity, handleDecreaseQuantity} = useCart();
-
+  
   return (
     <div className="cart-item">
       {/* Imagen + acciones */}
       <div className="image-section">
-        <img src={image[0]} alt={model} className="product-image" />
+        <img src={image} alt={modelo} className="product-image" />
         <div className="actions">   
           {/* Control de cantidad */}
           <div className="quantity-control">
-            <button onClick={() => handleDecreaseQuantity(id, size)}>
+            <button onClick={() => handleDecreaseQuantity(sku, numeroProducto)}>
               <DeleteOutlineIcon fontSize="small" />
             </button>
             <span>{quantity}</span>
             <button 
-              onClick={() => handleIncreaseQuantity(id, size)}
+              onClick={() => handleIncreaseQuantity(sku, numeroProducto)}
               disabled={quantity >= stock}
               title={quantity >= stock ? 'No se pueden agregar más productos. Límite de stock alcanzado.' : ''}
               style={{
@@ -35,16 +35,16 @@ function CartItem({ product }) {
 
       {/* Info del producto */}
       <div className="info-section">
-        <h3>{model}</h3>
-        <p>{brand}</p>
+        <h3>{modelo}</h3>
+        <p>{marca}</p>
         <p className="size">
-          Talle <span>{size}</span>
+          Talle <span>{numeroProducto}</span>
         </p>
       </div>
 
       {/* Precio */}
       <div className="price-section" style={{ paddingRight: '20px' }}>
-        ${price.toFixed(2)}
+        ${(precio || 0).toFixed(2)}
       </div>
     </div>
   );

@@ -21,12 +21,12 @@ export const CartProvider = ({ children }) => {
 
   const addProduct = (product) => {
     setProductList((prev) => {
-      const existing = prev.find(p => p.id === product.id && p.size === product.size);
+      const existing = prev.find(p => p.sku === product.sku && p.numeroProducto === product.numeroProducto);
       if (existing) {
         return prev.map(p => (
-          p.id === product.id && p.size === product.size 
-          ? ( p.quantity + 1 <= p.stock ) 
-            ? { ...p, quantity: p.quantity + 1 } 
+          p.sku === product.sku && p.numeroProducto === product.numeroProducto
+          ? ( p.quantity + 1 <= p.stock )
+            ? { ...p, quantity: p.quantity + 1 }
             : { ...p, quantity: p.quantity }
           : p
         ));
@@ -36,17 +36,17 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const handleIncreaseQuantity = (productId, size) => {
+  const handleIncreaseQuantity = (sku, numeroProducto) => {
     setProductList(prev =>
       prev.map(item =>
-        item.id === productId && item.size === size ? { ...item, quantity: item.quantity + 1 } : item
+        item.sku === sku && item.numeroProducto === numeroProducto ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  const handleDecreaseQuantity = (productId, size) => {
+  const handleDecreaseQuantity = (sku, numeroProducto) => {
     setProductList((prev) =>
-      prev.map(item => item.id === productId && item.size === size ? { ...item, quantity: item.quantity - 1 } : item)
+      prev.map(item => item.sku === sku && item.numeroProducto === numeroProducto ? { ...item, quantity: item.quantity - 1 } : item)
         .filter(item => item.quantity > 0)
     );
   };
@@ -90,7 +90,7 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem('cart');
   }
 
-  const subtotal = productList.reduce((acc, p) => acc + p.price * p.quantity, 0);
+  const subtotal = productList.reduce((acc, p) => acc + p.precio * p.quantity, 0);
 
   const cartSize = productList.length;
 
