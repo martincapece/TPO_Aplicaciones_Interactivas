@@ -38,10 +38,9 @@ export const ProductosProvider = ({ children }) => {
 
     if (token.trim().length === 0) {
       return false
-    }
-
-    return true
+    }    return true
   }
+  
   useEffect(() => {
     // Solo ejecutar si:
     // 1. El contexto de auth está disponible
@@ -49,6 +48,9 @@ export const ProductosProvider = ({ children }) => {
     // 3. Tenemos un token válido
     // 4. Los datos no han sido cargados aún
     // 5. No estamos ya cargando datos
+    if (authContext && isAuthenticated && validarToken() && !datosYaCargados && !loading) {
+      fetchTodosLosDatos()
+    }
   }, [authContext, isAuthenticated, token, datosYaCargados, loading]) // Se ejecuta cuando cambia el estado de auth
 
   // Función para cargar imágenes progresivamente
@@ -143,10 +145,9 @@ export const ProductosProvider = ({ children }) => {
           [producto.sku]: []
         }))
       }
-    })
-
-    // Marcar que ya no estamos cargando talles después de un breve momento
+    })    // Marcar que ya no estamos cargando talles después de un breve momento
     setTimeout(() => {
+      setLoadingTalles(false)
     }, 500)
   }
 
