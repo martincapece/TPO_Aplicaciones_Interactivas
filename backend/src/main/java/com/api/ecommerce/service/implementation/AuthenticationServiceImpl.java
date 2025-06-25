@@ -157,7 +157,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             authenticationRequestDTO.contraseña()));
 
             // Generar el token JWT
-            return new AuthenticationResponseDTO(jwtUtil.generateToken(cliente.getMail(), cliente.getRole()), cliente.getRole().name());
+            return new AuthenticationResponseDTO(
+                    jwtUtil.generateToken(cliente.getMail(), cliente.getRole()),
+                    cliente.getRole().name(),
+                    cliente.getIdCliente()
+            );
+
         } catch (BadCredentialsException e) {
             throw new AuthenticationException("Credenciales inválidas. Por favor, verifique su email y contraseña.");
         }
