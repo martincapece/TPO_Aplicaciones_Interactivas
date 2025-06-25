@@ -31,8 +31,8 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO authenticationRequestDTO) {
         try {
-            AuthenticationResponseDTO jwt = authenticationService.login(authenticationRequestDTO);
-            return ResponseEntity.ok(jwt);
+            AuthenticationResponseDTO response = authenticationService.login(authenticationRequestDTO);
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException | BadCredentialsException e) {
             Map<String, Object> error = new HashMap<>();
             error.put("timestamp", LocalDateTime.now());
