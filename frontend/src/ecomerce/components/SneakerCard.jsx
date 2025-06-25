@@ -1,34 +1,38 @@
 import { Box, Card, CardContent, CardMedia, Grid, Skeleton, Typography } from "@mui/material"
-import { useNavigate } from "react-router-dom";
-import { useGetImagenesPorSku } from "../hooks/useGetImagenesPorSku";
-import imgNotFound from "../../../assets/imgNotFound.jpg"; // importa la imagen fallback
-import { useGetProductoTallePorSku } from "../hooks/useGetProductoTallePorSku";
+import { useNavigate } from "react-router-dom"
+import { useContext } from "react"
+import imgNotFound from "../../../assets/imgNotFound.jpg"
+import { ProductosContext } from "../context/ProductosContext";
 
 export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, sizes, image, destacado }) => {
-    const navigate = useNavigate();
-    
-    const { productoTalles, loadingTalles, errorTalle } = useGetProductoTallePorSku({ sku });
-    const sinStock = productoTalles.length > 0 && productoTalles.every(t => t.stock === 0);
+    const navigate = useNavigate()  // Obtener datos del contexto (¡súper rápido porque ya están cargados!)
+  const { getTallesPorSku, getImagenPrincipalPorSku, getEstadoImagenPorSku } = useContext(ProductosContext)
 
+  const productoTalles = getTallesPorSku(sku)
+  const imagenPrincipal = getImagenPrincipalPorSku(sku)
+  const estadoImagen = getEstadoImagenPorSku(sku)
+  const sinStock = productoTalles.length > 0 && productoTalles.every((t) => t.stock === 0)
 
-    const { imagenes, loadingImagenes, errorImagenes } = useGetImagenesPorSku({ sku });
-    const imagenPrincipal = imagenes.find((img) => img.esPrincipal);
+  // Determinar qué mostrar basado en el estado de la imagen
+  const mostrarSkeleton = estadoImagen === 'cargando'
+  const imagenSrc = estadoImagen === 'cargada' && imagenPrincipal?.cloudinarySecureUrl 
+    ? imagenPrincipal.cloudinarySecureUrl 
+    : (estadoImagen === 'error' ? imgNotFound : null)
 
     return (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
             <Card
-                sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                        '& .MuiCardMedia-root': {
-                            transform: 'scale(1.1)',
-                            transition: 'transform 0.3s ease-in-out'
-                        }
+            sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                    '& .MuiCardMedia-root': {
+                        transform: 'scale(1.1)',
+                        transition: 'transform 0.3s ease-in-out'
                     }
-                }}
-                onClick={() => navigate(`/producto/${sku}`)}
+                }
+            }}
+            onClick={() => navigate(`/producto/${sku}`)}
             >
-                {/* Solución más simple: usar un contenedor con altura fija basada en viewport */}
                 <Box
                 sx={{
                     overflow: "hidden",
@@ -36,36 +40,35 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                     width: "100%",
                     paddingTop: "100%", // Esto crea un cuadrado perfecto (aspect-ratio 1:1)
                 }}
-                >
-                {loadingImagenes || loadingTalles ? (
-                    <Skeleton
-                    variant="rectangular"
-                    sx={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                    }}
-                    />
-                ) : (
-                    <CardMedia
-                    component="img"
-                    alt={modelo}
-                    image={imagenPrincipal ? imagenPrincipal?.cloudinarySecureUrl : imgNotFound}
-                    sx={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                        backgroundColor: "#f5f5f5",
-                        transform: "scale(1.0)",
-                        transition: "transform 0.3s ease-in-out",
-                    }}
-                    />
-                )}
+                >                    {mostrarSkeleton ? (
+                        <Skeleton
+                        variant="rectangular"
+                        sx={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                        }}
+                        />
+                    ) : (
+                        <CardMedia
+                        component="img"
+                        alt={modelo}
+                        image={imagenSrc || imgNotFound}
+                        sx={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
+                            backgroundColor: "#f5f5f5",
+                            transform: "scale(1.0)",
+                            transition: "transform 0.3s ease-in-out",
+                        }}
+                        />
+                    )}
                 </Box>
 
                 <CardContent sx={{ height: "175px" }}>
