@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../../auth/context/AuthContext";
 
 export const useGetProductosFiltrados = ({
   marca = null,
@@ -12,8 +13,16 @@ export const useGetProductosFiltrados = ({
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const { authState } = useContext(AuthContext);
+  const token = authState?.user?.token;
+  const isAuthenticated = authState?.logged || false;
   useEffect(() => {
+    // Solo hacer fetch si el usuario está autenticado y tiene token
+    if (!isAuthenticated || !token) {
+      setLoading(false);
+      return;
+    }
+
     const fetchProductosFiltrados = async () => {
       try {
         setLoading(true);
@@ -32,7 +41,13 @@ export const useGetProductosFiltrados = ({
             ? `http://localhost:8080/sapah/productos/filter?${params.toString()}`
             : `http://localhost:8080/sapah/productos`;
 
-        const response = await fetch(endpoint);
+        const response = await fetch(endpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        
         if (!response.ok) throw new Error("Error al obtener productos");
 
         const data = await response.json();
@@ -40,11 +55,12 @@ export const useGetProductosFiltrados = ({
         setLoading(false);
       } catch (err) {
         setError(err.message);
+        setLoading(false);
       }
     };
 
     fetchProductosFiltrados();
-  }, []);
+  }, [isAuthenticated, token, marca, modelo, color, minPrecio, maxPrecio, destacados, nuevos]);
 
   return { productos, loading, error };
 };

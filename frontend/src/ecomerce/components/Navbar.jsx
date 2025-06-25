@@ -19,12 +19,12 @@ import { useNavigate, Link } from "react-router-dom"
 import { logoutFirebase } from "../../firebase/providers"
 import { AuthContext } from "../../auth/context/AuthContext"
 import { CartContext } from "../../Cart/context/CartContext"
-import { useGetProductosFiltrados } from "../hooks/useGetProductosFiltrados"
-import { useGetImagenesPrincipalesPorSkus } from "../hooks/useGetImagenesPrincipalesPorSkus"
+import { ProductosContext } from "../context/ProductosContext"
 import imgNotFound from "../../../assets/imgNotFound.jpg"
 
 export const Navbar = () => {
   const { cartSize } = useContext(CartContext)
+  const { productos, imagenesPrincipales, loading, getEstadoImagenPorSku } = useContext(ProductosContext)
   const [menuAnchorEl, setMenuAnchorEl] = useState(null)
   const [userAnchorEl, setUserAnchorEl] = useState(null)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -36,9 +36,6 @@ export const Navbar = () => {
   const cartItems = cartSize
   const { dispatch, authState } = useContext(AuthContext)
   const { user } = authState
-  const { productos, loading: loadingProductos } = useGetProductosFiltrados()
-  const skusFiltrados = !loadingProductos ? productos.map((p) => p.sku) : []
-  const { imagenesPorSku, loadingImagenes } = useGetImagenesPrincipalesPorSkus(skusFiltrados)
 
   const handleLogoClick = () => {
     navigate("/", { replace: true });
@@ -261,9 +258,12 @@ export const Navbar = () => {
                     }}
                   >
                     <Grid container direction={{ xs: "column", sm: "row" }} alignItems="center" sx={{ p: 1 }}>
-                      <Grid size={{ xs: 12, sm: 6, lg: 5 }} sx={{ display: "flex", justifyContent: { xs: "center", sm: "left" } }}>
-                        <Avatar
-                          src={imagenesPorSku[product.sku] ?? imgNotFound}
+                      <Grid size={{ xs: 12, sm: 6, lg: 5 }} sx={{ display: "flex", justifyContent: { xs: "center", sm: "left" } }}>                        <Avatar
+                          src={
+                            getEstadoImagenPorSku(product.sku) === 'cargada' && imagenesPrincipales[product.sku]?.cloudinarySecureUrl
+                              ? imagenesPrincipales[product.sku].cloudinarySecureUrl
+                              : imgNotFound
+                          }
                           alt={product.modelo}
                           variant="rounded"
                           sx={{

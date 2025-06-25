@@ -1,44 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Grid, Typography, FormControl, InputLabel, Select, MenuItem, Slider, Button, CircularProgress } from "@mui/material";
-import { SneakerCard } from "./SneakerCard";
-import { useLocation } from "react-router-dom";
-import { useGetProductosFiltrados } from "../hooks/useGetProductosFiltrados";
-import { useGetProductoTallePorSkus } from "../hooks/useGetProductoTallePorSkus";
+import { SneakerCard } from "./SneakerCard"
+import { useLocation } from "react-router-dom"
+import { ProductosContext } from "../context/ProductosContext";
 
 export const Productos = () => {
     // Estado para filtros
-    const [marca, setMarca] = useState("");
-    const [color, setColor] = useState("");
-    const [talle, setTalle] = useState("");
-    const [tallesDisponibles, setTallesDisponibles] = useState([])
-    const [maxPrecio, setMaxPrecio] = useState(500);
-    const [order, setOrder] = useState("alphabetically"); // Nuevo estado para ordenar
-    const location = useLocation();
-    const searchQuery = new URLSearchParams(location.search).get("query") || "";
-    const { productos, loading: loadingProductos, error } = useGetProductosFiltrados({
-        marca: marca || null,
-        color: color || null,
-        modelo: searchQuery || null,
-        minPrecio: 0,
-        maxPrecio: maxPrecio || null,
-    });
+    const [marca, setMarca] = useState("")
+    const [color, setColor] = useState("")
+    const [talle, setTalle] = useState("")
+    const [maxPrecio, setMaxPrecio] = useState(500)
+    const [order, setOrder] = useState("alphabetically")
 
-    const skus = productos.map(p => p.sku);
-    const { productoTalles, loadingProductoTalles, errorProductoTalles } = useGetProductoTallePorSkus({ skus });
+    const location = useLocation()
+    const searchQuery = new URLSearchParams(location.search).get("query") || ""    // Obtener datos del contexto
+    const { productos, loading, loadingProductos, loadingTalles, errorProductos, getTallesDisponibles, tieneStockEnTalle } = useContext(ProductosContext)
 
-    // useEffect para calcular talles disponibles cuando productoTalles cambie
-    useEffect(() => {
-        if (productoTalles && productoTalles.length > 0) {
-        const talles = [...new Set(productoTalles.map((p) => p.talle.numero))].sort(
-            (a, b) => Number.parseFloat(a) - Number.parseFloat(b),
-        )
-        setTallesDisponibles(talles)
-        } else {
-        setTallesDisponibles([])
-        }
-    }, [productoTalles])
-
+    // Obtener datos derivados
     const coloresDisponibles = !loadingProductos ? [...new Set(productos.flatMap((p) => p.color))] : []
+    const tallesDisponibles = !loadingTalles ? getTallesDisponibles() : []
 
     // Aplica filtros sobre los productos
     const productosFiltrados = productos
@@ -50,8 +30,7 @@ export const Productos = () => {
         .filter(p => color ? p.color === color : true)
         .filter(p => {
             if (!talle) return true;
-            const tallesDeProducto = productoTalles.filter(pt => pt.producto.sku === p.sku);
-            return tallesDeProducto.some(pt => pt.talle.numero === talle && pt.stock > 0);
+            return tieneStockEnTalle(p.sku, talle);
         })
         .filter(p => p.precio <= maxPrecio)
         .sort((a, b) => {
@@ -64,14 +43,18 @@ export const Productos = () => {
                 return b.precio - a.precio;
             default:
                 return a.modelo.localeCompare(b.modelo);
-            }
-        });
-
+            }        });
+    
     return (
         <Grid sx={{ my: 10, }}>
-            <Typography variant="h2" id="productos" sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800, mb: 5 }}>
-                {searchQuery ? `Resultados para: "${searchQuery}"` : "TODOS LOS PRODUCTOS"}
-            </Typography>
+            <Grid container alignItems="center" sx={{ mb: 5 }}>
+                <Typography variant="h2" id="productos" sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800 }}>
+                    {searchQuery ? `Resultados para: "${searchQuery}"` : "TODOS LOS PRODUCTOS"}
+                </Typography>
+                {loading && (
+                    <CircularProgress size={24} sx={{ ml: 2 }} />
+                )}
+            </Grid>
 
             {/* Filtros */}
             <Grid container spacing={2} sx={{ mb: 6 }}>
@@ -88,7 +71,7 @@ export const Productos = () => {
                             sx={{ minWidth: 120 }}
                         >
                             <MenuItem value="">
-                                <em>Todas</em>
+                                <em>Seleccionar marca</em>
                             </MenuItem>
                             <MenuItem value="Jordan">Jordan</MenuItem>
                             <MenuItem value="Nike">Nike</MenuItem>
@@ -100,70 +83,65 @@ export const Productos = () => {
                             <MenuItem value="Vans">Vans</MenuItem>
                         </Select>
                     </FormControl>
-                </Grid>
-
-                {/* Filtro Color */}
+                </Grid>                {/* Filtro Color */}
                 <Grid item xs={12} sm={3}>
                     <FormControl fullWidth variant="outlined" size="small">
-                        <InputLabel id="color-label">{ loadingProductos ? "Cargando..." : "Color" }</InputLabel>
+                        <InputLabel id="color-label">Color</InputLabel>
                         <Select
-                            labelId="color-label"
-                            id="color"
-                            value={color}
-                            onChange={(e) => setColor(e.target.value)}
-                            label="Color"
-                            sx={{ minWidth: 125 }}
+                        labelId="color-label"
+                        id="color"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}
+                        label="Color"
+                        sx={{ minWidth: 125 }}
+                        disabled={loadingProductos}
                         >
                             <MenuItem value="">
-                                <em>Selecionar un color</em>
+                                <em>{loadingProductos ? "Cargando colores..." : "Seleccionar color"}</em>
                             </MenuItem>
-                            {!loadingProductos &&
-                                coloresDisponibles.map((col) => (
+                            {coloresDisponibles.map((col) => (
                                 <MenuItem key={col} value={col}>
-                                    {col}
+                                {col}
                                 </MenuItem>
-                                ))}
+                            ))}
                         </Select>
                     </FormControl>
-                </Grid>
-
-                {/* Filtro Talle */}
+                </Grid>                {/* Filtro Talle */}
                 <Grid item xs={12} sm={3}>
-                <FormControl fullWidth variant="outlined" size="small">
-                    <InputLabel id="size-label">{tallesDisponibles.length === 0 ? "Cargando..." : "Talle"}</InputLabel>
-                    <Select
-                    labelId="size-label"
-                    id="size"
-                    value={talle}
-                    onChange={(e) => setTalle(e.target.value)}
-                    label="Talle"
-                    disabled={tallesDisponibles.length === 0}
-                    sx={{ minWidth: 125 }}
-                    >
-                    <MenuItem value="">
-                        <em>{tallesDisponibles.length === 0 ? "Cargando talles..." : "Seleccionar un talle"}</em>
-                    </MenuItem>
-                    {tallesDisponibles.length > 0 &&
-                        tallesDisponibles.map((talleNum) => (
-                        <MenuItem key={talleNum} value={talleNum}>
-                            {talleNum}
+                    <FormControl fullWidth variant="outlined" size="small">
+                        <InputLabel id="size-label">Talle</InputLabel>
+                        <Select
+                        labelId="size-label"
+                        id="size"
+                        value={talle}
+                        onChange={(e) => setTalle(e.target.value)}
+                        label="Talle"
+                        sx={{ minWidth: 125 }}
+                        disabled={loadingTalles}
+                        >
+                        <MenuItem value="">
+                            <em>{loadingTalles ? "Cargando talles..." : "Seleccionar talle"}</em>
                         </MenuItem>
+                        {tallesDisponibles.map((talleNum) => (
+                            <MenuItem key={talleNum} value={talleNum}>
+                            {talleNum}
+                            </MenuItem>
                         ))}
-                    </Select>
-                </FormControl>
+                        </Select>
+                    </FormControl>
                 </Grid>
 
                 {/* Filtro Precio */}
                 <Grid item xs={12} sm={9}> {/* Ajustamos a 9 para que ocupe más espacio */}
                     <Typography gutterBottom>Precio máximo: ${maxPrecio}</Typography>
                     <Slider
-                        value={maxPrecio}
-                        onChange={(e, value) => setMaxPrecio(value)}
-                        min={0}
-                        max={500}
-                        step={10}
-                        valueLabelDisplay="auto"
-                        sx={{ width: '100%' }}  /* Esto hace que el slider ocupe el 100% del ancho disponible */
+                    value={maxPrecio}
+                    onChange={(e, value) => setMaxPrecio(value)}
+                    min={0}
+                    max={500}
+                    step={10}
+                    valueLabelDisplay="auto"
+                    sx={{ width: '100%' }}  /* Esto hace que el slider ocupe el 100% del ancho disponible */
                     />
                 </Grid>
 
@@ -203,20 +181,34 @@ export const Productos = () => {
                     </Button>
                 </Grid>
 
-            </Grid>
-
-            {/* Productos */}
+            </Grid>            {/* Productos */}
             <Grid container spacing={2}>
                 {productosFiltrados.length ? (
                     productosFiltrados.map(sneaker => (
                         <SneakerCard key={sneaker.sku} {...sneaker} />
                     ))
                 ) : (
-                    <Typography variant="h6" sx={{ m: 2 }}>
-                        {searchQuery
-                        ? `No se encontraron resultados para: "${searchQuery}".`
-                        : "No hay productos que coincidan con los filtros seleccionados."}
-                    </Typography>
+                    <Grid container justifyContent="center" sx={{ mt: 4, mb: 4 }}>
+                        <Grid item xs={12} textAlign="center">
+                            {loadingProductos ? (
+                                <>
+                                    <CircularProgress size={40} sx={{ mb: 2 }} />
+                                    <Typography variant="h6" sx={{ mb: 1 }}>
+                                        Cargando productos...
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Por favor espera mientras obtenemos los productos
+                                    </Typography>
+                                </>
+                            ) : (
+                                <Typography variant="h6" sx={{ m: 2 }}>
+                                    {searchQuery
+                                    ? `No se encontraron resultados para: "${searchQuery}".`
+                                    : "No hay productos que coincidan con los filtros seleccionados."}
+                                </Typography>
+                            )}
+                        </Grid>
+                    </Grid>
                 )}
             </Grid>
         </Grid>
