@@ -3,7 +3,7 @@ import { useCart } from "../hooks/useCart";
 import Swal from 'sweetalert2'
 
 export const PurchaseDetail = ({ productList, subtotal }) => {
-    const { discountStock, resetCart, } = useCart();
+    const { processCheckout, resetCart } = useCart();
     const navigate = useNavigate();
 
     const discount = 5;
@@ -23,47 +23,34 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
 
         if (result.isConfirmed) {
             try {
-                // Agrupar productos por id + talle
-                const grouped = {};
+                // Datos temporales - deberías obtenerlos del usuario logueado
+                const idCliente = 1; // TODO: obtener del contexto de autenticación
+                const medioPago = "Tarjeta de Crédito"; // TODO: obtener del formulario
 
-                productList.forEach((item) => {
-                const key = `${item.id}-${item.size}`;
-                if (!grouped[key]) {
-                    grouped[key] = {
-                        id: item.id,
-                        size: item.size,
-                        quantity: item.quantity
-                    };
-                } else {
-                    grouped[key].quantity += item.quantity;
-                }
+                // Procesar la compra usando el backend real
+                await processCheckout(idCliente, medioPago);
+
+                // Mostrar mensaje de éxito
+                await Swal.fire({
+                    title: '¡Compra realizada!',
+                    text: 'Tu compra fue procesada exitosamente',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
                 });
 
-                // Agrupar por productoId para enviar una sola petición por producto
-                const groupedByProduct = {};
-
-                Object.values(grouped).forEach(({ id, size, quantity }) => {
-                if (!groupedByProduct[id]) {
-                    groupedByProduct[id] = [];
-                }
-                groupedByProduct[id].push({ size, quantity });
-                });
-
-                // Ahora hacemos una sola petición por producto
-                for (const productId in groupedByProduct) {
-                await discountStock(productId, groupedByProduct[productId]);
-                }
-
-                // alert("Compra realizada con éxito ✅");
-                resetCart();
+                // Navegar al inicio (el resetCart ya se ejecuta dentro de processCheckout)
                 navigate('/inicio');
 
-                // (Opcional) limpiar carrito acá
-                // clearCart();
-
             } catch (error) {
-                console.error(error);
-                // alert("Hubo un error al procesar la compra");
+                console.error('Error al procesar la compra:', error);
+                
+                // Mostrar mensaje de error
+                await Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al procesar tu compra. Inténtalo nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         } else {
             Swal.fire('Cancelado', 'Tu compra no fue procesada.', 'info');
@@ -76,7 +63,7 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
             <p>Subtotal: ${subtotal}</p>
             <p>Envío: {shipping === 0 ? 'Gratis' : shipping}</p>
             <p>Descuento: -${subtotal === 0 ? 0 : discount}</p>
-            <h3>Total: ${total < 0 ? 0 : total}</h3> {/*TODO: calcular el total, segun corresponda*/}
+            <h3>Total: ${total < 0 ? 0 : total}</h3>
             <button type="submit" onClick={ onSubmit } className="checkout-button">Pagar</button>
             <button type="submit" onClick={ resetCart } className="reset-button">Vaciar Carrito</button>
         </div>

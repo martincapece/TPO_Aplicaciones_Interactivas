@@ -51,44 +51,51 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  const discountStock = async(productId, tallesAActualizar) => {
-    debugger
-     try {
-      // 1. Traer el producto completo
-      const res = await fetch(`http://localhost:3000/data/${productId}`);
-      const product = await res.json();
-
-      // 2. Crear nuevo array de talles con el stock actualizado
-      const updatedSizes = product.sizes.map((s) => {
-        const encontrado = tallesAActualizar.find(t => String(t.size) === String(s.size));
-        if (encontrado) {
-          return {
-            ...s,
-            stock: s.stock - encontrado.quantity
-          };
-        }
-        return s;
-      });
-
-      // 3. Enviar el producto actualizado al servidor
-      const updatedProduct = { ...product, sizes: updatedSizes };
-
-      await fetch(`http://localhost:3000/data/${productId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProduct)
-      });
-
-      console.log(`Stock actualizado para producto ${productId}`);
-    } catch (error) {
-      console.error("Error al actualizar el stock:", error);
-    }
-  };
-
   const resetCart = () => {
     setProductList([]);
     localStorage.removeItem('cart');
   }
+
+  // Función para procesar la compra
+const processCheckout = async (idCliente, medioPago) => {
+  try {
+    // Transformar datos del carrito al formato esperado por el backend
+    const items = productList.map(product => ({
+      sku: product.id, // mapear id a sku
+      talle: product.size, // mapear size a talle
+      cantidad: product.quantity // mapear quantity a cantidad
+    }));
+
+    const compraRequest = {
+      idCliente: idCliente,
+      medioPago: medioPago,
+      items: items
+    };
+
+    const response = await fetch('http://localhost:8080/sapah/compras', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(compraRequest)
+    });
+
+    if (response.ok) {
+      const compraCreada = await response.json();
+      console.log('Compra creada exitosamente:', compraCreada);
+      
+      // Resetear carrito después de compra exitosa
+      resetCart();
+      
+      return compraCreada;
+    } else {
+      throw new Error('Error al procesar la compra');
+    }
+  } catch (error) {
+    console.error('Error en checkout:', error);
+    throw error;
+  }
+};
 
   const subtotal = productList.reduce((acc, p) => acc + p.price * p.quantity, 0);
 
@@ -100,10 +107,10 @@ export const CartProvider = ({ children }) => {
       addProduct,
       handleIncreaseQuantity,
       handleDecreaseQuantity,
-      discountStock,
       resetCart,
       subtotal,
-      cartSize
+      cartSize,
+      processCheckout
     }}>
       {children}
     </CartContext.Provider>
