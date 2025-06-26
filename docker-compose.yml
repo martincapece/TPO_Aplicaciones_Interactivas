@@ -1,0 +1,30 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: "jdbc:postgresql://ep-calm-mountain-a8n5g4lq-pooler.eastus2.azure.neon.tech/ecommerce?sslmode=require"
+      DB_USER_NAME: "neondb_owner"
+      DB_PASSWORD: "npg_LEJs5cqv4UCa"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
