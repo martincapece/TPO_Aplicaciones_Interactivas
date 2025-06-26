@@ -14,6 +14,7 @@ import com.api.ecommerce.exceptions.ProductoNoEncontradoException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +58,41 @@ public class ProductoServiceImpl implements ProductoService {
         repo.deleteById(sku);
     }
 
+    @Override
+    @Transactional
+    public Producto actualizarProducto(Long sku, Map<String, Object> updates) {
+        if (sku == null) {
+            throw new IllegalArgumentException("SKU no puede ser null");
+        }
+
+        Producto producto = repo.findById(sku)
+                .orElseThrow(() -> new ProductoNoEncontradoException(sku));
+
+        // Actualizar campos específicos
+        if (updates.containsKey("destacado")) {
+            producto.setDestacado((Boolean) updates.get("destacado"));
+        }
+        if (updates.containsKey("nuevo")) {
+            producto.setNuevo((Boolean) updates.get("nuevo"));
+        }
+        if (updates.containsKey("modelo")) {
+            producto.setModelo((String) updates.get("modelo"));
+        }
+        if (updates.containsKey("marca")) {
+            producto.setMarca((String) updates.get("marca"));
+        }
+        if (updates.containsKey("color")) {
+            producto.setColor((String) updates.get("color"));
+        }
+        if (updates.containsKey("precio")) {
+            producto.setPrecio(((Number) updates.get("precio")).doubleValue());
+        }
+        if (updates.containsKey("descripcion")) {
+            producto.setDescripcion((String) updates.get("descripcion"));
+        }
+
+        return repo.save(producto);
+    }
 
     @Override
     @Transactional(readOnly = true)

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sapah/productos")
@@ -30,6 +31,12 @@ public class ProductoController {
     public ResponseEntity<Producto> crear(@RequestBody Producto p) {
         Producto creado = productoService.guardarProducto(p);
         return ResponseEntity.created(null).body(creado);
+    }
+
+    @PatchMapping("/{sku}")
+    public ResponseEntity<Producto> actualizar(@PathVariable Long sku, @RequestBody Map<String, Object> updates) {
+        Producto actualizado = productoService.actualizarProducto(sku, updates);
+        return ResponseEntity.ok(actualizado);
     }
 
     @DeleteMapping("/{sku}")

@@ -1,10 +1,27 @@
-import { useReducer } from "react";
+import { useReducer, useEffect } from "react";
 import { authReducer } from "./authReducer";
 import { AuthContext } from "./AuthContext";
 import { types } from "../types/types";
 
 export const AuthProvider = ({ children }) => {
     const [authState, dispatch] = useReducer(authReducer, { logged: false, user: null, checking: false, errorMessage: null });
+
+    // NUEVO: Revisar localStorage al montar el provider
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const idUsuario = localStorage.getItem('idCliente');
+        const rol = localStorage.getItem('rol');
+        if (token && idUsuario && rol) {
+            dispatch({
+                type: types.login,
+                payload: {
+                    token,
+                    idUsuario,
+                    rol,
+                }
+            });
+        }
+    }, []);
 
     const login = async({ mail, contraseña }) => {
         try {
@@ -42,6 +59,7 @@ export const AuthProvider = ({ children }) => {
             // GUARDA EL ID EN LOCALSTORAGE PARA USO EN OTRAS PARTES DE LA APP
             localStorage.setItem('idCliente', data.idUsuario);
             localStorage.setItem('token', data.jwt);
+            localStorage.setItem('rol', data.role);
 
             return { ok: true };
             
