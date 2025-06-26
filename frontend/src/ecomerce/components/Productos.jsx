@@ -100,7 +100,7 @@ export const Productos = () => {
                             <MenuItem value="Asics">Asics</MenuItem>
                             <MenuItem value="Hoka">Hoka</MenuItem>
                             <MenuItem value="New Balance">New Balance</MenuItem>
-                            <MenuItem value="Rebook">Rebook</MenuItem>
+                            <MenuItem value="Reebok">Reebok</MenuItem>
                             <MenuItem value="Adidas">Adidas</MenuItem>
                             <MenuItem value="Vans">Vans</MenuItem>
                         </Select>

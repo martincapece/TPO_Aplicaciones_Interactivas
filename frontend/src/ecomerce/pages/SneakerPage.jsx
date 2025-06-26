@@ -493,6 +493,9 @@ export function SneakerPage() {
                     <Typography variant="h3" sx={{ fontFamily: "Inter", fontSize: { xs: '30px', md: '45px' }, fontWeight: "bold" }}>
                         {sneaker.modelo}
                     </Typography>
+                    <Typography variant="subtitle1" sx={{ fontFamily: "Inter", color: "#000000", fontWeight: 500, mb: 1 }}>
+                        {sneaker.color}
+                    </Typography>
                     <Typography variant="h5" sx={{
                         color: "text.secondary",
                         fontFamily: "Inter",
