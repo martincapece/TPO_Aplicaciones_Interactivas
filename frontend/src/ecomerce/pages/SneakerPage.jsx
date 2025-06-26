@@ -101,7 +101,18 @@ export function SneakerPage() {
             if (!response.ok) return;
 
             const data = await response.json();
-            const recomendados = data.filter(prod => prod.sku.toString() !== id).slice(0, 6);
+            let recomendados = data.filter(prod => prod.sku.toString() !== id).slice(0, 6);
+
+            // Si no hay suficientes productos de la misma marca, tomar productos aleatorios
+            if (recomendados.length < 6) {
+                const productosAleatorios = productos
+                    .filter(prod => prod.sku.toString() !== id && !recomendados.some(r => r.sku === prod.sku))
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 6 - recomendados.length);
+
+                recomendados = [...recomendados, ...productosAleatorios];
+            }
+
             setProductosRecomendados(recomendados);
             setLoadingRecomendados(false);
 
@@ -236,7 +247,24 @@ export function SneakerPage() {
 
     const confirmarAgregarCarrito = useCallback(() => {
         const talleSeleccionado = talles.find(t => t.talle.numero.toString() === selectedSize.toString());
-        
+
+        // Verificar cuántos productos de este SKU y talle ya están en el carrito
+        const productosEnCarrito = JSON.parse(localStorage.getItem('cart') || '[]');
+        const cantidadEnCarrito = productosEnCarrito
+            .filter(item => item.sku === sneaker.sku && item.numeroProducto === talleSeleccionado?.talle?.numero)
+            .reduce((total, item) => total + (item.quantity || 1), 0);
+
+        // Verificar si hay stock disponible
+        if (cantidadEnCarrito >= selectedStock) {
+            Swal.fire({
+                title: "Stock insuficiente",
+                text: `Ya tienes ${cantidadEnCarrito} unidad${cantidadEnCarrito > 1 ? 'es' : ''} de este producto y talle en el carrito. Stock disponible: ${selectedStock}`,
+                icon: "warning"
+            });
+            setDialogOpen(false);
+            return;
+        }
+
         const productToAdd = {
             sku: sneaker.sku,
             modelo: sneaker.modelo,
@@ -249,20 +277,22 @@ export function SneakerPage() {
         };
 
         console.log(sneaker);
-
         console.log('Producto a agregar:', productToAdd); // Para debuggear
-        
+
         addProduct(productToAdd);
         setDialogOpen(false);
 
+        const nuevaCantidad = cantidadEnCarrito + 1;
+        const stockRestante = selectedStock - nuevaCantidad;
+
         Swal.fire({
             title: "¡Agregado!",
-            text: "El producto se agregó correctamente al carrito",
+            text: `El producto se agregó correctamente al carrito${stockRestante > 0 ? `. Stock restante: ${stockRestante}` : '. ¡Última unidad!'}`,
             icon: "success",
             timer: 2000,
             showConfirmButton: false
         });
-    }, [talles, sneaker, currentPhoto, selectedSize, selectedStock, addProduct]);
+    }, [talles, sneaker, selectedSize, selectedStock, addProduct, imagenPrincipal]);
 
     // CORREGIDO: Componente ProductoRecomendado con sintaxis correcta
     const ProductoRecomendado = useCallback(({ producto, imagen }) => {
@@ -290,7 +320,6 @@ export function SneakerPage() {
                     showSkeleton={true}
                     sx={{
                         width: "100%",
-                        maxWidth: { xs: 250, sm: 180 },
                         mb: 1,
                         aspectRatio: "1",
                         objectFit: "contain",
@@ -672,15 +701,15 @@ export function SneakerPage() {
                 <Grid container spacing={2}>
                     {loadingRecomendados ? (
                         [...Array(6)].map((_, index) => (
-                            <Grid size={{ sm: 4, md: 2 }} width='100%' key={index}>
+                            <Grid size={{ xs: 6, sm: 4, md: 2 }} key={index}>
                                 <Box sx={{ textAlign: "center" }}>
                                     <Skeleton
                                         variant="rectangular"
                                         width="100%"
                                         sx={{
-                                            maxWidth: { xs: 250, sm: 180 },
                                             aspectRatio: "1",
-                                            mb: 1
+                                            mb: 1,
+                                            borderRadius: 1
                                         }}
                                     />
                                     <Skeleton variant="text" width="80%" />
@@ -690,7 +719,7 @@ export function SneakerPage() {
                         ))
                     ) : productosRecomendados.length > 0 ? (
                         productosRecomendados.map((prod) => (
-                            <Grid size={{ sm: 4, md: 2 }} width='100%' key={prod.sku}>
+                            <Grid size={{ xs: 6, sm: 4, md: 2 }} key={prod.sku}>
                                 <ProductoRecomendado
                                     producto={prod}
                                     imagen={imagenesRecomendados[prod.sku]}
@@ -698,9 +727,11 @@ export function SneakerPage() {
                             </Grid>
                         ))
                     ) : (
-                        <Typography variant="body2" color="text.secondary" sx={{ ml: 2 }}>
-                            No hay productos recomendados disponibles
-                        </Typography>
+                        <Grid size={12}>
+                            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                                No hay productos recomendados disponibles
+                            </Typography>
+                        </Grid>
                     )}
                 </Grid>
             </Box>
