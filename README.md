@@ -1,18 +1,33 @@
 # TPO_Aplicaciones_Interactivas - Grupo 6
-Este trabajo practico esta destinado a realizar el desarrollo de una WebbApp basada en un **e-comerce** de libre eleccion. En nuestro caso, vamos a desarrollar un e-comerce basado en **sneakers**.
+Este trabajo práctico está destinado a realizar el desarrollo de una WebApp basada en un **e-commerce** de libre elección. En nuestro caso, vamos a desarrollar un e-commerce basado en **sneakers**.
 
-Los aspectos a evaluar seran los siguientes:
+Los aspectos a evaluar serán los siguientes:
 - Gestión de usuarios.
 - Catálogo de productos.
-- Carrito de comrpas.
+- Carrito de compras.
 - Gestión de productos.
 - Mi perfil.
 
-# HERRAMIENTAS
-Las **herramientas** que utilizaremos en el desarrollo del proyecto seran todas aquellas que nos ayuden a lograr una correcta implementacion de nuestras ideas en mente.
+# HERRAMIENTAS Y TECNOLOGÍAS
 
-DESARROLLO FRONTEND: Buscaremos implementar **React** como librería principal de desarrollo frontend debido a sus múltiples ventajas a la hora de construir aplicaciones web dinámicas e interactivas. React nos permitirá desarrollar una interfaz de usuario modular, reutilizable y fácil de mantener. Tambien nos ayudara mucho en cuanto a funcionalidades específicas como el manejo de rutas, la gestión de estados o la conexión con APIs externas. Por otro lado, para la estructura. 
-Para el diseño de nuestra pagina, y la estructura que estableceremos, vamos a definirlo con **Taiwind CSS**. Interpretamos que su facilidad de personalizacion en tema de diseño es superior a Boostrap y por otro lado, podemos implementarla con **Next.js** con facilidad.  
+Las **herramientas** que utilizamos en el desarrollo del proyecto están orientadas a lograr una implementación eficiente y escalable tanto en el frontend como en el backend.
+
+## Frontend
+- **React**: Librería principal para el desarrollo de interfaces de usuario dinámicas y modulares.
+- **Vite**: Herramienta para el desarrollo rápido y build del proyecto.
+- **React Router**: Manejo de rutas en la aplicación.
+- **Context API**: Manejo de estado global.
+- **Material UI**: Componentes visuales modernos y personalizables.
+
+## Backend
+- **Java 17**: Lenguaje principal del backend.
+- **Spring Boot**: Framework para la creación de APIs REST.
+- **Spring Security + JWT**: Seguridad y autenticación basada en tokens.
+- **PostgreSQL**: Base de datos relacional para el almacenamiento de información.
+- **Maven**: Gestión de dependencias y build.
+- **Docker**: Utilizamos Docker para contenedizar tanto el frontend como el backend y la base de datos, facilitando el despliegue y la portabilidad del proyecto en cualquier entorno.
+
+---
 
 ## Integrantes
 
@@ -20,4 +35,4 @@ Para el diseño de nuestra pagina, y la estructura que estableceremos, vamos a d
 - **Felipe Vega Torre - LU1180291**  
 - **Martin Capece - LU1165197**  
 - **Jose Garcia Olmos - LU1167676**
-- **Simón Forteza - LU1175162** 
+- **Simón Forteza - LU1175162**
