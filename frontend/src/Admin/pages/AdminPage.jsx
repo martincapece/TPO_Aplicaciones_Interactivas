@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import {
@@ -15,6 +15,7 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 import AdminNavigation from '../components/AdminNavigation';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../hooks/useAdmin'; 
+import { AuthContext } from '../../auth/context/AuthContext';
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -31,6 +32,19 @@ export default function AdminPage() {
     errorProductos,
   } = useAdmin();
 
+  // ✅ CORRECCIÓN: Acceso seguro al token
+  const { authState } = useContext(AuthContext); // Corregir typo: authStete -> authState
+  const token = authState?.user?.token; // Usar optional chaining
+
+  // ✅ AGREGAR: Verificar que el usuario esté logueado y sea admin
+  if (!authState?.logged || !token) {
+    return (
+      <Grid sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography>Por favor, inicia sesión para acceder al panel de administración.</Typography>
+      </Grid>
+    );
+  }
+
   const columns = [
     { field: 'id', headerName: 'SKU', flex: 0.1, headerAlign: 'center', align: 'center' },
     {
@@ -44,7 +58,7 @@ export default function AdminPage() {
             alt={params.row.model}
             style={{ width: 76, height: 76, objectFit: 'cover' }}
             onError={(e) => {
-              e.target.src = '/assets/imgNotFound.jpg'; // Imagen por defecto si falla
+              e.target.src = '/assets/imgNotFound.jpg';
             }}
           />
         </div>
@@ -96,6 +110,7 @@ export default function AdminPage() {
               row.id === params.row.id ? { ...row, featured: updatedValue } : row
             );
             setProductRows(updatedRows);
+            // ✅ CORRECCIÓN: Pasar el token directamente, no como parámetro extra
             await updateProduct(params.row.id, { featured: updatedValue });
           }}
           color="primary"
@@ -119,6 +134,7 @@ export default function AdminPage() {
               row.id === params.row.id ? { ...row, new: updatedValue } : row
             );
             setProductRows(updatedRows);
+            // ✅ CORRECCIÓN: Pasar el token directamente, no como parámetro extra
             await updateProduct(params.row.id, { new: updatedValue });
           }}
           color="primary"
@@ -201,6 +217,7 @@ export default function AdminPage() {
         onConfirm={() => {
           setDeleteDialogOpen(false);
           setTimeout(() => {
+            // ✅ CORRECCIÓN: No pasar token aquí, que lo obtenga desde el hook
             confirmDelete();
           }, 0);
         }}

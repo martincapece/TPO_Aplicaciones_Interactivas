@@ -1,13 +1,49 @@
-import { Box, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Box, Typography, CircularProgress } from '@mui/material';
+import { useContext, useState } from 'react';
 import ImageUpload from '../components/ImageUpload';
 import ProductForm from '../components/ProductForm';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import useImageUpload from '../hooks/useImageUpload';
 import useProductForm from '../hooks/useProductForm';
+import { AuthContext } from '../../auth/context/AuthContext';
 
 export default function NewProduct() {
     const [dialogOpen, setDialogOpen] = useState(false);
+    
+    // ✅ CORRECCIÓN: Verificación más robusta del contexto
+    const authContext = useContext(AuthContext);
+    
+    // ✅ Verificar si el contexto está disponible
+    if (!authContext) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+                <Typography sx={{ ml: 2 }}>Cargando contexto de autenticación...</Typography>
+            </Box>
+        );
+    }
+
+    const { authState } = authContext;
+    const token = authState?.user?.token;
+
+    // ✅ Verificar si aún está cargando el estado de auth
+    if (authState?.checking) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+                <Typography sx={{ ml: 2 }}>Verificando autenticación...</Typography>
+            </Box>
+        );
+    }
+
+    // ✅ Verificar si el usuario está logueado
+    if (!authState?.logged || !token) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <Typography>Por favor, inicia sesión para acceder a esta página.</Typography>
+            </Box>
+        );
+    }
 
     const {
         mainImage,
@@ -24,7 +60,7 @@ export default function NewProduct() {
         model, brand, price, stock, sizes, colors,
         setModel, setBrand, setPrice, setStock, setSizes, setColors,
         isEditable,
-        marcasDisponibles, // Recibir las marcas disponibles
+        marcasDisponibles,
         handleAddProduct,
         handleUpdateProduct
     } = useProductForm(setMainImage, setExtraImages);
@@ -51,7 +87,7 @@ export default function NewProduct() {
                     colors={colors}
                     stock={stock}
                     sizes={sizes}
-                    marcasDisponibles={marcasDisponibles} // Pasar las marcas disponibles
+                    marcasDisponibles={marcasDisponibles}
                     setModel={setModel}
                     setBrand={setBrand}
                     setPrice={setPrice}

@@ -1,8 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { ProductosContext } from '../../ecomerce/context/ProductosContext'; // ✅ AGREGAR
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+  // ✅ AGREGAR: Obtener función para actualizar stock
+  const { actualizarStockPorCompra } = useContext(ProductosContext);
+
   const [productList, setProductList] = useState(() => {
     try {
       const storedCart = localStorage.getItem('cart');
@@ -61,7 +65,7 @@ export const CartProvider = ({ children }) => {
     try {
       const items = productList.map(product => ({
         sku: product.sku,
-        talle: product.numeroProducto, // <-- usa numeroProducto, que es el talle seleccionado
+        talle: product.numeroProducto,
         cantidad: product.quantity,
       }));
 
@@ -71,6 +75,7 @@ export const CartProvider = ({ children }) => {
         items,
       };
 
+      // ✅ 1. Hacer request a la API
       const response = await fetch('http://localhost:8080/sapah/compras', {
         method: 'POST',
         headers: {
@@ -83,11 +88,17 @@ export const CartProvider = ({ children }) => {
       if (response.ok) {
         const compraCreada = await response.json();
         console.log('Compra creada exitosamente:', compraCreada);
+        
+        // ✅ 2. Actualizar stock local para cambio inmediato
+        if (actualizarStockPorCompra) {
+          actualizarStockPorCompra(items);
+        }
+        
         return compraCreada;
       } else {
-        // ✅ Mejorar el manejo de errores
         const errorText = await response.text();
         console.error('Error response:', errorText);
+        throw new Error(`Error ${response.status}: ${errorText}`);
       }
     } catch (error) {
       console.error('Error en checkout:', error);
