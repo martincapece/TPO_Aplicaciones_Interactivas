@@ -5,19 +5,14 @@ import imgNotFound from "../../../assets/imgNotFound.jpg"
 import { ProductosContext } from "../context/ProductosContext";
 
 export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, sizes, image, destacado }) => {
-    const navigate = useNavigate()  // Obtener datos del contexto (¡súper rápido porque ya están cargados!)
-  const { getTallesPorSku, getImagenPrincipalPorSku, getEstadoImagenPorSku } = useContext(ProductosContext)
+    const navigate = useNavigate()
+
+  // Obtener datos del contexto (¡súper rápido porque ya están cargados!)
+  const { getTallesPorSku, getImagenPrincipalPorSku, loading } = useContext(ProductosContext)
 
   const productoTalles = getTallesPorSku(sku)
   const imagenPrincipal = getImagenPrincipalPorSku(sku)
-  const estadoImagen = getEstadoImagenPorSku(sku)
   const sinStock = productoTalles.length > 0 && productoTalles.every((t) => t.stock === 0)
-
-  // Determinar qué mostrar basado en el estado de la imagen
-  const mostrarSkeleton = estadoImagen === 'cargando'
-  const imagenSrc = estadoImagen === 'cargada' && imagenPrincipal?.cloudinarySecureUrl 
-    ? imagenPrincipal.cloudinarySecureUrl 
-    : (estadoImagen === 'error' ? imgNotFound : null)
 
     return (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
@@ -40,7 +35,8 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                     width: "100%",
                     paddingTop: "100%", // Esto crea un cuadrado perfecto (aspect-ratio 1:1)
                 }}
-                >                    {mostrarSkeleton ? (
+                >
+                    {loading ? (
                         <Skeleton
                         variant="rectangular"
                         sx={{
@@ -55,7 +51,7 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                         <CardMedia
                         component="img"
                         alt={modelo}
-                        image={imagenSrc || imgNotFound}
+                        image={imagenPrincipal ? imagenPrincipal?.cloudinarySecureUrl : imgNotFound}
                         sx={{
                             position: "absolute",
                             top: 0,

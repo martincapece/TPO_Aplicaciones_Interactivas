@@ -19,6 +19,7 @@ export default function ProductForm({
     price,
     colors,
     sizes,
+    marcasDisponibles = [], // Recibir marcas disponibles como prop
     setModel,
     setBrand,
     setPrice,
@@ -44,7 +45,6 @@ export default function ProductForm({
         const found = sizes.find((s) => s.size === String(size));
         return found ? found.stock : '';
     };
-
 
     return (
         <Box
@@ -78,9 +78,11 @@ export default function ProductForm({
                     onChange={(e) => setBrand(e.target.value)}
                     label="Marca"
                 >
-                    <MenuItem value="Nike">Nike</MenuItem>
-                    <MenuItem value="Vans">Vans</MenuItem>
-                    <MenuItem value="Jordan">Jordan</MenuItem>
+                    {marcasDisponibles.map((marca) => (
+                        <MenuItem key={marca} value={marca}>
+                            {marca}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
 
@@ -99,7 +101,6 @@ export default function ProductForm({
                     ))}
                 </Select>
             </FormControl>
-
 
             <TextField
                 label="Precio"

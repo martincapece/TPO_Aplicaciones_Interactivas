@@ -22,8 +22,9 @@ export default function NewProduct() {
 
     const {
         model, brand, price, stock, sizes, colors,
-        setModel, setBrand, setPrice, setStock, setSizes,setColors,
+        setModel, setBrand, setPrice, setStock, setSizes, setColors,
         isEditable,
+        marcasDisponibles, // Recibir las marcas disponibles
         handleAddProduct,
         handleUpdateProduct
     } = useProductForm(setMainImage, setExtraImages);
@@ -50,6 +51,7 @@ export default function NewProduct() {
                     colors={colors}
                     stock={stock}
                     sizes={sizes}
+                    marcasDisponibles={marcasDisponibles} // Pasar las marcas disponibles
                     setModel={setModel}
                     setBrand={setBrand}
                     setPrice={setPrice}

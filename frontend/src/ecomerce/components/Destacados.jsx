@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Skeleton } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { SneakerCard } from "./SneakerCard";
@@ -6,7 +6,7 @@ import { ProductosContext } from "../context/ProductosContext";
 
 export const Destacados = () => {
   const location = useLocation();
-  const { productos, loadingProductos, errorProductos } = useContext(ProductosContext);
+  const { productos, loading, errorProductos } = useContext(ProductosContext);
 
   // Scroll suave al hash
   useEffect(() => {
@@ -23,9 +23,39 @@ export const Destacados = () => {
     }
   }, [location]);
 
-  if (loadingProductos) return <Typography variant="h6">Cargando productos...</Typography>;
-  if (errorProductos) return <Typography variant="h6" color="error">Error al cargar productos</Typography>;
-  if (!Array.isArray(productos)) return <Typography variant="h6" color="error">Datos inválidos</Typography>;
+  // Mostrar skeletons mientras carga
+  if (loading) {
+    return (
+      <>
+        <Typography
+          variant="h2"
+          id="destacados"
+          sx={{ fontSize: '45px', fontFamily: 'Inter', fontWeight: 800, my: 10 }}
+        >
+          DESTACADOS
+        </Typography>
+
+        <Grid container spacing={2} direction="row">
+          {[...Array(6)].map((_, index) => (
+            <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }} key={index}>
+              <Skeleton variant="rectangular" sx={{ aspectRatio: '1', borderRadius: 1, mb: 1 }} />
+              <Skeleton variant="text" width="80%" />
+              <Skeleton variant="text" width="60%" />
+              <Skeleton variant="text" width="70%" />
+            </Grid>
+          ))}
+        </Grid>
+      </>
+    );
+  }
+
+  if (errorProductos) {
+    return <Typography variant="h6" color="error">Error al cargar productos</Typography>;
+  }
+
+  if (!Array.isArray(productos)) {
+    return <Typography variant="h6" color="error">Datos inválidos</Typography>;
+  }
 
   const productosDestacados = productos.filter(p => p.destacado);
 
