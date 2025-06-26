@@ -112,16 +112,16 @@ public class SecurityConfig {
                         // Rutas públicas que no requieren autenticación
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/sapah/productos/**").permitAll()
-
+                        
                         // Rutas que requieren autenticación para modificar productos
                         .requestMatchers(HttpMethod.POST, "/api/productos").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/sapah/compras/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/imagenes/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
 
                         // Rutas exclusivas para administradores
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/imagenes/**").hasRole("ADMIN")
-                        .requestMatchers("/sapah/compras/**").hasRole("ADMIN")
 
                         // Rutas de pedidos solo para usuarios autenticados
                         .requestMatchers("/api/pedidos/**").authenticated()

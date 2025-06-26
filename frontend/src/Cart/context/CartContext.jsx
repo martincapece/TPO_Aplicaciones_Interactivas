@@ -66,7 +66,7 @@ export const CartProvider = ({ children }) => {
       }));
 
       const compraRequest = {
-        idUsuario,
+        idCliente: idUsuario,
         medioPago,
         items,
       };
