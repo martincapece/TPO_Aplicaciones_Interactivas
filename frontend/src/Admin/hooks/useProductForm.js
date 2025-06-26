@@ -1,123 +1,156 @@
 // hooks/useProductForm.js
-import { useContext, useEffect, useState, useMemo } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ProductosContext } from '../../ecomerce/context/ProductosContext';
+import { AuthContext } from '../../auth/context/AuthContext';
 
 export default function useProductForm(setMainImage, setExtraImages) {
-    const { id } = useParams(); // Cambiar a 'id' según la ruta
+    const { id } = useParams();
     const navigate = useNavigate();
     const isEditable = Boolean(id);
-    
-    // Usar ProductosContext para obtener los datos
-    const { 
-        productos, 
-        loadingProductos,
-        getTallesPorSku,
-        getImagenPrincipalPorSku,
-        getImagenesProductoPorSku,
-        solicitarImagenesProducto,
-        getEstadoImagenesProducto
-    } = useContext(ProductosContext);
 
     // Estados del formulario
     const [model, setModel] = useState('');
     const [brand, setBrand] = useState('');
-    const [colors, setColors] = useState([]);
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [sizes, setSizes] = useState([]);
+    const [colors, setColors] = useState('');
+    const [marcasDisponibles, setMarcasDisponibles] = useState(['Nike', 'Vans', 'Jordan']);
 
-    // Obtener marcas disponibles dinámicamente
-    const marcasDisponibles = useMemo(() => {
-        if (loadingProductos || productos.length === 0) {
-            return ['Nike', 'Vans', 'Jordan']; // Fallback mientras carga
-        }
-        return [...new Set(productos.map(p => p.marca))].sort();
-    }, [productos, loadingProductos]);
+    // ✅ Contexto de auth
+    const authContext = useContext(AuthContext);
+    const authState = authContext?.authState;
+    const token = authState?.user?.token;
 
-    // Cargar datos del producto si estamos editando
+    // ✅ Contexto de productos con todas las funciones necesarias
+    const productosContext = useContext(ProductosContext);
+    const { 
+        productos = [], 
+        loadingProductos = false,
+        getTallesPorSku = () => [],
+        getImagenPrincipalPorSku = () => null,
+        getImagenesProductoPorSku = () => [],
+        solicitarImagenesProducto = () => {},
+        getEstadoImagenesProducto = () => ({ estado: 'no-cargado' }),
+        agregarProductoLocal = () => {},
+        actualizarProductoLocal = () => {}
+    } = productosContext || {};
+
+    // Cargar marcas disponibles al montar el componente
     useEffect(() => {
-        console.log('useEffect ejecutándose:', { isEditable, id, productosLength: productos.length, loadingProductos });
-        
-        if (isEditable && !loadingProductos && productos.length > 0 && id) {
-            const skuNumber = parseInt(id); // Usar 'id' en lugar de 'sku'
-            const productToEdit = productos.find(p => p.sku === skuNumber);
+        if (productos && productos.length > 0) {
+            const marcasUnicas = [...new Set(productos.map(p => p.marca))].filter(Boolean);
+            if (marcasUnicas.length > 0) {
+                setMarcasDisponibles(marcasUnicas);
+            }
+        }
+    }, [productos]);
+
+    // ✅ CORREGIDO: Cargar datos del producto para edición
+    useEffect(() => {
+        if (isEditable && id && productos.length > 0 && !loadingProductos) {
+            const skuNumber = parseInt(id);
+            const product = productos.find(p => p.sku === skuNumber);
             
-            console.log('Buscando producto con SKU:', skuNumber);
-            console.log('Producto encontrado:', productToEdit);
-            console.log('Todos los productos:', productos);
+            console.log('🔍 Buscando producto para editar:', { skuNumber, product });
             
-            if (productToEdit) {
-                console.log('Producto encontrado para editar:', productToEdit);
+            if (product) {
+                // Cargar datos básicos del producto
+                setModel(product.modelo || '');
+                setBrand(product.marca || '');
+                setPrice(product.precio?.toString() || '');
+                setColors(product.color || '');
                 
-                // Mapear datos básicos del producto
-                setModel(productToEdit.modelo);
-                setBrand(productToEdit.marca);
-                setColors([productToEdit.color]);
-                setPrice(productToEdit.precio.toString());
-                
-                // Obtener talles con stock del ProductosContext
-                const tallesProducto = getTallesPorSku(productToEdit.sku);
-                console.log('Talles del producto:', tallesProducto);
+                // ✅ CORREGIDO: Cargar talles del producto
+                const tallesProducto = getTallesPorSku(skuNumber);
+                console.log('📏 Talles del producto:', tallesProducto);
                 
                 if (tallesProducto && tallesProducto.length > 0) {
+                    // Mapear los talles al formato esperado por el formulario
                     const sizesFormateados = tallesProducto.map(talleData => ({
                         size: talleData.talle.numero.toString(),
                         stock: talleData.stock
                     }));
+                    
                     setSizes(sizesFormateados);
+                    console.log('📏 Sizes formateados:', sizesFormateados);
                     
                     // Calcular stock total
                     const stockTotal = tallesProducto.reduce((total, talleData) => total + talleData.stock, 0);
                     setStock(stockTotal.toString());
+                    console.log('📦 Stock total:', stockTotal);
                 }
                 
-                // Obtener imagen principal
-                const imagenPrincipal = getImagenPrincipalPorSku(productToEdit.sku);
-                console.log('Imagen principal:', imagenPrincipal);
+                // ✅ CORREGIDO: Cargar imagen principal
+                const imagenPrincipal = getImagenPrincipalPorSku(skuNumber);
+                console.log('🖼️ Imagen principal:', imagenPrincipal);
                 
-                if (imagenPrincipal && imagenPrincipal.cloudinarySecureUrl) {
+                if (imagenPrincipal && imagenPrincipal !== 'ERROR' && imagenPrincipal.cloudinarySecureUrl) {
                     setMainImage(imagenPrincipal.cloudinarySecureUrl);
                 }
                 
-                // Solicitar imágenes adicionales del producto
-                solicitarImagenesProducto(productToEdit.sku);
-            } else {
-                console.log('No se encontró el producto con SKU:', skuNumber);
+                // ✅ CORREGIDO: Solicitar imágenes adicionales del producto
+                console.log('🔄 Solicitando imágenes adicionales...');
+                solicitarImagenesProducto(skuNumber);
             }
         }
-    }, [id, productos, loadingProductos, isEditable, getTallesPorSku, getImagenPrincipalPorSku, solicitarImagenesProducto, setMainImage]);
+    }, [
+        id, 
+        isEditable, 
+        productos, 
+        loadingProductos, 
+        getTallesPorSku, 
+        getImagenPrincipalPorSku, 
+        solicitarImagenesProducto, 
+        setMainImage
+    ]);
 
-    // Cargar imágenes adicionales cuando estén disponibles
+    // ✅ NUEVO: Effect para cargar imágenes adicionales cuando estén disponibles
     useEffect(() => {
         if (isEditable && id && !loadingProductos) {
             const skuNumber = parseInt(id);
             const estadoImagenes = getEstadoImagenesProducto(skuNumber);
             
-            console.log('Estado imágenes para SKU', skuNumber, ':', estadoImagenes);
+            console.log('🖼️ Estado de imágenes para SKU', skuNumber, ':', estadoImagenes);
             
+            // Verificar si las imágenes están cargadas
             if (estadoImagenes === 'cargado') {
                 const todasLasImagenes = getImagenesProductoPorSku(skuNumber);
-                console.log('Todas las imágenes:', todasLasImagenes);
+                console.log('🖼️ Todas las imágenes cargadas:', todasLasImagenes);
                 
-                // Filtrar imágenes que no sean la principal y tomar máximo 3
-                const imagenesAdicionales = todasLasImagenes
+                // Filtrar imágenes que no sean la principal
+                const imagenesSecundarias = todasLasImagenes
                     .filter(img => !img.esPrincipal)
-                    .slice(0, 3)
+                    .slice(0, 3) // Máximo 3 imágenes adicionales
                     .map(img => img.cloudinarySecureUrl);
                 
+                console.log('🖼️ Imágenes secundarias:', imagenesSecundarias);
+                
                 // Completar con null si hay menos de 3 imágenes
-                while (imagenesAdicionales.length < 3) {
-                    imagenesAdicionales.push(null);
+                while (imagenesSecundarias.length < 3) {
+                    imagenesSecundarias.push(null);
                 }
                 
-                console.log('Imágenes adicionales cargadas:', imagenesAdicionales);
-                setExtraImages(imagenesAdicionales);
+                setExtraImages(imagenesSecundarias);
             }
         }
-    }, [id, isEditable, loadingProductos, getImagenesProductoPorSku, getEstadoImagenesProducto, setExtraImages]);
+    }, [
+        id, 
+        isEditable, 
+        loadingProductos, 
+        getImagenesProductoPorSku, 
+        getEstadoImagenesProducto, 
+        setExtraImages
+    ]);
 
     const handleAddProduct = async (mainImage, extraImages) => {
+        if (!token) {
+            console.error('Token no disponible');
+            alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
+            return;
+        }
+
         try {
             const colorPrincipal = Array.isArray(colors) ? colors[0] : colors;
             
@@ -137,26 +170,41 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(newProduct)
             });
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
             }
 
             const addedProduct = await response.json();
             console.log("Producto agregado:", addedProduct);
             
+            // Actualizar contexto local para cambio inmediato
+            try {
+                agregarProductoLocal(addedProduct);
+            } catch (error) {
+                console.error('Error al actualizar contexto local:', error);
+            }
+            
             navigate('/admin');
             
         } catch (error) {
             console.error("Error al agregar producto:", error);
+            alert(`Error al crear el producto: ${error.message}`);
         }
     };
 
     const handleUpdateProduct = async (mainImage, extraImages) => {
+        if (!token) {
+            console.error('Token no disponible');
+            alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
+            return;
+        }
+
         try {
             const skuNumber = parseInt(id);
             const colorPrincipal = Array.isArray(colors) ? colors[0] : colors;
@@ -174,20 +222,30 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 method: 'PATCH',
                 headers: { 
                     'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(updatedProduct),
             });
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
             }
 
             console.log("Producto actualizado");
+            
+            // Actualizar contexto local para cambio inmediato
+            try {
+                actualizarProductoLocal(skuNumber, updatedProduct);
+            } catch (error) {
+                console.error('Error al actualizar contexto local:', error);
+            }
+            
             navigate('/admin');
             
         } catch (error) {
             console.error("Error al actualizar producto:", error);
+            alert(`Error al actualizar el producto: ${error.message}`);
         }
     };
 
@@ -195,8 +253,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
         model, brand, price, stock, sizes, colors,
         setModel, setBrand, setPrice, setStock, setSizes, setColors,
         isEditable,
-        loadingProductos,
-        marcasDisponibles, // Exponer las marcas disponibles
+        marcasDisponibles,
         handleAddProduct,
         handleUpdateProduct
     };
