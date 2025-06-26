@@ -19,6 +19,33 @@ export default function ComprasPage() {
     errorCompras,
   } = useCompras();
 
+  // Validadores robustos
+  const formatFecha = (value) => {
+    const timestamp = Number(value);
+    if (!isNaN(timestamp) && timestamp > 0) {
+      const fecha = new Date(timestamp);
+      return fecha.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    return 'N/A';
+  };
+
+  const formatMonto = (value) => {
+    const monto = Number(value);
+    if (!isNaN(monto)) {
+      return new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS'
+      }).format(monto);
+    }
+    return '-';
+  };
+
   const columns = [
     { 
       field: 'nroCompra', 
@@ -43,41 +70,25 @@ export default function ComprasPage() {
       align: 'center'
     },
     { 
-      field: 'fechaTimestamp', 
-      headerName: 'Fecha', 
-      flex: 0.15, 
-      headerAlign: 'center', 
+      field: 'fechaTimestamp',
+      headerName: 'Fecha',
+      flex: 0.15,
+      headerAlign: 'center',
       align: 'center',
       sortable: true,
       type: 'number',
-      valueFormatter: (params) => {
-        // Convertir timestamp a fecha formateada
-        if (params.value && typeof params.value === 'number') {
-          const fecha = new Date(params.value);
-          return fecha.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-        }
-        return 'N/A';
-      }
+      renderCell: (params) => {
+        return formatFecha(params.row.fechaTimestamp);
+      },
     },
     { 
-      field: 'montoTotal', 
-      headerName: 'Monto Total', 
-      flex: 0.15, 
+      field: 'montoTotal',
+      headerName: 'Monto Total',
+      flex: 0.15,
       type: 'number',
-      headerAlign: 'center', 
+      headerAlign: 'center',
       align: 'center',
-      valueFormatter: (params) => {
-        return new Intl.NumberFormat('es-AR', {
-          style: 'currency',
-          currency: 'ARS'
-        }).format(params.value);
-      }
+      renderCell: (params) => formatMonto(params.row.montoTotal)
     },
     {
       field: 'medioPago',
@@ -126,6 +137,10 @@ export default function ComprasPage() {
     );
   }
 
+  // Mensajes de advertencia si hay datos inválidos
+  const comprasSinFecha = compraRows.filter(row => !row.fechaTimestamp || isNaN(Number(row.fechaTimestamp)));
+  const comprasMontoInvalido = compraRows.filter(row => isNaN(Number(row.montoTotal)));
+
   return (
     <Grid sx={{ height: '100vh' }}>
       <Box sx={{ p: 2 }}>
@@ -142,22 +157,25 @@ export default function ComprasPage() {
             No hay compras registradas en el sistema.
           </Alert>
         )}
-        
-        {console.log('Renderizando DataGrid con compraRows:', compraRows)}
-        
-        {/* Verificar que los datos están listos */}
-        {compraRows.length > 0 && compraRows.some(row => !row.fechaTimestamp) && (
+
+        {comprasSinFecha.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>
-            Algunas compras no tienen fecha válida. Verificando datos...
+            Algunas compras no tienen fecha válida. Se mostrarán como "N/A".
+          </Alert>
+        )}
+
+        {comprasMontoInvalido.length > 0 && (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            Algunas compras tienen monto inválido. Se mostrarán como "-".
           </Alert>
         )}
         
         <Paper sx={{ height: 'calc(100vh - 200px)', width: '100%' }}>
           <DataGrid
             key={`compras-grid-${compraRows.length}`}
-            rows={compraRows.filter(row => row.fechaTimestamp !== undefined)}
+            rows={compraRows}
             columns={columns}
-            getRowId={(row) => row.id}
+            getRowId={(row) => row.nroCompra} // <--- usa nroCompra como id
             pageSize={10}
             pageSizeOptions={[5, 10, 25, 50]}
             checkboxSelection
@@ -176,4 +194,4 @@ export default function ComprasPage() {
       </Box>
     </Grid>
   );
-} 
+}
