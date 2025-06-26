@@ -402,7 +402,7 @@ export const Navbar = () => {
             <Typography variant="p" sx={{ fontFamily: "Inter", fontWeight: "600", px: 1 }}>
               {user?.mail}
             </Typography>
-            {user?.role === "admin" && (
+            {user?.rol === "ADMIN" && (
               <MenuItem
                 variant="p"
                 onClick={() => handleNavigate("/admin")}

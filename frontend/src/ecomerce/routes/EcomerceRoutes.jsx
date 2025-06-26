@@ -34,8 +34,8 @@ export const EcomerceRoutes = () => {
                         <Route path="/nosotros/" element={<Nosotros />} />
                         <Route path="/legales/" element={<Legales />} />
                         <Route path="/catalogo/" element={<Catalogo />} />
-                        
-                        {authState.user.role === 'admin' && (
+
+                        {authState.user.rol === 'ADMIN' && (
                             <Route path="/admin/*" element={<AdminRoutes />} />
                         )}
                         

@@ -2,19 +2,20 @@ import { Grid, Box } from "@mui/material"
 import { Destacados, Footer, ImageBackground, ImageBackgroundChild, Navbar } from "../components"
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect, useContext, useMemo } from "react"
+import { ProductosContext } from "../context/ProductosContext"
 import vans from "/assets/vans_knu.png"
 import jordan from "/assets/jordans.png"
 import nike from "/assets/nikes.png"
 import adidas from "/assets/adidas.png"
-import { ProductosContext } from "../context/ProductosContext"
-// Agregar más imágenes según necesites
-// import nike from "/assets/nike.png" // ejemplo
-// import adidas from "/assets/adidas.png" // ejemplo
+import asics from "/assets/asics.png"
+import hoka from "/assets/hoka.png"
+import new_balance from "/assets/new_balance.png"
+import reebok from "/assets/reebok.png"
 
 export const EcomercePage = () => {
   const navigate = useNavigate()
   const [currentIndex, setCurrentIndex] = useState(0)
-  const { productos, loading, loadingProductos, errorProductos, getTallesDisponibles, tieneStockEnTalle } = useContext(ProductosContext)
+  const { productos, loadingProductos } = useContext(ProductosContext)
   
   const marcasDisponibles = !loadingProductos ? [...new Set(productos.flatMap((p) => p.marca))] : []
 
@@ -27,9 +28,12 @@ export const EcomercePage = () => {
   const imagenesPorMarca = {
     "Jordan": jordan,
     "Vans": vans,
-    "Nike": nike, // Usar jordan mientras no tengas la imagen
-    "Adidas": adidas, // Usar jordan mientras no tengas la imagen
-    // Agrega más según tengas
+    "Nike": nike,
+    "Adidas": adidas,
+    "Asics": asics,
+    "Hoka": hoka,
+    "New Balance": new_balance,
+    "Reebok": reebok
   }
 
   // Crear categorías dinámicamente usando tu marcasDisponibles
@@ -39,14 +43,18 @@ export const EcomercePage = () => {
       return [
         { nombre: "Jordan", imagen: jordan },
         { nombre: "Vans", imagen: vans },
-        { nombre: "Nike", imagen: jordan },
-        { nombre: "Adidas", imagen: jordan },
+        { nombre: "Nike", imagen: nike },
+        { nombre: "Adidas", imagen: adidas },
+        { nombre: "Asics", imagen: asics },
+        { nombre: "Hoka", imagen: hoka },
+        { nombre: "New Balance", imagen: new_balance },
+        { nombre: "Reebok", imagen: reebok }
       ]
     }
 
     return marcasDisponibles.map(marca => ({
       nombre: marca,
-      imagen: imagenesPorMarca[marca] || jordan // Imagen por defecto
+      imagen: imagenesPorMarca[marca] // Imagen por defecto
     }))
   }, [marcasDisponibles, loadingProductos])
 

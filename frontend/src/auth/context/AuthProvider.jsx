@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async({ mail, contraseña }) => {
         try {
+            console.log("Intentando iniciar sesión con:", { mail, contraseña });
             if (mail.trim().length <= 0 || contraseña.trim().length <= 0) {
                 throw new Error("Los campos son obligatorios");
             }
@@ -34,6 +35,8 @@ export const AuthProvider = ({ children }) => {
                     mail: mail,
                     contraseña: contraseña,
                     token: data.jwt,
+                    idUsuario: data.idUsuario,
+                    rol: data.role
                 } 
             });
             

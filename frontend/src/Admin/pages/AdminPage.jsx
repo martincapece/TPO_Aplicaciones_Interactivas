@@ -4,7 +4,9 @@ import Paper from '@mui/material/Paper';
 import {
   IconButton, Select, MenuItem, Checkbox, Button,
   Box,
-  Grid
+  Grid,
+  CircularProgress,
+  Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,10 +26,12 @@ export default function AdminPage() {
     handleDelete,
     confirmDelete,
     updateProduct,
+    loadingProductos,
+    errorProductos,
   } = useAdmin();
 
   const columns = [
-    { field: 'id', headerName: 'ID', flex: 0.1, headerAlign: 'center', align: 'center' },
+    { field: 'id', headerName: 'SKU', flex: 0.1, headerAlign: 'center', align: 'center' },
     {
       field: 'image',
       headerName: 'Imagen',
@@ -38,6 +42,9 @@ export default function AdminPage() {
             src={params.row.image[0]}
             alt={params.row.model}
             style={{ width: 76, height: 76, objectFit: 'cover' }}
+            onError={(e) => {
+              e.target.src = '/assets/imgNotFound.jpg'; // Imagen por defecto si falla
+            }}
           />
         </div>
       ),
@@ -141,6 +148,25 @@ export default function AdminPage() {
       align: 'center'
     }
   ];
+
+  // Mostrar loading mientras cargan los productos
+  if (loadingProductos) {
+    return (
+      <Grid sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Cargando productos...</Typography>
+      </Grid>
+    );
+  }
+
+  // Mostrar error si hay problemas
+  if (errorProductos) {
+    return (
+      <Grid sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography color="error">Error al cargar productos: {errorProductos}</Typography>
+      </Grid>
+    );
+  }
 
   return (
     <Grid sx={{ height: '100vh' }}>
