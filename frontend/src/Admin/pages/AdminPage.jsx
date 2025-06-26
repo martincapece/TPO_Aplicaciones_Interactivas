@@ -12,6 +12,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import ConfirmationDialog from '../components/ConfirmationDialog';
+import AdminNavigation from '../components/AdminNavigation';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../hooks/useAdmin'; 
 
@@ -170,26 +171,29 @@ export default function AdminPage() {
 
   return (
     <Grid sx={{ height: '100vh' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mr={4} mt={2} ml={2}>
-        <h1>Dashboard</h1>
-        <Button variant="contained" color="primary" onClick={() => navigate('/admin/new-product')}>
-          Agregar producto
-        </Button>
+      <Box sx={{ p: 2 }}>
+        <AdminNavigation />
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <h1>Productos</h1>
+          <Button variant="contained" color="primary" onClick={() => navigate('/admin/new-product')}>
+            Agregar producto
+          </Button>
+        </Box>
+        <Paper sx={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+          <DataGrid
+            rows={productRows}
+            columns={columns}
+            getRowId={(row) => row.id}
+            pageSize={5}
+            pageSizeOptions={[5, 10, productRows?.length || 5]}
+            checkboxSelection
+            rowHeight={80}
+            disableRowSelectionOnClick
+            sx={{ border: 0 }}
+            pagination
+          />
+        </Paper>
       </Box>
-      <Paper sx={{ height: '80%', width: '100%' }}>
-        <DataGrid
-          rows={productRows}
-          columns={columns}
-          getRowId={(row) => row.id}
-          pageSize={5}
-          pageSizeOptions={[5, 10, productRows?.length || 5]}
-          checkboxSelection
-          rowHeight={80}
-          disableRowSelectionOnClick
-          sx={{ border: 0 }}
-          pagination
-        />
-      </Paper>
 
       <ConfirmationDialog
         open={deleteDialogOpen}

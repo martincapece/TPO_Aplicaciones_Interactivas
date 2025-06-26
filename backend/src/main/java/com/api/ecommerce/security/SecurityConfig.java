@@ -121,7 +121,7 @@ public class SecurityConfig {
                         // Rutas exclusivas para administradores
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/imagenes/**").hasRole("ADMIN")
-
+                        .requestMatchers("/sapah/compras/**").hasRole("ADMIN")
 
                         // Rutas de pedidos solo para usuarios autenticados
                         .requestMatchers("/api/pedidos/**").authenticated()
