@@ -94,7 +94,7 @@ export const CartProvider = ({ children }) => {
   };
 
   // ✅ Aquí decidimos si usamos `price` o `precio`
-  const subtotal = productList.reduce((acc, p) => acc + p.price * p.quantity, 0);
+  const subtotal = productList.reduce((acc, p) => acc + p.precio * p.quantity, 0);
 
   const cartSize = productList.length;
 
