@@ -90,7 +90,6 @@ export const CartProvider = ({ children }) => {
       if (response.ok) {
         const compraCreada = await response.json();
         console.log('Compra creada exitosamente:', compraCreada);
-        resetCart();
         return compraCreada;
       } else {
         throw new Error('Error al procesar la compra');

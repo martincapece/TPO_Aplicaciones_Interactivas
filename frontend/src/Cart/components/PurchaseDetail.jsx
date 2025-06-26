@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 export const PurchaseDetail = ({ productList, subtotal }) => {
     const { processCheckout, resetCart } = useCart();
@@ -37,6 +46,7 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
 
             // Mostrar mensaje de éxito
             setShowSuccessModal(true);
+            console.log("SE DESPLIEGA EL MODAL DE SUCESS")
 
         } catch (error) {
             console.error('Error al procesar la compra:', error);
@@ -49,6 +59,7 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
 
     const handleSuccessOk = () => {
         setShowSuccessModal(false);
+        resetCart(); // Vacía el carrito después de cerrar el modal de éxito
         navigate('/inicio');
     };
 
@@ -81,52 +92,129 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
             </div>
 
             {/* Modal de Confirmación */}
-            {showConfirmModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>¿Deseás confirmar tu compra?</h3>
-                        <p>¡Todo listo para completar tu compra! Si confirmás, reservaremos tus productos.</p>
-                        <div className="modal-buttons">
-                            <button onClick={handleConfirmPurchase} className="confirm-button">
-                                Sí, confirmar
-                            </button>
-                            <button onClick={handleCancel} className="cancel-button">
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <Dialog
+                open={showConfirmModal}
+                onClose={handleCancel}
+                fullWidth
+                maxWidth="xs"
+                PaperProps={{
+                    sx: {
+                        borderRadius: 4,
+                        backgroundColor: "white",
+                        textAlign: "center",
+                        p: 3,
+                    },
+                }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: "rgba(0, 0, 0, 0.4)",
+                    },
+                }}
+            >
+                <DialogTitle>¿Deseás confirmar tu compra?</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        ¡Todo listo para completar tu compra! Si confirmás, reservaremos tus productos.
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: "center" }}>
+                    <Button
+                        onClick={handleConfirmPurchase}
+                        variant="contained"
+                        color="primary"
+                        sx={{ borderRadius: 999, px: 4 }}
+                    >
+                        Confirmar
+                    </Button>
+                    <Button
+                        onClick={handleCancel}
+                        variant="outlined"
+                        color="secondary"
+                        sx={{ borderRadius: 999, px: 4 }}
+                    >
+                        Cancelar
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Modal de Éxito */}
-            {showSuccessModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>¡Compra realizada!</h3>
-                        <p>Tu compra fue procesada exitosamente</p>
-                        <div className="modal-buttons">
-                            <button onClick={handleSuccessOk} className="success-button">
-                                OK
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <Dialog
+                open={showSuccessModal}
+                onClose={handleSuccessOk}
+                fullWidth
+                maxWidth="xs"
+                PaperProps={{
+                    sx: {
+                        borderRadius: 4,
+                        backgroundColor: "white",
+                        textAlign: "center",
+                        p: 3,
+                    },
+                }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: "rgba(0, 0, 0, 0.4)",
+                    },
+                }}
+            >
+                <DialogTitle sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'success.main' }}>
+                    <CheckCircleOutlineIcon sx={{ fontSize: 48, mb: 1 }} color="success" />
+                    ¡Compra realizada!
+                </DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Tu compra fue procesada exitosamente
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: "center" }}>
+                    <Button
+                        onClick={handleSuccessOk}
+                        variant="contained"
+                        color="primary"
+                        sx={{ borderRadius: 999, px: 4 }}
+                    >
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Modal de Error */}
-            {showErrorModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>Error</h3>
-                        <p>{errorMessage}</p>
-                        <div className="modal-buttons">
-                            <button onClick={handleErrorOk} className="error-button">
-                                OK
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <Dialog
+                open={showErrorModal}
+                onClose={handleErrorOk}
+                fullWidth
+                maxWidth="xs"
+                PaperProps={{
+                    sx: {
+                        borderRadius: 4,
+                        backgroundColor: "white",
+                        textAlign: "center",
+                        p: 3,
+                    },
+                }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: "rgba(0, 0, 0, 0.4)",
+                    },
+                }}
+            >
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography color="error">
+                        {errorMessage}
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: "center" }}>
+                    <Button
+                        onClick={handleErrorOk}
+                        variant="contained"
+                        color="primary"
+                        sx={{ borderRadius: 999, px: 4 }}
+                    >
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };
