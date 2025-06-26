@@ -1,6 +1,7 @@
 package com.api.ecommerce.controller;
 
 import com.api.ecommerce.dto.CompraCompletaDTO;
+import com.api.ecommerce.dto.CompraDTO;
 import com.api.ecommerce.dto.CompraRequestDTO;
 import com.api.ecommerce.model.Compra;
 import com.api.ecommerce.service.CompraService;
@@ -20,8 +21,8 @@ public class CompraController {
     private final CompraService compraService;
 
     @GetMapping
-    public List<Compra> listar() {
-        return compraService.obtenerTodos();
+    public List<CompraDTO> listar() {
+        return compraService.obtenerTodosDTO();
     }
 
     @GetMapping("/{id}")

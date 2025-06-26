@@ -1,6 +1,7 @@
 package com.api.ecommerce.service.implementation;
 
 import com.api.ecommerce.dto.CompraCompletaDTO;
+import com.api.ecommerce.dto.CompraDTO;
 import com.api.ecommerce.dto.CompraRequestDTO;
 import com.api.ecommerce.dto.ItemCompraRequestDTO;
 import com.api.ecommerce.model.*;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -81,5 +83,24 @@ public class CompraServiceImpl implements CompraService {
         compraRepository.deleteById(id);
     }
 
+    @Override
+    public List<CompraDTO> obtenerTodosDTO() {
+        return compraRepository.findAll().stream()
+            .map(this::toDTO)
+            .toList();
+    }
 
+    private CompraDTO toDTO(Compra compra) {
+        return new CompraDTO(
+            compra.getNroCompra(),
+            compra.getCliente().getNombreCompleto(), // o getNombre()
+            compra.getCliente().getMail(),           // o getEmail()
+            compra.getFecha() != null
+                ? compra.getFecha().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                : null,
+            compra.getPrecioFinal(),
+            compra.getMedioPago(),
+            compra.getItems() != null ? compra.getItems().size() : 0
+        );
+    }
 }
