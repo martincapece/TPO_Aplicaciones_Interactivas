@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import Snackbar from '@mui/material/Snackbar';
@@ -10,10 +10,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { AuthContext } from "../../auth/context/AuthContext";
 
 export const PurchaseDetail = ({ productList, subtotal }) => {
     const { processCheckout, resetCart } = useCart();
     const navigate = useNavigate();
+
+    const { authState } = useContext(AuthContext);
+    const { idUsuario, token } = authState.user;
     
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -34,15 +38,13 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
         setIsProcessing(true);
 
         try {
-            // Obtener idCliente real del localStorage
-            const idCliente = localStorage.getItem('idCliente');
-            if (!idCliente) {
+            if (!idUsuario) {
                 throw new Error('No se encontró el id del cliente. Por favor, inicia sesión nuevamente.');
             }
             const medioPago = "Tarjeta de Crédito"; // TODO: obtener del formulario
 
             // Procesar la compra usando el backend real
-            await processCheckout(idCliente, medioPago);
+            await processCheckout(idUsuario, token, medioPago);
 
             // Mostrar mensaje de éxito
             setShowSuccessModal(true);

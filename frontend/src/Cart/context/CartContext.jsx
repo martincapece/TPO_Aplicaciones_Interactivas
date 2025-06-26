@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export const CartContext = createContext();
 
@@ -57,7 +57,7 @@ export const CartProvider = ({ children }) => {
   };
 
   // ✅ Aquí mantenemos la lógica de processCheckout
-  const processCheckout = async (idCliente, medioPago) => {
+  const processCheckout = async (idUsuario, token, medioPago) => {
     try {
       const items = productList.map(product => ({
         sku: product.sku,
@@ -66,23 +66,16 @@ export const CartProvider = ({ children }) => {
       }));
 
       const compraRequest = {
-        idCliente,
+        idUsuario,
         medioPago,
         items,
       };
-
-      // Obtener el JWT del localStorage
-      const jwt = localStorage.getItem('token');
-
-      console.log('Enviando compra:', compraRequest);
-      console.log('JWT:', jwt);
 
       const response = await fetch('http://localhost:8080/sapah/compras', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Agregar el header Authorization con el JWT
-          'Authorization': `Bearer ${jwt}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(compraRequest),
       });
@@ -92,7 +85,9 @@ export const CartProvider = ({ children }) => {
         console.log('Compra creada exitosamente:', compraCreada);
         return compraCreada;
       } else {
-        throw new Error('Error al procesar la compra');
+        // ✅ Mejorar el manejo de errores
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
       }
     } catch (error) {
       console.error('Error en checkout:', error);
