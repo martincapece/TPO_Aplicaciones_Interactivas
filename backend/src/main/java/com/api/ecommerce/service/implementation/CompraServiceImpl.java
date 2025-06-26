@@ -52,8 +52,8 @@ public class CompraServiceImpl implements CompraService {
         double total = 0;
 
         for (ItemCompraRequestDTO itemDTO : compraRequest.items()) {
-            ProductoTalle productoTalle = productoTalleRepository.findById(itemDTO.idProducto())
-                    .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con id: " + itemDTO.idProducto()));
+            ProductoTalle productoTalle = productoTalleRepository.findByProducto_SkuAndTalle_Numero(itemDTO.sku(), itemDTO.talle())
+                    .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con sku: " + itemDTO.sku() + " y talle: " + itemDTO.talle()));
 
             if (productoTalle.getStock() < itemDTO.cantidad()) {
                 throw new NoSuchElementException("No hay stock suficiente para el producto con SKU: " + productoTalle.getProducto().getSku());

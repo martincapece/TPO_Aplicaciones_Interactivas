@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
 
     const login = async({ mail, contraseña }) => {
         try {
-            console.log("Intentando iniciar sesión con:", { mail, contraseña });
             if (mail.trim().length <= 0 || contraseña.trim().length <= 0) {
                 throw new Error("Los campos son obligatorios");
             }
@@ -39,7 +38,11 @@ export const AuthProvider = ({ children }) => {
                     rol: data.role
                 } 
             });
-            
+
+            // GUARDA EL ID EN LOCALSTORAGE PARA USO EN OTRAS PARTES DE LA APP
+            localStorage.setItem('idCliente', data.idUsuario);
+            localStorage.setItem('token', data.jwt);
+
             return { ok: true };
             
         } catch (error) {

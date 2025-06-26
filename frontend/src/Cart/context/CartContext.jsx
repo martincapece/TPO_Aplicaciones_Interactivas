@@ -1,9 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 
-//crea el contexto
 export const CartContext = createContext();
 
-// crea el provider
 export const CartProvider = ({ children }) => {
   const [productList, setProductList] = useState(() => {
     try {
@@ -14,7 +12,6 @@ export const CartProvider = ({ children }) => {
     }
   });
 
-  // Guardar carrito en localStorage cada vez que cambie
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(productList));
   }, [productList]);
@@ -24,11 +21,9 @@ export const CartProvider = ({ children }) => {
       const existing = prev.find(p => p.sku === product.sku && p.numeroProducto === product.numeroProducto);
       if (existing) {
         return prev.map(p => (
-          p.sku === product.sku && p.numeroProducto === product.numeroProducto
-          ? ( p.quantity + 1 <= p.stock )
-            ? { ...p, quantity: p.quantity + 1 }
-            : { ...p, quantity: p.quantity }
-          : p
+            p.sku === product.sku && p.numeroProducto === product.numeroProducto
+                ? (p.quantity + 1 <= p.stock) ? { ...p, quantity: p.quantity + 1 } : { ...p, quantity: p.quantity }
+                : p
         ));
       } else {
         return [...prev, { ...product, quantity: 1 }];
@@ -38,74 +33,90 @@ export const CartProvider = ({ children }) => {
 
   const handleIncreaseQuantity = (sku, numeroProducto) => {
     setProductList(prev =>
-      prev.map(item =>
-        item.sku === sku && item.numeroProducto === numeroProducto ? { ...item, quantity: item.quantity + 1 } : item
-      )
+        prev.map(item =>
+            item.sku === sku && item.numeroProducto === numeroProducto ? { ...item, quantity: item.quantity + 1 } : item
+        )
     );
   };
 
   const handleDecreaseQuantity = (sku, numeroProducto) => {
     setProductList((prev) =>
-      prev.map(item => item.sku === sku && item.numeroProducto === numeroProducto ? { ...item, quantity: item.quantity - 1 } : item)
-        .filter(item => item.quantity > 0)
+        prev
+            .map(item =>
+                item.sku === sku && item.numeroProducto === numeroProducto
+                    ? { ...item, quantity: item.quantity - 1 }
+                    : item
+            )
+            .filter(item => item.quantity > 0)
     );
-  };
-
-  const discountStock = async(productId, tallesAActualizar) => {
-    debugger
-     try {
-      // 1. Traer el producto completo
-      const res = await fetch(`http://localhost:3000/data/${productId}`);
-      const product = await res.json();
-
-      // 2. Crear nuevo array de talles con el stock actualizado
-      const updatedSizes = product.sizes.map((s) => {
-        const encontrado = tallesAActualizar.find(t => String(t.size) === String(s.size));
-        if (encontrado) {
-          return {
-            ...s,
-            stock: s.stock - encontrado.quantity
-          };
-        }
-        return s;
-      });
-
-      // 3. Enviar el producto actualizado al servidor
-      const updatedProduct = { ...product, sizes: updatedSizes };
-
-      await fetch(`http://localhost:3000/data/${productId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProduct)
-      });
-
-      console.log(`Stock actualizado para producto ${productId}`);
-    } catch (error) {
-      console.error("Error al actualizar el stock:", error);
-    }
   };
 
   const resetCart = () => {
     setProductList([]);
     localStorage.removeItem('cart');
-  }
+  };
 
+  // ✅ Aquí mantenemos la lógica de processCheckout
+  const processCheckout = async (idCliente, medioPago) => {
+    try {
+      const items = productList.map(product => ({
+        sku: product.sku,
+        talle: product.numeroProducto, // <-- usa numeroProducto, que es el talle seleccionado
+        cantidad: product.quantity,
+      }));
+
+      const compraRequest = {
+        idCliente,
+        medioPago,
+        items,
+      };
+
+      // Obtener el JWT del localStorage
+      const jwt = localStorage.getItem('token');
+
+      console.log('Enviando compra:', compraRequest);
+      console.log('JWT:', jwt);
+
+      const response = await fetch('http://localhost:8080/sapah/compras', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Agregar el header Authorization con el JWT
+          'Authorization': `Bearer ${jwt}`,
+        },
+        body: JSON.stringify(compraRequest),
+      });
+
+      if (response.ok) {
+        const compraCreada = await response.json();
+        console.log('Compra creada exitosamente:', compraCreada);
+        return compraCreada;
+      } else {
+        throw new Error('Error al procesar la compra');
+      }
+    } catch (error) {
+      console.error('Error en checkout:', error);
+      throw error;
+    }
+  };
+
+  // ✅ Aquí decidimos si usamos `price` o `precio`
   const subtotal = productList.reduce((acc, p) => acc + p.precio * p.quantity, 0);
 
   const cartSize = productList.length;
 
   return (
-    <CartContext.Provider value={{
-      productList,
-      addProduct,
-      handleIncreaseQuantity,
-      handleDecreaseQuantity,
-      discountStock,
-      resetCart,
-      subtotal,
-      cartSize
-    }}>
-      {children}
-    </CartContext.Provider>
+      <CartContext.Provider value={{
+        productList,
+        addProduct,
+        handleIncreaseQuantity,
+        handleDecreaseQuantity,
+        resetCart,
+        subtotal,
+        cartSize,
+        processCheckout
+      }}>
+        {children}
+      </CartContext.Provider>
   );
 };
