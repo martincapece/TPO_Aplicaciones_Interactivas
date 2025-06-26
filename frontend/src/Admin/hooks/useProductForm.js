@@ -18,15 +18,13 @@ export default function useProductForm(setMainImage, setExtraImages) {
     const [colors, setColors] = useState('');
     const [marcasDisponibles, setMarcasDisponibles] = useState(['Nike', 'Vans', 'Jordan']);
 
-    // ✅ Contexto de auth
+    // Contextos
     const authContext = useContext(AuthContext);
     const authState = authContext?.authState;
     const token = authState?.user?.token;
-
-    // ✅ Contexto de productos con todas las funciones necesarias
     const productosContext = useContext(ProductosContext);
-    const { 
-        productos = [], 
+    const {
+        productos = [],
         loadingProductos = false,
         getTallesPorSku = () => [],
         getImagenPrincipalPorSku = () => null,
@@ -37,6 +35,11 @@ export default function useProductForm(setMainImage, setExtraImages) {
         actualizarProductoLocal = () => {}
     } = productosContext || {};
 
+    // Estado para talles disponibles
+    const [tallesDisponibles, setTallesDisponibles] = useState([]);
+    const [loadingTallesDisponibles, setLoadingTallesDisponibles] = useState(false);
+    const [errorTallesDisponibles, setErrorTallesDisponibles] = useState(null);
+
     // Cargar marcas disponibles al montar el componente
     useEffect(() => {
         if (productos && productos.length > 0) {
@@ -46,6 +49,36 @@ export default function useProductForm(setMainImage, setExtraImages) {
             }
         }
     }, [productos]);
+
+    // Cargar talles disponibles al montar
+    useEffect(() => {
+        const fetchTalles = async () => {
+            setLoadingTallesDisponibles(true);
+            setErrorTallesDisponibles(null);
+            try {
+                const response = await fetch('http://localhost:8080/sapah/talles', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) throw new Error('Error al obtener talles');
+                const talles = await response.json();
+                setTallesDisponibles(talles);
+            } catch (err) {
+                setErrorTallesDisponibles(err.message);
+            } finally {
+                setLoadingTallesDisponibles(false);
+            }
+        };
+        if (token) fetchTalles();
+    }, [token]);
+
+    // Helper para mapear número de talle a idTalle
+    const getIdTalleByNumero = (numero) => {
+        const talle = tallesDisponibles.find(t => t.numero.toString() === numero.toString());
+        return talle ? talle.idTalle : null;
+    };
 
     // ✅ CORREGIDO: Cargar datos del producto para edición
     useEffect(() => {
@@ -146,14 +179,11 @@ export default function useProductForm(setMainImage, setExtraImages) {
 
     const handleAddProduct = async (mainImage, extraImages) => {
         if (!token) {
-            console.error('Token no disponible');
             alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
             return;
         }
-
         try {
             const colorPrincipal = Array.isArray(colors) ? colors[0] : colors;
-            
             const newProduct = {
                 modelo: model,
                 marca: brand,
@@ -163,35 +193,47 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 destacado: true,
                 nuevo: true
             };
-
-            console.log('Creando producto:', newProduct);
-
             const response = await fetch("http://localhost:8080/sapah/productos", {
                 method: "POST",
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(newProduct)
             });
-
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Error ${response.status}: ${errorText}`);
             }
-
             const addedProduct = await response.json();
-            console.log("Producto agregado:", addedProduct);
-            
-            // Actualizar contexto local para cambio inmediato
+            // Crear talles asociados
+            if (sizes && sizes.length > 0) {
+                const productoTalles = sizes.map(s => ({
+                    producto: { sku: addedProduct.sku },
+                    talle: { idTalle: getIdTalleByNumero(s.size) },
+                    stock: parseInt(s.stock)
+                })).filter(pt => pt.talle.idTalle);
+                if (productoTalles.length > 0) {
+                    const tallesResp = await fetch('http://localhost:8080/sapah/productos-talles/bulk', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(productoTalles)
+                    });
+                    if (!tallesResp.ok) {
+                        alert('Error al crear talles para el producto.');
+                        throw new Error('Error al crear talles');
+                    }
+                }
+            }
             try {
                 agregarProductoLocal(addedProduct);
             } catch (error) {
                 console.error('Error al actualizar contexto local:', error);
             }
-            
             navigate('/admin');
-            
         } catch (error) {
             console.error("Error al agregar producto:", error);
             alert(`Error al crear el producto: ${error.message}`);
@@ -200,49 +242,70 @@ export default function useProductForm(setMainImage, setExtraImages) {
 
     const handleUpdateProduct = async (mainImage, extraImages) => {
         if (!token) {
-            console.error('Token no disponible');
             alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
             return;
         }
-
         try {
             const skuNumber = parseInt(id);
             const colorPrincipal = Array.isArray(colors) ? colors[0] : colors;
-            
             const updatedProduct = {
                 modelo: model,
                 marca: brand,
                 precio: parseFloat(price),
                 color: colorPrincipal,
             };
-
-            console.log('Actualizando producto:', updatedProduct);
-
             const response = await fetch(`http://localhost:8080/sapah/productos/${skuNumber}`, {
                 method: 'PATCH',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(updatedProduct),
             });
-
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Error ${response.status}: ${errorText}`);
             }
-
-            console.log("Producto actualizado");
-            
-            // Actualizar contexto local para cambio inmediato
+            // Borrar talles existentes
+            const tallesActuales = getTallesPorSku(skuNumber);
+            for (const pt of tallesActuales) {
+                if (pt.idProductoTalle) {
+                    await fetch(`http://localhost:8080/sapah/productos-talles/${pt.idProductoTalle}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                }
+            }
+            // Crear nuevos talles
+            if (sizes && sizes.length > 0) {
+                const productoTalles = sizes.map(s => ({
+                    producto: { sku: skuNumber },
+                    talle: { idTalle: getIdTalleByNumero(s.size) },
+                    stock: parseInt(s.stock)
+                })).filter(pt => pt.talle.idTalle);
+                if (productoTalles.length > 0) {
+                    const tallesResp = await fetch('http://localhost:8080/sapah/productos-talles/bulk', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(productoTalles)
+                    });
+                    if (!tallesResp.ok) {
+                        alert('Error al crear talles para el producto.');
+                        throw new Error('Error al crear talles');
+                    }
+                }
+            }
             try {
                 actualizarProductoLocal(skuNumber, updatedProduct);
             } catch (error) {
                 console.error('Error al actualizar contexto local:', error);
             }
-            
             navigate('/admin');
-            
         } catch (error) {
             console.error("Error al actualizar producto:", error);
             alert(`Error al actualizar el producto: ${error.message}`);
@@ -255,6 +318,9 @@ export default function useProductForm(setMainImage, setExtraImages) {
         isEditable,
         marcasDisponibles,
         handleAddProduct,
-        handleUpdateProduct
+        handleUpdateProduct,
+        tallesDisponibles,
+        loadingTallesDisponibles,
+        errorTallesDisponibles
     };
 }
