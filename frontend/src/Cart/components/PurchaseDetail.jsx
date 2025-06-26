@@ -25,8 +25,11 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
         setIsProcessing(true);
 
         try {
-            // Datos temporales - deberías obtenerlos del usuario logueado
-            const idCliente = 1; // TODO: obtener del contexto de autenticación
+            // Obtener idCliente real del localStorage
+            const idCliente = localStorage.getItem('idCliente');
+            if (!idCliente) {
+                throw new Error('No se encontró el id del cliente. Por favor, inicia sesión nuevamente.');
+            }
             const medioPago = "Tarjeta de Crédito"; // TODO: obtener del formulario
 
             // Procesar la compra usando el backend real

@@ -60,8 +60,8 @@ export const CartProvider = ({ children }) => {
   const processCheckout = async (idCliente, medioPago) => {
     try {
       const items = productList.map(product => ({
-        sku: product.id,
-        talle: product.size,
+        sku: product.sku,
+        talle: product.numeroProducto, // <-- usa numeroProducto, que es el talle seleccionado
         cantidad: product.quantity,
       }));
 
@@ -71,10 +71,18 @@ export const CartProvider = ({ children }) => {
         items,
       };
 
+      // Obtener el JWT del localStorage
+      const jwt = localStorage.getItem('token');
+
+      console.log('Enviando compra:', compraRequest);
+      console.log('JWT:', jwt);
+
       const response = await fetch('http://localhost:8080/sapah/compras', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Agregar el header Authorization con el JWT
+          'Authorization': `Bearer ${jwt}`,
         },
         body: JSON.stringify(compraRequest),
       });
