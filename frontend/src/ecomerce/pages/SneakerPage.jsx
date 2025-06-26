@@ -3,26 +3,27 @@ import { useCart } from "../../Cart/hooks/useCart";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../auth/context/index.js";
 import { ProductosContext } from "../context/ProductosContext.jsx";
-import { 
-    Dialog, 
-    DialogTitle, 
-    DialogContent, 
-    DialogActions, 
-    Accordion, 
-    AccordionSummary, 
-    AccordionDetails, 
-    Box, 
-    Typography, 
-    Button, 
-    Grid, 
-    ToggleButton, 
-    ToggleButtonGroup, 
-    CircularProgress, 
-    Skeleton 
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Box,
+    Typography,
+    Button,
+    Grid,
+    ToggleButton,
+    ToggleButtonGroup,
+    CircularProgress,
+    Skeleton, Alert
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Swal from 'sweetalert2';
 import { LazyImage } from "../components/LazyImage";
+import Snackbar from "@mui/material/Snackbar";
 
 export function SneakerPage() {
     const { id } = useParams();
@@ -153,11 +154,13 @@ export function SneakerPage() {
 
     // Datos calculados
     const getTallesDisponiblesLocal = useMemo(() => {
-        return talles.map(t => ({
-            numero: t.talle.numero,
-            stock: t.stock,
-            id: t.talle.id
-        }));
+        return talles
+            .map(t => ({
+                numero: t.talle.numero,
+                stock: t.stock,
+                id: t.talle.id
+            }))
+            .sort((a, b) => parseFloat(a.numero) - parseFloat(b.numero));
     }, [talles]);
 
     const hayStockDisponible = useMemo(() => {
@@ -245,6 +248,12 @@ export function SneakerPage() {
         setDialogOpen(true);
     }, [selectedSize]);
 
+
+    // Primero, agrega estos estados al componente
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationSeverity, setNotificationSeverity] = useState('success'); // 'success', 'warning', 'error'
+
     const confirmarAgregarCarrito = useCallback(() => {
         const talleSeleccionado = talles.find(t => t.talle.numero.toString() === selectedSize.toString());
 
@@ -256,11 +265,9 @@ export function SneakerPage() {
 
         // Verificar si hay stock disponible
         if (cantidadEnCarrito >= selectedStock) {
-            Swal.fire({
-                title: "Stock insuficiente",
-                text: `Ya tienes ${cantidadEnCarrito} unidad${cantidadEnCarrito > 1 ? 'es' : ''} de este producto y talle en el carrito. Stock disponible: ${selectedStock}`,
-                icon: "warning"
-            });
+            setNotificationMessage(`Ya tienes ${cantidadEnCarrito} unidad${cantidadEnCarrito > 1 ? 'es' : ''} de este producto y talle en el carrito. Stock disponible: ${selectedStock}`);
+            setNotificationSeverity('warning');
+            setNotificationOpen(true);
             setDialogOpen(false);
             return;
         }
@@ -285,14 +292,11 @@ export function SneakerPage() {
         const nuevaCantidad = cantidadEnCarrito + 1;
         const stockRestante = selectedStock - nuevaCantidad;
 
-        Swal.fire({
-            title: "¡Agregado!",
-            text: `El producto se agregó correctamente al carrito${stockRestante > 0 ? `. Stock restante: ${stockRestante}` : '. ¡Última unidad!'}`,
-            icon: "success",
-            timer: 2000,
-            showConfirmButton: false
-        });
+        setNotificationMessage(`El producto se agregó correctamente al carrito${stockRestante > 0 ? `. Stock restante: ${stockRestante}` : '. ¡Última unidad!'}`);
+        setNotificationSeverity('success');
+        setNotificationOpen(true);
     }, [talles, sneaker, selectedSize, selectedStock, addProduct, imagenPrincipal]);
+
 
     // CORREGIDO: Componente ProductoRecomendado con sintaxis correcta
     const ProductoRecomendado = useCallback(({ producto, imagen }) => {
@@ -645,6 +649,67 @@ export function SneakerPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+                {/* Dialog de confirmación existente */}
+                <Dialog
+                    open={dialogOpen}
+                    onClose={() => setDialogOpen(false)}
+                    fullWidth
+                    maxWidth="xs"
+                    PaperProps={{
+                        sx: {
+                            borderRadius: 4,
+                            backgroundColor: "white",
+                            textAlign: "center",
+                            p: 3,
+                        },
+                    }}
+                    BackdropProps={{
+                        sx: {
+                            backgroundColor: "rgba(0, 0, 0, 0.4)",
+                        },
+                    }}
+                >
+                    <DialogTitle>Confirmar compra</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            ¿Deseás agregar <strong>{sneaker.modelo}</strong> talle <strong>{selectedSize}</strong> al
+                            carrito?
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions sx={{ justifyContent: "center" }}>
+                        <Button
+                            onClick={confirmarAgregarCarrito}
+                            variant="contained"
+                            color="primary"
+                            sx={{ borderRadius: 999, px: 4 }}
+                        >
+                            Aceptar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* Snackbar para notificaciones */}
+                <Snackbar
+                    open={notificationOpen}
+                    autoHideDuration={notificationSeverity === 'success' ? 2000 : 4000}
+                    onClose={() => setNotificationOpen(false)}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                    <Alert
+                        onClose={() => setNotificationOpen(false)}
+                        severity={notificationSeverity}
+                        sx={{
+                            width: '100%',
+                            borderRadius: 2,
+                            '& .MuiAlert-message': {
+                                fontSize: '0.9rem',
+                            },
+                        }}
+                    >
+                        {notificationMessage}
+                    </Alert>
+                </Snackbar>
+
 
             {/* Información adicional */}
             <Box sx={{ mt: 8, width: "100%" }}>
