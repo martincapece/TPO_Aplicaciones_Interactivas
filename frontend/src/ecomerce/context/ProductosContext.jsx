@@ -358,6 +358,64 @@ export const ProductosProvider = ({ children }) => {
     }
   }, [cargarImagenesProducto])
 
+  // NUEVAS: Funciones para actualizar datos localmente (para admin)
+  const actualizarProductoLocal = useCallback((sku, datosActualizados) => {
+    setProductos(prev => 
+      prev.map(producto => 
+        producto.sku === sku 
+          ? { ...producto, ...datosActualizados }
+          : producto
+      )
+    )
+  }, [])
+
+  const agregarProductoLocal = useCallback((nuevoProducto) => {
+    setProductos(prev => [...prev, nuevoProducto])
+  }, [])
+
+  const eliminarProductoLocal = useCallback((sku) => {
+    setProductos(prev => prev.filter(producto => producto.sku !== sku))
+    
+    // También limpiar datos relacionados
+    setProductoTalles(prev => {
+      const { [sku]: removed, ...rest } = prev
+      return rest
+    })
+    
+    setImagenesPrincipales(prev => {
+      const { [sku]: removed, ...rest } = prev
+      return rest
+    })
+    
+    setImagenesProductoCache(prev => {
+      const { [sku]: removed, ...rest } = prev
+      return rest
+    })
+  }, [])
+
+  const actualizarStockLocal = useCallback((sku, nuevoStock) => {
+    setProductoTalles(prev => ({
+      ...prev,
+      [sku]: prev[sku]?.map(talleData => ({
+        ...talleData,
+        stock: nuevoStock[talleData.talle.numero] || talleData.stock
+      })) || []
+    }))
+  }, [])
+
+  const actualizarStockPorCompra = useCallback((itemsCompra) => {
+    itemsCompra.forEach(item => {
+      setProductoTalles(prev => ({
+        ...prev,
+        [item.sku]: prev[item.sku]?.map(talleData => 
+          talleData.talle.numero.toString() === item.talle.toString()
+            ? { ...talleData, stock: Math.max(0, talleData.stock - item.cantidad) }
+            : talleData
+        ) || []
+      }))
+    })
+  }, [])
+
   // useEffect existente...
   useEffect(() => {
     if (authContext && isAuthenticated && validarToken() && !datosYaCargados && !loading) {
@@ -398,6 +456,13 @@ export const ProductosProvider = ({ children }) => {
     getEstadoImagenesProducto,
     hayImagenesSecundariasProducto,
     solicitarImagenesProducto,
+    
+    // NUEVAS: Funciones para admin
+    actualizarProductoLocal,
+    agregarProductoLocal,
+    eliminarProductoLocal,
+    actualizarStockLocal,
+    actualizarStockPorCompra,
     
     // Estados del caché
     imagenesProductoCache,

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../auth/context/AuthContext'; // ✅ AGREGAR
 
 // FUNCIONES DIRECTAS EN EL COMPONENTE
 const formatFecha = (value) => {
@@ -29,60 +30,60 @@ const formatMonto = (value) => {
 
 export function useCompras() {
   const [compraRows, setCompraRows] = useState([]);
-  const [loadingCompras, setLoadingCompras] = useState(true);
+  const [loadingCompras, setLoadingCompras] = useState(false);
   const [errorCompras, setErrorCompras] = useState(null);
+
+  // ✅ AGREGAR: Obtener token del contexto
+  const { authState } = useContext(AuthContext);
+  const token = authState?.user?.token;
 
   useEffect(() => {
     const fetchCompras = async () => {
+      if (!token) return; // ✅ No hacer fetch sin token
+
+      setLoadingCompras(true);
+      setErrorCompras(null);
+
       try {
-        setLoadingCompras(true);
-        const token = localStorage.getItem('token');
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) headers.Authorization = `Bearer ${token}`;
-
         const response = await fetch('http://localhost:8080/sapah/compras', {
-          headers,
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`, // ✅ Usar token del contexto
+            'Content-Type': 'application/json'
+          }
         });
 
-        if (response.status === 401) {
-          throw new Error('No autorizado. Verifique su token de autenticación.');
-        }
-        if (response.status === 403) {
-          throw new Error('Acceso denegado. No tiene permisos para ver las compras.');
-        }
         if (!response.ok) {
-          throw new Error(`Error al cargar las compras: ${response.status} ${response.statusText}`);
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
 
-        const compras = await response.json();
+        const data = await response.json();
+        
+        // Mapear los datos al formato esperado por el DataGrid
+        const mappedData = data.map(compra => ({
+          nroCompra: compra.nroCompra,
+          nombreComprador: compra.nombreComprador || 'N/A',
+          emailComprador: compra.emailComprador || 'N/A',
+          fechaTimestamp: compra.fechaTimestamp || 0,
+          montoTotal: compra.montoTotal || 0,
+          medioPago: compra.medioPago || 'N/A',
+          cantidadItems: compra.cantidadItems || 0
+        }));
 
-        const mappedCompras = compras.map((compra) => {
-          const fecha = compra.fechaTimestamp || compra.fecha || compra.fechaCompra;
-          return {
-            nroCompra: compra.nroCompra,
-            nombreComprador: compra.nombreComprador,
-            emailComprador: compra.emailComprador,
-            fechaTimestamp: fecha,
-            montoTotal: compra.montoTotal,
-            medioPago: compra.medioPago,
-            cantidadItems: compra.cantidadItems,
-          };
-        });
-
-        setCompraRows(mappedCompras);
-        setErrorCompras(null);
+        setCompraRows(mappedData);
       } catch (error) {
+        console.error('Error al cargar compras:', error);
         setErrorCompras(error.message);
       } finally {
         setLoadingCompras(false);
       }
     };
+
     fetchCompras();
-  }, []);
+  }, [token]); // ✅ Dependencia del token
 
   return {
     compraRows,
-    setCompraRows,
     loadingCompras,
     errorCompras,
   };

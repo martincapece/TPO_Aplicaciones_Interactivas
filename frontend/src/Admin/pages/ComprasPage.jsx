@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useContext } from 'react'; // ✅ AGREGAR
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import {
@@ -11,13 +12,27 @@ import {
 } from '@mui/material';
 import { useCompras } from '../hooks/useCompras';
 import AdminNavigation from '../components/AdminNavigation';
+import { AuthContext } from '../../auth/context/AuthContext'; // ✅ AGREGAR
 
 export default function ComprasPage() {
+  // ✅ AGREGAR: Verificación de autenticación
+  const { authState } = useContext(AuthContext);
+  const token = authState?.user?.token;
+
   const {
     compraRows,
     loadingCompras,
     errorCompras,
   } = useCompras();
+
+  // ✅ AGREGAR: Verificar que el usuario esté logueado
+  if (!authState?.logged || !token) {
+    return (
+      <Grid sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography>Por favor, inicia sesión para acceder al panel de administración.</Typography>
+      </Grid>
+    );
+  }
 
   // Validadores robustos
   const formatFecha = (value) => {

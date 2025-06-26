@@ -2,12 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { ProductosContext } from '../../ecomerce/context/ProductosContext';
+import { AuthContext } from '../../auth/context/AuthContext'; // ✅ AGREGAR
 
 export function useAdmin() {
   const navigate = useNavigate();
   const [productRows, setProductRows] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+
+  // ✅ AGREGAR: Obtener token del contexto de auth
+  const { authState } = useContext(AuthContext);
+  const token = authState?.user?.token;
 
   // Usar el contexto de productos
   const { 
@@ -17,7 +22,10 @@ export function useAdmin() {
     productoTalles,
     imagenesPrincipales,
     getTallesPorSku,
-    getImagenPrincipalPorSku 
+    getImagenPrincipalPorSku,
+    // ✅ NUEVAS: Funciones para actualizar datos localmente
+    actualizarProductoLocal,
+    eliminarProductoLocal
   } = useContext(ProductosContext);
 
   // Mapear productos de la BD al formato que espera el DataGrid
@@ -59,17 +67,18 @@ export function useAdmin() {
   };
 
   const confirmDelete = async () => {
+    if (!token || !productToDelete) return; // ✅ Verificar token
+
     try {
-      // Aquí deberías usar tu API real para eliminar
       await fetch(`http://localhost:8080/sapah/productos/${productToDelete}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Ajustar según tu manejo de auth
+          Authorization: `Bearer ${token}`, // ✅ Usar token del contexto
           'Content-Type': 'application/json'
         }
       });
 
-      // Actualizar el estado local
+      eliminarProductoLocal(productToDelete);
       setProductRows(prev => prev.filter(p => p.id !== productToDelete));
       setDeleteDialogOpen(false);
       setProductToDelete(null);
@@ -79,8 +88,9 @@ export function useAdmin() {
   };
 
   const updateProduct = async (id, updatedFields) => {
+    if (!token) return; // ✅ Verificar token
+
     try {
-      // Mapear campos del frontend a la BD si es necesario
       const mappedFields = {};
       if (updatedFields.hasOwnProperty('featured')) {
         mappedFields.destacado = updatedFields.featured;
@@ -92,13 +102,13 @@ export function useAdmin() {
       await fetch(`http://localhost:8080/sapah/productos/${id}`, {
         method: 'PATCH',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Ajustar según tu manejo de auth
+          Authorization: `Bearer ${token}`, // ✅ Usar token del contexto
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(mappedFields)
       });
 
-      // Actualizar el estado local
+      actualizarProductoLocal(id, mappedFields);
       setProductRows(prev => 
         prev.map(row => 
           row.id === id ? { ...row, ...updatedFields } : row
@@ -114,13 +124,11 @@ export function useAdmin() {
     setProductRows,
     deleteDialogOpen,
     setDeleteDialogOpen,
-    productToDelete,
-    setProductToDelete,
     handleEdit,
     handleDelete,
     confirmDelete,
     updateProduct,
-    loadingProductos, // Exponer el loading del contexto
-    errorProductos, // Exponer el error del contexto
+    loadingProductos,
+    errorProductos,
   };
 }
