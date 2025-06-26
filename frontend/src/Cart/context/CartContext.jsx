@@ -87,7 +87,6 @@ export const CartProvider = ({ children }) => {
 
       if (response.ok) {
         const compraCreada = await response.json();
-        console.log('Compra creada exitosamente:', compraCreada);
         
         // ✅ 2. Actualizar stock local para cambio inmediato
         if (actualizarStockPorCompra) {

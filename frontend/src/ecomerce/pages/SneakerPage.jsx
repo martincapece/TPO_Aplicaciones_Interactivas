@@ -283,9 +283,6 @@ export function SneakerPage() {
             image: imagenPrincipal?.cloudinarySecureUrl,
         };
 
-        console.log(sneaker);
-        console.log('Producto a agregar:', productToAdd); // Para debuggear
-
         addProduct(productToAdd);
         setDialogOpen(false);
 

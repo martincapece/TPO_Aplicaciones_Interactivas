@@ -86,8 +86,6 @@ export default function useProductForm(setMainImage, setExtraImages) {
             const skuNumber = parseInt(id);
             const product = productos.find(p => p.sku === skuNumber);
             
-            console.log('🔍 Buscando producto para editar:', { skuNumber, product });
-            
             if (product) {
                 // Cargar datos básicos del producto
                 setModel(product.modelo || '');
@@ -97,7 +95,6 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 
                 // ✅ CORREGIDO: Cargar talles del producto
                 const tallesProducto = getTallesPorSku(skuNumber);
-                console.log('📏 Talles del producto:', tallesProducto);
                 
                 if (tallesProducto && tallesProducto.length > 0) {
                     // Mapear los talles al formato esperado por el formulario
@@ -107,24 +104,20 @@ export default function useProductForm(setMainImage, setExtraImages) {
                     }));
                     
                     setSizes(sizesFormateados);
-                    console.log('📏 Sizes formateados:', sizesFormateados);
                     
                     // Calcular stock total
                     const stockTotal = tallesProducto.reduce((total, talleData) => total + talleData.stock, 0);
                     setStock(stockTotal.toString());
-                    console.log('📦 Stock total:', stockTotal);
                 }
                 
                 // ✅ CORREGIDO: Cargar imagen principal
                 const imagenPrincipal = getImagenPrincipalPorSku(skuNumber);
-                console.log('🖼️ Imagen principal:', imagenPrincipal);
                 
                 if (imagenPrincipal && imagenPrincipal !== 'ERROR' && imagenPrincipal.cloudinarySecureUrl) {
                     setMainImage(imagenPrincipal.cloudinarySecureUrl);
                 }
                 
                 // ✅ CORREGIDO: Solicitar imágenes adicionales del producto
-                console.log('🔄 Solicitando imágenes adicionales...');
                 solicitarImagenesProducto(skuNumber);
             }
         }
@@ -145,20 +138,15 @@ export default function useProductForm(setMainImage, setExtraImages) {
             const skuNumber = parseInt(id);
             const estadoImagenes = getEstadoImagenesProducto(skuNumber);
             
-            console.log('🖼️ Estado de imágenes para SKU', skuNumber, ':', estadoImagenes);
-            
             // Verificar si las imágenes están cargadas
             if (estadoImagenes === 'cargado') {
                 const todasLasImagenes = getImagenesProductoPorSku(skuNumber);
-                console.log('🖼️ Todas las imágenes cargadas:', todasLasImagenes);
                 
                 // Filtrar imágenes que no sean la principal
                 const imagenesSecundarias = todasLasImagenes
                     .filter(img => !img.esPrincipal)
                     .slice(0, 3) // Máximo 3 imágenes adicionales
                     .map(img => img.cloudinarySecureUrl);
-                
-                console.log('🖼️ Imágenes secundarias:', imagenesSecundarias);
                 
                 // Completar con null si hay menos de 3 imágenes
                 while (imagenesSecundarias.length < 3) {

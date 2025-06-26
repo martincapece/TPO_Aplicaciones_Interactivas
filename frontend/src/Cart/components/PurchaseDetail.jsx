@@ -48,7 +48,6 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
 
             // Mostrar mensaje de éxito
             setShowSuccessModal(true);
-            console.log("SE DESPLIEGA EL MODAL DE SUCESS")
 
         } catch (error) {
             console.error('Error al procesar la compra:', error);
