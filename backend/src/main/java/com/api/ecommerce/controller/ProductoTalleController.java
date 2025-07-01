@@ -88,5 +88,18 @@ public class ProductoTalleController {
         ProductoTalle actualizado = productoTalleService.getProductoTalle(sku, idTalle);
         return ResponseEntity.ok("Stock actualizado. Nuevo stock: " + actualizado.getStock());
     }
+    
+    /** Setear stock exacto (crear si no existe) */
+    @PutMapping("/actualizar-stock")
+    public ResponseEntity<?> actualizarStock(
+            @RequestParam Long sku,
+            @RequestParam Long idTalle,
+            @RequestParam Integer cantidad) {
+        if (cantidad == null || cantidad < 0) {
+            return ResponseEntity.badRequest().body("La cantidad debe ser 0 o mayor.");
+        }
+        ProductoTalle pt = productoTalleService.actualizarStock(sku, idTalle, cantidad);
+        return ResponseEntity.ok(pt);
+    }
 
 }

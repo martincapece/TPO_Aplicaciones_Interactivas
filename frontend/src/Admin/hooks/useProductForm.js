@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ProductosContext } from '../../ecomerce/context/ProductosContext';
 import { AuthContext } from '../../auth/context/AuthContext';
+import Swal from 'sweetalert2'; // Agregar import de SweetAlert
 
 export default function useProductForm(setMainImage, setExtraImages) {
     const { id } = useParams();
@@ -16,7 +17,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
     const [stock, setStock] = useState('');
     const [sizes, setSizes] = useState([]);
     const [colors, setColors] = useState('');
-    const [marcasDisponibles, setMarcasDisponibles] = useState(['Nike', 'Vans', 'Jordan']);
+    const [marcasDisponibles, setMarcasDisponibles] = useState([]);
 
     // Contextos
     const authContext = useContext(AuthContext);
@@ -233,6 +234,23 @@ export default function useProductForm(setMainImage, setExtraImages) {
             alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
             return;
         }
+
+        // ✅ VALIDACIÓN CORREGIDA: Solo rechazar stocks negativos (permitir 0)
+        const stocksNegativos = sizes.filter(s => {
+            const stockValue = parseInt(s.stock);
+            return isNaN(stockValue) || stockValue < 0; // Solo rechazar si es NaN o menor a 0
+        });
+        
+        if (stocksNegativos.length > 0) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Stock inválido',
+                text: 'El stock debe ser 0 o un número positivo', // Mensaje actualizado
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
         try {
             const skuNumber = parseInt(id);
             const colorPrincipal = Array.isArray(colors) ? colors[0] : colors;
@@ -242,6 +260,8 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 precio: parseFloat(price),
                 color: colorPrincipal,
             };
+            
+            // 1. Actualizar datos básicos del producto
             const response = await fetch(`http://localhost:8080/sapah/productos/${skuNumber}`, {
                 method: 'PATCH',
                 headers: {
@@ -254,49 +274,73 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 const errorText = await response.text();
                 throw new Error(`Error ${response.status}: ${errorText}`);
             }
-            // Borrar talles existentes
-            const tallesActuales = getTallesPorSku(skuNumber);
-            for (const pt of tallesActuales) {
-                if (pt.idProductoTalle) {
-                    await fetch(`http://localhost:8080/sapah/productos-talles/${pt.idProductoTalle}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
+            
+            // 2. Actualizar stock de talles usando Promise.all para mejor manejo de errores
+            const stockPromises = sizes.map(async (s) => {
+                const numeroTalle = s.size.toString();
+                const nuevoStock = parseInt(s.stock);
+                const idTalle = getIdTalleByNumero(numeroTalle);
+                
+                if (idTalle) {
+                    const stockResponse = await fetch(
+                        `http://localhost:8080/sapah/productos-talles/actualizar-stock?sku=${skuNumber}&idTalle=${idTalle}&cantidad=${nuevoStock}`,
+                        {
+                            method: 'PUT',
+                            headers: { 'Authorization': `Bearer ${token}` }
                         }
-                    });
-                }
-            }
-            // Crear nuevos talles
-            if (sizes && sizes.length > 0) {
-                const productoTalles = sizes.map(s => ({
-                    producto: { sku: skuNumber },
-                    talle: { idTalle: getIdTalleByNumero(s.size) },
-                    stock: parseInt(s.stock)
-                })).filter(pt => pt.talle.idTalle);
-                if (productoTalles.length > 0) {
-                    const tallesResp = await fetch('http://localhost:8080/sapah/productos-talles/bulk', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(productoTalles)
-                    });
-                    if (!tallesResp.ok) {
-                        alert('Error al crear talles para el producto.');
-                        throw new Error('Error al crear talles');
+                    );
+                    
+                    if (!stockResponse.ok) {
+                        const errorText = await stockResponse.text();
+                        throw new Error(`Error actualizando stock talle ${numeroTalle}: ${errorText}`);
                     }
                 }
-            }
+            });
+
+            // Esperar a que todas las actualizaciones de stock terminen
+            await Promise.all(stockPromises);
+
+            // 3. Actualizar contexto local (datos básicos del producto)
             try {
                 actualizarProductoLocal(skuNumber, updatedProduct);
             } catch (error) {
                 console.error('Error al actualizar contexto local:', error);
             }
+
+            // ✅ NUEVA FUNCIONALIDAD: Actualizar stocks en el contexto local
+            try {
+                // Actualizar los stocks de los talles en el contexto
+                sizes.forEach(sizeData => {
+                    const numeroTalle = sizeData.size.toString();
+                    const nuevoStock = parseInt(sizeData.stock);
+                    
+                    // Buscar el talle en el contexto y actualizarlo
+                    const tallesProducto = getTallesPorSku(skuNumber);
+                    const talleEncontrado = tallesProducto.find(pt => 
+                        pt.talle.numero.toString() === numeroTalle
+                    );
+                    
+                    if (talleEncontrado) {
+                        // Actualizar el stock en el contexto local
+                        talleEncontrado.stock = nuevoStock;
+                    }
+                });
+                
+                console.log('Stocks actualizados en el contexto local');
+            } catch (error) {
+                console.error('Error al actualizar stocks en contexto local:', error);
+            }
+            
             navigate('/admin');
         } catch (error) {
             console.error("Error al actualizar producto:", error);
-            alert(`Error al actualizar el producto: ${error.message}`);
+            // ✅ USAR SWEETALERT TAMBIÉN PARA ERRORES GENERALES
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error al actualizar producto',
+                text: error.message,
+                confirmButtonText: 'Entendido'
+            });
         }
     };
 

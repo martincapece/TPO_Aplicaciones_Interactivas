@@ -37,7 +37,7 @@ export default function ProductForm({
             updatedSizes.push({ size, stock: Number(stock) });
         }
 
-        const cleaned = updatedSizes.filter((s) => !isNaN(s.stock) && s.stock > 0);
+        const cleaned = updatedSizes.filter((s) => !isNaN(s.stock) && s.stock >= 0);
         setSizes(cleaned);
     };
 
@@ -124,7 +124,10 @@ export default function ProductForm({
                         value={getStockForSize(String(size))}
                         onChange={(e) => handleSizeStockChange(String(size), e.target.value)}
                         sx={{ width: '120px', height: '63px' }}
-                        inputProps={{ min: 0 }}
+                        inputProps={{ 
+                            min: 0,
+                            step: 1
+                        }}
                     />
                 ))}
             </Box>
