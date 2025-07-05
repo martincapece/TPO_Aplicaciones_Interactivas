@@ -48,6 +48,8 @@ export default function NewProduct() {
     const {
         mainImage,
         extraImages,
+        mainImageFile,
+        extraImageFiles,
         handleImageUpload,
         handleExtraImageUpload,
         handleImageRemove,
@@ -105,7 +107,7 @@ export default function NewProduct() {
                 onConfirm={() => {
                     setDialogOpen(false);
                     isEditable
-                        ? handleUpdateProduct(mainImage, extraImages)
+                        ? handleUpdateProduct(mainImageFile, extraImageFiles)
                         : handleAddProduct(mainImage, extraImages);
                 }}
                 title={isEditable ? "Confirmar actualización" : "Confirmar creación"}

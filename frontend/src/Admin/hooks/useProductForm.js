@@ -166,6 +166,137 @@ export default function useProductForm(setMainImage, setExtraImages) {
         setExtraImages
     ]);
 
+    // ✅ NUEVA FUNCIÓN: Gestionar actualizaciones de imágenes
+    const handleImageUpdates = async (sku, newMainImageFile, newExtraImageFiles) => {
+        try {
+            // Obtener las imágenes actuales del producto
+            const imagenesActuales = getImagenesProductoPorSku(sku);
+            
+            // Separar imágenes actuales en principal y secundarias
+            const imagenPrincipalActual = imagenesActuales.find(img => img.esPrincipal);
+            const imagenesSecundariasActuales = imagenesActuales.filter(img => !img.esPrincipal);
+            
+            // Preparar arrays para gestionar cambios
+            const imagenesAReemplazar = [];
+            const nuevasImagenes = [];
+            let indicePrincipal = null;
+            
+            // 1. Gestionar imagen principal
+            if (newMainImageFile && newMainImageFile instanceof File) {
+                // Hay una nueva imagen principal (archivo)
+                if (imagenPrincipalActual) {
+                    imagenesAReemplazar.push(imagenPrincipalActual.id);
+                    nuevasImagenes.push(newMainImageFile);
+                    indicePrincipal = 0; // La primera imagen será la principal
+                }
+            }
+            
+            // 2. Gestionar imágenes secundarias
+            const imagenesSecundariasNuevas = (newExtraImageFiles || []).filter(img => 
+                img && img instanceof File
+            );
+            
+            // Si hay imágenes secundarias nuevas, determinar cuáles reemplazar
+            if (imagenesSecundariasNuevas.length > 0) {
+                const maxImagenesAReemplazar = Math.min(
+                    imagenesSecundariasNuevas.length, 
+                    imagenesSecundariasActuales.length
+                );
+                
+                // Agregar IDs de imágenes secundarias a reemplazar
+                for (let i = 0; i < maxImagenesAReemplazar; i++) {
+                    imagenesAReemplazar.push(imagenesSecundariasActuales[i].id);
+                    nuevasImagenes.push(imagenesSecundariasNuevas[i]);
+                }
+                
+                // Si hay más imágenes nuevas que actuales, agregar las restantes
+                if (imagenesSecundariasNuevas.length > maxImagenesAReemplazar) {
+                    const imagenesParaAgregar = imagenesSecundariasNuevas.slice(maxImagenesAReemplazar);
+                    await subirImagenesAdicionales(sku, imagenesParaAgregar);
+                }
+            }
+            
+            // 3. Ejecutar reemplazo si hay imágenes para reemplazar
+            if (imagenesAReemplazar.length > 0 && nuevasImagenes.length > 0) {
+                await reemplazarImagenesExistentes(sku, imagenesAReemplazar, nuevasImagenes, indicePrincipal);
+            } else if (nuevasImagenes.length > 0) {
+                // Si solo hay imágenes nuevas sin reemplazar, usar upload múltiple
+                await subirImagenesAdicionales(sku, nuevasImagenes, indicePrincipal);
+            }
+            
+            console.log('Imágenes actualizadas exitosamente');
+            
+        } catch (error) {
+            console.error('Error al actualizar imágenes:', error);
+            throw new Error(`Error al actualizar imágenes: ${error.message}`);
+        }
+    };
+    
+    // ✅ FUNCIÓN AUXILIAR: Reemplazar imágenes existentes
+    const reemplazarImagenesExistentes = async (sku, idsAReemplazar, nuevasImagenes, indicePrincipal) => {
+        const formData = new FormData();
+        
+        // Agregar IDs a reemplazar
+        idsAReemplazar.forEach(id => {
+            formData.append('idsAReemplazar', id);
+        });
+        
+        // Agregar nuevas imágenes
+        nuevasImagenes.forEach(imagen => {
+            formData.append('archivos', imagen);
+        });
+        
+        // Agregar índice principal si existe
+        if (indicePrincipal !== null) {
+            formData.append('indicePrincipal', indicePrincipal);
+        }
+        
+        const response = await fetch(`http://localhost:8080/api/imagenes/replace/${sku}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('Imágenes reemplazadas:', result);
+    };
+    
+    // ✅ FUNCIÓN AUXILIAR: Subir imágenes adicionales
+    const subirImagenesAdicionales = async (sku, imagenes, indicePrincipal = null) => {
+        const formData = new FormData();
+        
+        imagenes.forEach(imagen => {
+            formData.append('archivos', imagen);
+        });
+        
+        if (indicePrincipal !== null) {
+            formData.append('indicePrincipal', indicePrincipal);
+        }
+        
+        const response = await fetch(`http://localhost:8080/api/imagenes/upload-multiple/${sku}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('Imágenes adicionales subidas:', result);
+    };
+
     const handleAddProduct = async (mainImage, extraImages) => {
         if (!token) {
             alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
@@ -300,7 +431,10 @@ export default function useProductForm(setMainImage, setExtraImages) {
             // Esperar a que todas las actualizaciones de stock terminen
             await Promise.all(stockPromises);
 
-            // 3. Actualizar contexto local (datos básicos del producto)
+            // 3. Gestionar actualización de imágenes
+            await handleImageUpdates(skuNumber, mainImage, extraImages);
+
+            // 4. Actualizar contexto local (datos básicos del producto)
             try {
                 actualizarProductoLocal(skuNumber, updatedProduct);
             } catch (error) {
