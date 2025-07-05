@@ -169,8 +169,24 @@ export default function useProductForm(setMainImage, setExtraImages) {
     // ✅ NUEVA FUNCIÓN: Gestionar actualizaciones de imágenes
     const handleImageUpdates = async (sku, newMainImageFile, newExtraImageFiles) => {
         try {
+            console.log('🔍 DEBUG - handleImageUpdates iniciado para SKU:', sku);
+            console.log('  - newMainImageFile:', newMainImageFile);
+            console.log('  - newExtraImageFiles:', newExtraImageFiles);
+            
+            // ✅ VERIFICAR SI HAY CAMBIOS DE IMÁGENES
+            const hayImagenPrincipalNueva = newMainImageFile && newMainImageFile instanceof File;
+            const hayImagenesSecundariasNuevas = newExtraImageFiles && 
+                Array.isArray(newExtraImageFiles) && 
+                newExtraImageFiles.some(img => img && img instanceof File);
+            
+            if (!hayImagenPrincipalNueva && !hayImagenesSecundariasNuevas) {
+                console.log('ℹ️ No hay cambios de imágenes para actualizar');
+                return;
+            }
+            
             // Obtener las imágenes actuales del producto
             const imagenesActuales = getImagenesProductoPorSku(sku);
+            console.log('🔍 DEBUG - Imágenes actuales del producto:', imagenesActuales);
             
             // Separar imágenes actuales en principal y secundarias
             const imagenPrincipalActual = imagenesActuales.find(img => img.esPrincipal);
@@ -182,22 +198,30 @@ export default function useProductForm(setMainImage, setExtraImages) {
             let indicePrincipal = null;
             
             // 1. Gestionar imagen principal
-            if (newMainImageFile && newMainImageFile instanceof File) {
-                // Hay una nueva imagen principal (archivo)
+            if (hayImagenPrincipalNueva) {
+                console.log('📸 Nueva imagen principal detectada');
                 if (imagenPrincipalActual) {
                     imagenesAReemplazar.push(imagenPrincipalActual.id);
                     nuevasImagenes.push(newMainImageFile);
                     indicePrincipal = 0; // La primera imagen será la principal
+                } else {
+                    // No hay imagen principal actual, agregar como nueva
+                    nuevasImagenes.push(newMainImageFile);
+                    indicePrincipal = 0;
                 }
             }
             
             // 2. Gestionar imágenes secundarias
-            const imagenesSecundariasNuevas = (newExtraImageFiles || []).filter(img => 
-                img && img instanceof File
-            );
-            
-            // Si hay imágenes secundarias nuevas, determinar cuáles reemplazar
-            if (imagenesSecundariasNuevas.length > 0) {
+            if (hayImagenesSecundariasNuevas) {
+                console.log('📸 Nuevas imágenes secundarias detectadas');
+                const imagenesSecundariasNuevas = newExtraImageFiles.filter(img => 
+                    img && img instanceof File
+                );
+                
+                console.log(`🔍 DEBUG - ${imagenesSecundariasNuevas.length} imágenes secundarias nuevas:`, 
+                    imagenesSecundariasNuevas.map(img => img.name));
+                
+                // Si hay imágenes secundarias nuevas, determinar cuáles reemplazar
                 const maxImagenesAReemplazar = Math.min(
                     imagenesSecundariasNuevas.length, 
                     imagenesSecundariasActuales.length
@@ -217,14 +241,21 @@ export default function useProductForm(setMainImage, setExtraImages) {
             }
             
             // 3. Ejecutar reemplazo si hay imágenes para reemplazar
+            console.log('🔍 DEBUG - Estado final:');
+            console.log('  - imagenesAReemplazar:', imagenesAReemplazar);
+            console.log('  - nuevasImagenes:', nuevasImagenes.map(img => img.name));
+            console.log('  - indicePrincipal:', indicePrincipal);
+            
             if (imagenesAReemplazar.length > 0 && nuevasImagenes.length > 0) {
+                console.log('🔄 Reemplazando imágenes existentes...');
                 await reemplazarImagenesExistentes(sku, imagenesAReemplazar, nuevasImagenes, indicePrincipal);
             } else if (nuevasImagenes.length > 0) {
+                console.log('📤 Subiendo imágenes nuevas...');
                 // Si solo hay imágenes nuevas sin reemplazar, usar upload múltiple
                 await subirImagenesAdicionales(sku, nuevasImagenes, indicePrincipal);
             }
             
-            console.log('Imágenes actualizadas exitosamente');
+            console.log('✅ Imágenes actualizadas exitosamente');
             
         } catch (error) {
             console.error('Error al actualizar imágenes:', error);
@@ -297,12 +328,123 @@ export default function useProductForm(setMainImage, setExtraImages) {
         console.log('Imágenes adicionales subidas:', result);
     };
 
-    const handleAddProduct = async (mainImage, extraImages) => {
-        if (!token) {
-            alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
+    // ✅ FUNCIÓN AUXILIAR: Subir imágenes para un nuevo producto
+    const subirImagenesParaNuevoProducto = async (sku, mainImageFile, extraImageFiles) => {
+        try {
+            console.log('🔍 DEBUG - Parámetros recibidos:');
+            console.log('  - mainImageFile:', mainImageFile);
+            console.log('  - extraImageFiles:', extraImageFiles);
+            
+            // Preparar array de imágenes a subir
+            const imagenesParaSubir = [];
+            let indicePrincipal = null;
+
+            // Agregar imagen principal si existe
+            if (mainImageFile && mainImageFile instanceof File) {
+                imagenesParaSubir.push(mainImageFile);
+                indicePrincipal = 0; // La primera imagen será la principal
+                console.log('📸 Imagen principal detectada:', mainImageFile.name);
+            }
+
+            // Agregar imágenes secundarias si existen
+            if (extraImageFiles && Array.isArray(extraImageFiles)) {
+                console.log('🔍 DEBUG - Procesando imágenes secundarias:');
+                extraImageFiles.forEach((img, index) => {
+                    console.log(`  [${index}]:`, img);
+                });
+                
+                const imagenesSecundariasValidas = extraImageFiles.filter(img => 
+                    img && img instanceof File
+                );
+                
+                console.log('📸 Imágenes secundarias válidas:', imagenesSecundariasValidas.map(img => img.name));
+                imagenesParaSubir.push(...imagenesSecundariasValidas);
+            }
+
+            // Si no hay imágenes, no hacer nada
+            if (imagenesParaSubir.length === 0) {
+                console.log('ℹ️ No hay imágenes para subir');
+                return;
+            }
+
+            console.log(`📤 Subiendo ${imagenesParaSubir.length} imagen(es) para el producto ${sku}...`);
+            console.log('🔍 DEBUG - Imágenes a subir:', imagenesParaSubir.map(img => img.name));
+
+            // Subir imágenes usando el endpoint múltiple
+            const formData = new FormData();
+            imagenesParaSubir.forEach(imagen => {
+                formData.append('archivos', imagen);
+            });
+
+            // Agregar índice principal si existe
+            if (indicePrincipal !== null) {
+                formData.append('indicePrincipal', indicePrincipal);
+            }
+
+            const response = await fetch(`http://localhost:8080/api/imagenes/upload-multiple/${sku}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error al subir imágenes: ${errorText}`);
+            }
+
+            const result = await response.json();
+            console.log(`✅ ${result.cantidad} imagen(es) subida(s) exitosamente`);
+
+        } catch (error) {
+            console.error('❌ Error al subir imágenes:', error);
+            throw new Error(`Error al subir imágenes: ${error.message}`);
+        }
+    };
+
+    // ✅ PROTECCIÓN CONTRA LLAMADAS MÚLTIPLES
+    const [isCreatingProduct, setIsCreatingProduct] = useState(false);
+
+    const handleAddProduct = async (mainImageFile, extraImageFiles) => {
+        // ✅ PREVENIR LLAMADAS MÚLTIPLES
+        if (isCreatingProduct) {
+            console.warn('⚠️ Ya se está creando un producto, ignorando llamada duplicada');
             return;
         }
+
+        if (!token) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error de autenticación',
+                text: 'No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        // ✅ VALIDACIÓN: Verificar que hay stock válido
+        const stocksNegativos = sizes.filter(s => {
+            const stockValue = parseInt(s.stock);
+            return isNaN(stockValue) || stockValue < 0;
+        });
+        
+        if (stocksNegativos.length > 0) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Stock inválido',
+                text: 'El stock debe ser 0 o un número positivo',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        // ✅ MARCAR COMO EN PROCESO
+        setIsCreatingProduct(true);
+        console.log('🚀 Iniciando creación de producto...');
+
         try {
+            // ✅ PASO 1: Crear el producto básico
             const colorPrincipal = Array.isArray(colors) ? colors[0] : colors;
             const newProduct = {
                 modelo: model,
@@ -313,6 +455,9 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 destacado: true,
                 nuevo: true
             };
+
+            console.log('📦 Creando producto...');
+            console.log('Payload:', JSON.stringify(newProduct, null, 2));
             const response = await fetch("http://localhost:8080/sapah/productos", {
                 method: "POST",
                 headers: {
@@ -321,46 +466,102 @@ export default function useProductForm(setMainImage, setExtraImages) {
                 },
                 body: JSON.stringify(newProduct)
             });
+
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Error ${response.status}: ${errorText}`);
             }
+
             const addedProduct = await response.json();
-            // Crear talles asociados
+            const sku = addedProduct.sku;
+            console.log(`✅ Producto creado con SKU: ${sku}`);
+
+            // ✅ PASO 2: Crear talles y stocks PARA TODOS LOS TALLES DISPONIBLES
+            console.log('📏 Creando talles para todos los talles disponibles...');
+            
+            // Crear un mapa con los stocks configurados por el usuario
+            const stocksPorTalle = {};
             if (sizes && sizes.length > 0) {
-                const productoTalles = sizes.map(s => ({
-                    producto: { sku: addedProduct.sku },
-                    talle: { idTalle: getIdTalleByNumero(s.size) },
-                    stock: parseInt(s.stock)
-                })).filter(pt => pt.talle.idTalle);
-                if (productoTalles.length > 0) {
-                    const tallesResp = await fetch('http://localhost:8080/sapah/productos-talles/bulk', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(productoTalles)
-                    });
-                    if (!tallesResp.ok) {
-                        alert('Error al crear talles para el producto.');
-                        throw new Error('Error al crear talles');
+                sizes.forEach(s => {
+                    const idTalle = getIdTalleByNumero(s.size);
+                    if (idTalle) {
+                        stocksPorTalle[idTalle] = parseInt(s.stock);
                     }
-                }
+                });
             }
+            
+            // ✅ CREAR TALLES PARA TODOS LOS TALLES DISPONIBLES (inicializados en 0 o con el stock configurado)
+            const productoTalles = tallesDisponibles.map(talle => ({
+                producto: { sku: sku },
+                talle: { idTalle: talle.idTalle },
+                stock: stocksPorTalle[talle.idTalle] || 0 // Usar stock configurado o 0 por defecto
+            }));
+
+            console.log('🔍 DEBUG - Talles a crear:', productoTalles);
+
+            if (productoTalles.length > 0) {
+                const tallesResp = await fetch('http://localhost:8080/sapah/productos-talles/bulk', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(productoTalles)
+                });
+
+                if (!tallesResp.ok) {
+                    throw new Error('Error al crear talles para el producto');
+                }
+                console.log('✅ Talles creados exitosamente para todos los talles disponibles');
+            }
+
+            // ✅ PASO 3: Subir imágenes (si hay)
+            await subirImagenesParaNuevoProducto(sku, mainImageFile, extraImageFiles);
+
+            // ✅ PASO 4: Actualizar contexto local
             try {
                 agregarProductoLocal(addedProduct);
+                console.log('✅ Producto agregado al contexto local');
+                
+                // ✅ FORZAR CARGA DE IMÁGENES EN EL CONTEXTO DESPUÉS DE SUBIRLAS
+                if (mainImageFile || (extraImageFiles && extraImageFiles.some(f => f instanceof File))) {
+                    console.log('🔄 Solicitando carga de imágenes del producto recién creado...');
+                    // Usar setTimeout para asegurar que las imágenes se hayan procesado en el backend
+                    setTimeout(() => {
+                        solicitarImagenesProducto(sku);
+                    }, 1000);
+                }
             } catch (error) {
                 console.error('Error al actualizar contexto local:', error);
             }
+
+            // ✅ PASO 5: Mostrar mensaje de éxito
+            await Swal.fire({
+                icon: 'success',
+                title: '¡Producto creado!',
+                text: `El producto "${model}" se ha creado correctamente`,
+                confirmButtonText: 'Perfecto',
+                timer: 2000
+            });
+
             navigate('/admin');
+
         } catch (error) {
-            console.error("Error al agregar producto:", error);
-            alert(`Error al crear el producto: ${error.message}`);
+            console.error("❌ Error al agregar producto:", error);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error al crear producto',
+                text: error.message,
+                confirmButtonText: 'Entendido'
+            });
+        } finally {
+            // ✅ LIBERAR EL BLOQUEO
+            setIsCreatingProduct(false);
+            console.log('🔓 Proceso de creación finalizado');
         }
     };
 
-    const handleUpdateProduct = async (mainImage, extraImages) => {
+    const handleUpdateProduct = async (mainImageFile, extraImageFiles) => {
         if (!token) {
             alert('Error: No se encontró el token de autenticación. Por favor, inicia sesión nuevamente.');
             return;
@@ -432,11 +633,28 @@ export default function useProductForm(setMainImage, setExtraImages) {
             await Promise.all(stockPromises);
 
             // 3. Gestionar actualización de imágenes
-            await handleImageUpdates(skuNumber, mainImage, extraImages);
+            console.log('🔍 DEBUG - Actualizando imágenes con:');
+            console.log('  - mainImageFile:', mainImageFile);
+            console.log('  - extraImageFiles:', extraImageFiles);
+            await handleImageUpdates(skuNumber, mainImageFile, extraImageFiles);
 
             // 4. Actualizar contexto local (datos básicos del producto)
             try {
                 actualizarProductoLocal(skuNumber, updatedProduct);
+                
+                // ✅ FORZAR RECARGA DE IMÁGENES SI HUBO CAMBIOS
+                const hayImagenPrincipalNueva = mainImageFile && mainImageFile instanceof File;
+                const hayImagenesSecundariasNuevas = extraImageFiles && 
+                    Array.isArray(extraImageFiles) && 
+                    extraImageFiles.some(img => img && img instanceof File);
+                
+                if (hayImagenPrincipalNueva || hayImagenesSecundariasNuevas) {
+                    console.log('🔄 Solicitando recarga de imágenes del producto actualizado...');
+                    // Usar setTimeout para asegurar que las imágenes se hayan procesado en el backend
+                    setTimeout(() => {
+                        solicitarImagenesProducto(skuNumber);
+                    }, 1000);
+                }
             } catch (error) {
                 console.error('Error al actualizar contexto local:', error);
             }
@@ -487,6 +705,7 @@ export default function useProductForm(setMainImage, setExtraImages) {
         handleUpdateProduct,
         tallesDisponibles,
         loadingTallesDisponibles,
-        errorTallesDisponibles
+        errorTallesDisponibles,
+        isCreatingProduct // ✅ Exportar el estado para feedback visual
     };
 }

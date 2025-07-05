@@ -64,7 +64,8 @@ export default function NewProduct() {
         isEditable,
         marcasDisponibles,
         handleAddProduct,
-        handleUpdateProduct
+        handleUpdateProduct,
+        isCreatingProduct // ✅ Nuevo estado para prevenir llamadas múltiples
     } = useProductForm(setMainImage, setExtraImages);
 
     return (
@@ -103,15 +104,27 @@ export default function NewProduct() {
 
             <ConfirmationDialog
                 open={dialogOpen}
-                onClose={() => setDialogOpen(false)}
+                onClose={() => !isCreatingProduct && setDialogOpen(false)} // ✅ No permitir cerrar mientras se crea
                 onConfirm={() => {
+                    if (isCreatingProduct) return; // ✅ Prevenir múltiples clicks
                     setDialogOpen(false);
+                    
+                    // ✅ DEBUG: Verificar datos de imágenes antes de enviar
+                    console.log('🔍 DEBUG - Datos de imágenes en confirmación:');
+                    console.log('  - mainImageFile:', mainImageFile);
+                    console.log('  - extraImageFiles:', extraImageFiles);
+                    
                     isEditable
                         ? handleUpdateProduct(mainImageFile, extraImageFiles)
-                        : handleAddProduct(mainImage, extraImages);
+                        : handleAddProduct(mainImageFile, extraImageFiles);
                 }}
                 title={isEditable ? "Confirmar actualización" : "Confirmar creación"}
-                message={`¿Estás seguro de que deseas ${isEditable ? 'actualizar' : 'crear'} el producto "${model}"?`}
+                message={
+                    isCreatingProduct 
+                        ? "Creando producto, por favor espera..." 
+                        : `¿Estás seguro de que deseas ${isEditable ? 'actualizar' : 'crear'} el producto "${model}"?`
+                }
+                isLoading={isCreatingProduct} // ✅ Pasar estado de carga
             />
         </Box>
     );

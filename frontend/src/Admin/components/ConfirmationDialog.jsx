@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, CircularProgress } from '@mui/material';
 
 export default function ConfirmationDialog({
     open,
@@ -7,6 +7,7 @@ export default function ConfirmationDialog({
     onConfirm,
     title = "¿Estás seguro?", // Título por defecto
     message = "Esta acción no se puede deshacer.", // Mensaje por defecto
+    isLoading = false, // ✅ Nuevo prop para estado de carga
 }) {
     return (
         <Dialog
@@ -35,18 +36,21 @@ export default function ConfirmationDialog({
             <DialogActions sx={{ justifyContent: 'center' }}>
                 <Button
                     onClick={() => {
-                        if (typeof onConfirm === 'function') onConfirm();
+                        if (typeof onConfirm === 'function' && !isLoading) onConfirm();
                     }}
                     variant="contained"
                     color="primary"
+                    disabled={isLoading} // ✅ Deshabilitar cuando está cargando
                     sx={{ borderRadius: 999, px: 4 }}
+                    startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                 >
-                    Aceptar
+                    {isLoading ? 'Procesando...' : 'Aceptar'}
                 </Button>
                 <Button
                     onClick={onClose}
                     variant="outlined"
                     color="secondary"
+                    disabled={isLoading} // ✅ Deshabilitar cancelar cuando está cargando
                     sx={{ borderRadius: 999, px: 4 }}
                 >
                     Cancelar

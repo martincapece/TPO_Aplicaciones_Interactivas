@@ -370,7 +370,19 @@ export const ProductosProvider = ({ children }) => {
   }, [])
 
   const agregarProductoLocal = useCallback((nuevoProducto) => {
-    setProductos(prev => [...prev, nuevoProducto])
+    console.log('🔄 agregandoProductoLocal:', nuevoProducto);
+    
+    // ✅ VERIFICAR QUE EL PRODUCTO NO EXISTA YA
+    setProductos(prev => {
+      const productoExistente = prev.find(p => p.sku === nuevoProducto.sku);
+      if (productoExistente) {
+        console.warn('⚠️ Producto ya existe con SKU:', nuevoProducto.sku);
+        return prev; // No agregar duplicado
+      }
+      
+      console.log('✅ Agregando nuevo producto con SKU:', nuevoProducto.sku);
+      return [...prev, nuevoProducto];
+    });
   }, [])
 
   const eliminarProductoLocal = useCallback((sku) => {
