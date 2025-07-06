@@ -370,10 +370,24 @@ export const ProductosProvider = ({ children }) => {
   }, [])
 
   const agregarProductoLocal = useCallback((nuevoProducto) => {
-    setProductos(prev => [...prev, nuevoProducto])
+    console.log('🔄 agregandoProductoLocal:', nuevoProducto);
+    
+    // ✅ VERIFICAR QUE EL PRODUCTO NO EXISTA YA
+    setProductos(prev => {
+      const productoExistente = prev.find(p => p.sku === nuevoProducto.sku);
+      if (productoExistente) {
+        console.warn('⚠️ Producto ya existe con SKU:', nuevoProducto.sku);
+        return prev; // No agregar duplicado
+      }
+      
+      console.log('✅ Agregando nuevo producto con SKU:', nuevoProducto.sku);
+      return [...prev, nuevoProducto];
+    });
   }, [])
 
   const eliminarProductoLocal = useCallback((sku) => {
+    console.log('🗑️ Eliminando producto del contexto local:', sku);
+    
     setProductos(prev => prev.filter(producto => producto.sku !== sku))
     
     // También limpiar datos relacionados
@@ -391,6 +405,8 @@ export const ProductosProvider = ({ children }) => {
       const { [sku]: removed, ...rest } = prev
       return rest
     })
+    
+    console.log('✅ Producto eliminado del contexto local');
   }, [])
 
   const actualizarStockLocal = useCallback((sku, nuevoStock) => {

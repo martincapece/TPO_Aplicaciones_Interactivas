@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { ProductosContext } from '../../ecomerce/context/ProductosContext';
 import { AuthContext } from '../../auth/context/AuthContext'; // ✅ AGREGAR
+import Swal from 'sweetalert2'; // ✅ AGREGAR SweetAlert para notificaciones
 
 export function useAdmin() {
   const navigate = useNavigate();
@@ -70,20 +71,70 @@ export function useAdmin() {
     if (!token || !productToDelete) return; // ✅ Verificar token
 
     try {
-      await fetch(`http://localhost:8080/sapah/productos/${productToDelete}`, {
+      console.log(`🗑️ Iniciando eliminación del producto ${productToDelete}...`);
+      
+      // ✅ PASO 1: Eliminar todas las imágenes del producto primero
+      console.log('🖼️ Eliminando imágenes del producto...');
+      try {
+        const deleteImagesResponse = await fetch(`http://localhost:8080/api/imagenes/producto/${productToDelete}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (deleteImagesResponse.ok) {
+          const imageResult = await deleteImagesResponse.json();
+          console.log('✅ Imágenes eliminadas:', imageResult.message);
+        } else {
+          console.warn('⚠️ No se pudieron eliminar las imágenes o el producto no tenía imágenes');
+        }
+      } catch (imageError) {
+        console.warn('⚠️ Error al eliminar imágenes (continuando con eliminación del producto):', imageError);
+      }
+
+      // ✅ PASO 2: Eliminar el producto
+      console.log('📦 Eliminando producto...');
+      const deleteProductResponse = await fetch(`http://localhost:8080/sapah/productos/${productToDelete}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`, // ✅ Usar token del contexto
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
+      if (!deleteProductResponse.ok) {
+        throw new Error('Error al eliminar el producto');
+      }
+
+      console.log('✅ Producto eliminado exitosamente');
+
+      // ✅ PASO 3: Actualizar contexto y UI
       eliminarProductoLocal(productToDelete);
       setProductRows(prev => prev.filter(p => p.id !== productToDelete));
       setDeleteDialogOpen(false);
       setProductToDelete(null);
+
+      // ✅ Mostrar mensaje de éxito
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Producto eliminado!',
+        text: 'El producto y sus imágenes han sido eliminados correctamente',
+        confirmButtonText: 'Perfecto',
+        timer: 2000
+      });
+      
     } catch (error) {
-      console.error("Error al eliminar el producto:", error);
+      console.error("❌ Error al eliminar el producto:", error);
+      
+      // ✅ Mostrar error con SweetAlert
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error al eliminar producto',
+        text: 'No se pudo eliminar el producto. Por favor, inténtalo de nuevo.',
+        confirmButtonText: 'Entendido'
+      });
     }
   };
 
