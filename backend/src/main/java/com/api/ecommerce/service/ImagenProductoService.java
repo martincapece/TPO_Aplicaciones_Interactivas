@@ -16,6 +16,8 @@ public interface ImagenProductoService {
 
     ImagenProducto guardarImagen(MultipartFile archivo, Long skuProducto, boolean esPrincipal);
     List<ImagenProducto> guardarMultiplesImagenes(MultipartFile[] archivos, Long skuProducto);
+    List<ImagenProducto> guardarMultiplesImagenes(MultipartFile[] archivos, Long skuProducto, Integer indicePrincipal);
+    List<ImagenProducto> reemplazarImagenes(Long[] idsAReemplazar, MultipartFile[] nuevasImagenes, Long sku, Integer indicePrincipal);
     String generarUrlResponsiva(Long id);
     String generarUrlTransformada(Long id, String transformacion);
     

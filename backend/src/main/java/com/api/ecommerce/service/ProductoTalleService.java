@@ -11,4 +11,5 @@ public interface ProductoTalleService {
     boolean descontarStock(Long sku, Long idTalle, Integer cantidad);
     boolean agregarStock(Long sku, Long idTalle, Integer cantidad);
     ProductoTalle getProductoTalle(Long sku, Long idTalle);
+    ProductoTalle actualizarStock(Long sku, Long idTalle, Integer cantidad);
 }
