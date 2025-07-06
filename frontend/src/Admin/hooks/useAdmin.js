@@ -71,10 +71,8 @@ export function useAdmin() {
     if (!token || !productToDelete) return; // ✅ Verificar token
 
     try {
-      console.log(`🗑️ Iniciando eliminación del producto ${productToDelete}...`);
       
       // ✅ PASO 1: Eliminar todas las imágenes del producto primero
-      console.log('🖼️ Eliminando imágenes del producto...');
       try {
         const deleteImagesResponse = await fetch(`http://localhost:8080/api/imagenes/producto/${productToDelete}`, {
           method: 'DELETE',
@@ -86,16 +84,14 @@ export function useAdmin() {
 
         if (deleteImagesResponse.ok) {
           const imageResult = await deleteImagesResponse.json();
-          console.log('✅ Imágenes eliminadas:', imageResult.message);
         } else {
-          console.warn('⚠️ No se pudieron eliminar las imágenes o el producto no tenía imágenes');
+          console.error('⚠️ No se pudieron eliminar las imágenes o el producto no tenía imágenes');
         }
       } catch (imageError) {
-        console.warn('⚠️ Error al eliminar imágenes (continuando con eliminación del producto):', imageError);
+        console.error('⚠️ Error al eliminar imágenes (continuando con eliminación del producto):', imageError);
       }
 
       // ✅ PASO 2: Eliminar el producto
-      console.log('📦 Eliminando producto...');
       const deleteProductResponse = await fetch(`http://localhost:8080/sapah/productos/${productToDelete}`, {
         method: 'DELETE',
         headers: {
@@ -107,8 +103,6 @@ export function useAdmin() {
       if (!deleteProductResponse.ok) {
         throw new Error('Error al eliminar el producto');
       }
-
-      console.log('✅ Producto eliminado exitosamente');
 
       // ✅ PASO 3: Actualizar contexto y UI
       eliminarProductoLocal(productToDelete);

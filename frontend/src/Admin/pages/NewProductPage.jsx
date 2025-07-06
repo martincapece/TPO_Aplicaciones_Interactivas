@@ -110,9 +110,6 @@ export default function NewProduct() {
                     setDialogOpen(false);
                     
                     // ✅ DEBUG: Verificar datos de imágenes antes de enviar
-                    console.log('🔍 DEBUG - Datos de imágenes en confirmación:');
-                    console.log('  - mainImageFile:', mainImageFile);
-                    console.log('  - extraImageFiles:', extraImageFiles);
                     
                     isEditable
                         ? handleUpdateProduct(mainImageFile, extraImageFiles)

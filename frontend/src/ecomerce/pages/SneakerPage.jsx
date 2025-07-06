@@ -147,7 +147,6 @@ export function SneakerPage() {
                 setImagenesRecomendados(nuevasImagenes);
             }
         } catch (err) {
-            console.error("Error al cargar productos recomendados:", err);
             setLoadingRecomendados(false);
         }
     }, [token, id, imgNotFound]);

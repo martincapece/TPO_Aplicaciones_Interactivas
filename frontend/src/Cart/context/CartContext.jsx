@@ -96,11 +96,9 @@ export const CartProvider = ({ children }) => {
         return compraCreada;
       } else {
         const errorText = await response.text();
-        console.error('Error response:', errorText);
         throw new Error(`Error ${response.status}: ${errorText}`);
       }
     } catch (error) {
-      console.error('Error en checkout:', error);
       throw error;
     }
   };

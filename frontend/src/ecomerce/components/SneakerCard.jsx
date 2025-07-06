@@ -5,7 +5,7 @@ import { useContext } from "react"
 import imgNotFound from "../../../assets/imgNotFound.jpg"
 import { ProductosContext } from "../context/ProductosContext";
 
-export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, sizes, image, destacado }) => {
+export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, sizes, image, nuevo }) => {
     const navigate = useNavigate()
 
     // Obtener datos del contexto (¡súper rápido porque ya están cargados!)
@@ -93,7 +93,7 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                             alignItems: 'center',
                         }}
                     >
-                        {destacado && (
+                        {nuevo && (
                             <Box sx={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -141,7 +141,7 @@ export const SneakerCard = ({ sku, modelo, marca, color, precio, descripcion, si
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: '2px 6px',
-                        mb: destacado || sinStock ? 0.5 : 3
+                        mb: nuevo || sinStock ? 0.5 : 3
                     }}>
                         <Typography sx={{
                             color: '#ffffff',

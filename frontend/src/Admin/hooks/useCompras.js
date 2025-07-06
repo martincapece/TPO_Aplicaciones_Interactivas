@@ -72,7 +72,6 @@ export function useCompras() {
 
         setCompraRows(mappedData);
       } catch (error) {
-        console.error('Error al cargar compras:', error);
         setErrorCompras(error.message);
       } finally {
         setLoadingCompras(false);

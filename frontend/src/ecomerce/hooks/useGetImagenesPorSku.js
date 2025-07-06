@@ -34,7 +34,6 @@ export const useGetImagenesPorSku = ({ sku }) => {
                 const data = await response.json();
                 setImagenes(data);
             } catch (err) {
-                console.error(`Error obteniendo imágenes para SKU ${sku}:`, err);
                 setErrorImagenes(err.message);
                 setImagenes([]);
             } finally {

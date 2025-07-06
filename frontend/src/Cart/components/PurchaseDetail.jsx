@@ -50,7 +50,6 @@ export const PurchaseDetail = ({ productList, subtotal }) => {
             setShowSuccessModal(true);
 
         } catch (error) {
-            console.error('Error al procesar la compra:', error);
             setErrorMessage('Hubo un problema al procesar tu compra. Inténtalo nuevamente.');
             setShowErrorModal(true);
         } finally {
