@@ -386,6 +386,8 @@ export const ProductosProvider = ({ children }) => {
   }, [])
 
   const eliminarProductoLocal = useCallback((sku) => {
+    console.log('🗑️ Eliminando producto del contexto local:', sku);
+    
     setProductos(prev => prev.filter(producto => producto.sku !== sku))
     
     // También limpiar datos relacionados
@@ -403,6 +405,8 @@ export const ProductosProvider = ({ children }) => {
       const { [sku]: removed, ...rest } = prev
       return rest
     })
+    
+    console.log('✅ Producto eliminado del contexto local');
   }, [])
 
   const actualizarStockLocal = useCallback((sku, nuevoStock) => {
