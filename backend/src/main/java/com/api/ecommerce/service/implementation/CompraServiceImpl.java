@@ -1,14 +1,17 @@
 package com.api.ecommerce.service.implementation;
 
-import com.api.ecommerce.dto.CompraCompletaDTO;
 import com.api.ecommerce.dto.CompraDTO;
 import com.api.ecommerce.dto.CompraRequestDTO;
 import com.api.ecommerce.dto.ItemCompraRequestDTO;
+import com.api.ecommerce.exceptions.EmailEnvioException;
 import com.api.ecommerce.model.*;
 import com.api.ecommerce.repository.ClienteRepository;
 import com.api.ecommerce.repository.CompraRepository;
 import com.api.ecommerce.repository.ProductoTalleRepository;
 import com.api.ecommerce.service.CompraService;
+import com.api.ecommerce.service.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+// ... otros imports ...
+
 @Service
 public class CompraServiceImpl implements CompraService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(CompraServiceImpl.class);
 
     @Autowired
     private CompraRepository compraRepository;
@@ -28,6 +35,8 @@ public class CompraServiceImpl implements CompraService {
     private ClienteRepository clienteRepository;
     @Autowired
     private ProductoTalleRepository productoTalleRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<Compra> obtenerTodos() {
@@ -75,7 +84,20 @@ public class CompraServiceImpl implements CompraService {
 
         compra.setItems(items);
         compra.setPrecioFinal(total);
-        return compraRepository.save(compra);
+        
+        // Guardamos la compra
+        Compra compraGuardada = compraRepository.save(compra);
+
+        // Intentamos enviar el email de confirmación
+        try {
+            emailService.enviarConfirmacionCompra(compraGuardada);
+        } catch (EmailEnvioException e) {
+            // Logueamos el error pero no revertimos la transacción
+            logger.error("Error al enviar el email de confirmación para la compra #{}: {}", 
+                    compraGuardada.getNroCompra(), e.getMessage());
+        }
+
+        return compraGuardada;
     }
 
     @Override

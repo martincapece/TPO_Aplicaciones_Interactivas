@@ -31,7 +31,7 @@ public class ItemCompra {
         if (productoTalle == null) {
             return 0;
         }
-        return productoTalle.getPrecioUnitario();
+        return productoTalle.getPrecioUnitario() * cantidad;
     }
 
 }
